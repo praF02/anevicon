@@ -22,7 +22,7 @@ use std::time::{Duration, Instant};
 
 use humantime::format_duration;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
     bytes_sent: usize,
     packets_sent: usize,
