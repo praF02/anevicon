@@ -13,6 +13,9 @@
   <a href="https://crates.io/crates/anevicon">
     <img src="https://img.shields.io/badge/crates.io-v0.1.3-orange.svg">
   </a>
+  <a href="https://semver.org">
+    <img src="https://img.shields.io/badge/semver-follows-green.svg">
+  </a>
   
   <img src="DEMO.gif"><br>
   
@@ -119,9 +122,6 @@ Wait 7 seconds, and then start to test, displaying summaries after every 400 pac
 # Test the 80 port of the example.com site using the specific options
 $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms
 ```
-
-## Semantic versioning
-This project explicitly follows the [SemVer](https://semver.org/) specification to discredit dependency hell and other unpleasant things which are simply unavailable without this specification, so you can rely on the versions numbered in the appropriate order.
 
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
