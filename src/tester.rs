@@ -169,18 +169,18 @@ mod tests {
             tester
                 .socket
                 .write_timeout()
-                .expect("Cannot get the write timeout from the tester"),
+                .expect("A write timeout is unavailable"),
             config.send_timeout
         );
         assert_eq!(
             tester
                 .socket
                 .local_addr()
-                .expect("Cannot get the tester local address"),
+                .expect("A local address is unavailable"),
             config.sender
         );
         assert_eq!(
-            NonZeroUsize::new(tester.packet.len()).expect("The packet length is zero"),
+            NonZeroUsize::new(tester.packet.len()).expect("Zero packet length"),
             config.length
         );
     }
