@@ -165,6 +165,11 @@ impl Display for ArgsConfig {
             None => String::from("infinity"),
         };
 
+        let file = match &self.file {
+            Some(given_file) => given_file.to_str().unwrap(),
+            None => "unspecified",
+        };
+
         write!(
             fmt,
             "receiver: {receiver}, \
@@ -176,6 +181,7 @@ impl Display for ArgsConfig {
              display-periodicity: {display_periodicity}, \
              packets: {packets}, \
              send-timeout: {send_timeout}, \
+             file: {file}, \
              debug: {debug}",
             receiver = self.receiver,
             sender = self.sender,
@@ -186,6 +192,7 @@ impl Display for ArgsConfig {
             display_periodicity = self.display_periodicity,
             packets = self.packets,
             send_timeout = send_timeout,
+            file = file,
             debug = self.debug,
         )
     }
