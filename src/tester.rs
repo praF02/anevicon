@@ -170,6 +170,26 @@ mod tests {
     }
 
     #[test]
+    fn end_conditions_work() {
+        let server = setup_server();
+        let config = default_config(
+            server
+                .local_addr()
+                .expect("Cannot get a local address of a server"),
+        );
+        let tester = setup_tester(&config);
+        let mut summary = TestSummary::new();
+
+        // The default duration and the default packets count are too big,
+        // so this line must return false
+        assert_eq!(tester.check_end_cond(&summary), false);
+
+        // Update the summary and check that all the packets was sent
+        summary.update(1549335, std::usize::MAX);
+        assert_eq!(tester.check_end_cond(&summary), true);
+    }
+
+    #[test]
     fn sends_all_packets() {
         // Assign a very low required packets count to prevent our
         // lovely Travis CI and your computer for a shameful breaking
