@@ -119,7 +119,7 @@ Note that the test below will end when, and only when one of two specified end c
 $ anevicon --receiver 93.184.216.34:80 --length 4092
 ```
 
-### Custom file
+### Custom message
 By default, Anevicon will generate a random set of bytes which will be used as a sending packet. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--file` option:
 
 ```bash
