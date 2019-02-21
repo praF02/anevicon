@@ -139,6 +139,7 @@ mod tests {
         config.file = Some(PathBuf::from(temp.path().to_str().unwrap()));
 
         // Now we have a file specified, and the function must read it
+        // even with the existing '--length' option (just ignore it)
         assert_eq!(
             construct_packet(&config).expect("Cannot construct a packet"),
             content
