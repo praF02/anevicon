@@ -119,6 +119,14 @@ Note that the test below will end when, and only when one of two specified end c
 $ anevicon --receiver 93.184.216.34:80 --length 4092
 ```
 
+### Custom file
+By default, Anevicon will generate a random set of bytes which will be used as a sending packet. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--file` option:
+
+```bash
+# Test the 80 port of example.com with the custom file 'message.txt'
+$ anevicon --receiver 93.184.216.34:80 --file message.txt
+```
+
 ### Specific options
 Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, wait 270 macroseconds between sending two packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
