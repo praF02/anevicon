@@ -102,7 +102,8 @@ mod tests {
     use super::super::helpers::random_packet;
 
     lazy_static! {
-        static ref DEFAULT_PACKET: Vec<u8> = random_packet(NonZeroUsize::new(65000).unwrap());
+        static ref DEFAULT_PACKET: Vec<u8> =
+            unsafe { random_packet(NonZeroUsize::new_unchecked(65000)) };
         static ref DEFAULT_SERVER: UdpSocket = UdpSocket::bind("0.0.0.0:0")
             .expect("Cannot setup the testing server with the address 0.0.0.0:0");
     }
@@ -140,7 +141,7 @@ mod tests {
     fn sends_all_packets() {
         // Assign a very low required packets count to prevent our
         // lovely Travis CI and your computer for a shameful breaking
-        let packets = NonZeroUsize::new(25).unwrap();
+        let packets = unsafe { NonZeroUsize::new_unchecked(25) };
 
         let mut config = default_config();
         config.packets = packets;
