@@ -31,7 +31,7 @@ $ cargo install anevicon
 
 ## Usage
 ```
-anevicon 0.1.0
+anevicon 0.1.3
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
@@ -52,10 +52,14 @@ OPTIONS:
             A program working time. The default value is too big, that is, a
             test will be performed until you explicitly stop the process.
             [default: 64years 64hours 64secs]
+    -f, --file <FILENAME>
+            A file for sending as a packet. If this option is specified, then
+            the program will not generate a random set of bytes, but instead
+            read file content.
     -l, --length <BYTES>
-            A size of each UDP-packet, specified in bytes. Note that your system
-            or a target server might not be able to handle the default value.
-            [default: 65000]
+            A size of each random-generated UDP-packet, specified in bytes. Note
+            that your system or a target server might not be able to handle the
+            default value. [default: 65000]
     -p, --packets <COUNT>
             A count of packets for sending. The default value equals to the
             largest number available for the inner data type. [default:

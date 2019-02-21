@@ -19,24 +19,22 @@
 
 use std::io;
 use std::net::UdpSocket;
-use std::num::NonZeroUsize;
 use std::thread;
 
 use super::config::ArgsConfig;
 use super::summary::TestSummary;
 
 use log::info;
-use rand::{thread_rng, RngCore};
 
 #[derive(Debug)]
 pub struct Tester<'a> {
     socket: UdpSocket,
-    buffer: Vec<u8>,
+    packet: &'a [u8],
     args_config: &'a ArgsConfig,
 }
 
 impl<'a> Tester<'a> {
-    pub fn from_args_config(args_config: &'a ArgsConfig) -> io::Result<Tester<'a>> {
+    pub fn new(args_config: &'a ArgsConfig, packet: &'a [u8]) -> io::Result<Tester<'a>> {
         // Complete any necessary stuff with the specified socket
         let socket = UdpSocket::bind(args_config.sender)?;
         socket.connect(args_config.receiver)?;
@@ -44,21 +42,9 @@ impl<'a> Tester<'a> {
 
         Ok(Tester {
             socket,
-            buffer: Tester::random_buffer(args_config.length),
+            packet,
             args_config,
         })
-    }
-
-    fn random_buffer(length: NonZeroUsize) -> Vec<u8> {
-        // Create a sending buffer without an unnecessary initialization
-        // because we'll fill this buffer with random values next.
-        let mut buffer = Vec::with_capacity(length.get());
-        unsafe {
-            buffer.set_len(length.get());
-        }
-
-        thread_rng().fill_bytes(buffer.as_mut_slice());
-        buffer
     }
 
     pub fn execute(&self) -> io::Result<TestSummary> {
@@ -69,7 +55,7 @@ impl<'a> Tester<'a> {
 
         loop {
             for _ in 0..self.args_config.display_periodicity.get() {
-                summary.update(self.socket.send(&self.buffer)?, 1);
+                summary.update(self.socket.send(self.packet)?, 1);
 
                 if self.check_end_cond(&summary) {
                     return Ok(summary);
@@ -108,40 +94,71 @@ impl<'a> Tester<'a> {
 mod tests {
     use super::*;
 
-    use std::net::SocketAddr;
+    use std::num::NonZeroUsize;
 
+    use lazy_static::lazy_static;
     use structopt::StructOpt;
 
-    fn default_config(receiver: SocketAddr) -> ArgsConfig {
+    use super::super::helpers::random_packet;
+
+    lazy_static! {
+        static ref DEFAULT_PACKET: Vec<u8> = random_packet(NonZeroUsize::new(65000).unwrap());
+        static ref DEFAULT_SERVER: UdpSocket = UdpSocket::bind("0.0.0.0:0")
+            .expect("Cannot setup the testing server with the address 0.0.0.0:0");
+    }
+
+    fn default_config() -> ArgsConfig {
         // The first command-line argument doesn't have any meaning for CLAP
-        ArgsConfig::from_iter_safe(vec!["anevicon", "--receiver", &receiver.to_string()])
-            .expect("The command-line arguments are incorrectly specified")
+        ArgsConfig::from_iter_safe(vec![
+            "anevicon",
+            "--receiver",
+            &DEFAULT_SERVER.local_addr().unwrap().to_string(),
+        ])
+        .expect("The command-line arguments are incorrectly specified")
     }
 
     fn setup_tester(args_config: &ArgsConfig) -> Tester {
-        Tester::from_args_config(args_config)
-            .expect("Cannot setup the tester with this configuration")
-    }
-
-    fn setup_server() -> UdpSocket {
-        UdpSocket::bind("0.0.0.0:0")
-            .expect("Cannot setup the testing server with the address 0.0.0.0:0")
+        Tester::new(args_config, &DEFAULT_PACKET).expect("Cannot setup the tester")
     }
 
     #[test]
-    fn generates_random_buffer() {
-        let length = unsafe { NonZeroUsize::new_unchecked(35684) };
-        let buffer = Tester::random_buffer(length);
+    fn end_conditions_work() {
+        let config = default_config();
+        let tester = setup_tester(&config);
+        let mut summary = TestSummary::new();
 
-        // Check that we've got the correctly length and capacity
-        assert_eq!(buffer.len(), length.get());
-        assert!(buffer.capacity() >= length.get());
+        // The default duration and the default packets count are too big,
+        // so this line must return false
+        assert_eq!(tester.check_end_cond(&summary), false);
+
+        // Update the summary and check that all the packets was sent
+        summary.update(1549335, std::usize::MAX);
+        assert_eq!(tester.check_end_cond(&summary), true);
+    }
+
+    #[test]
+    fn sends_all_packets() {
+        // Assign a very low required packets count to prevent our
+        // lovely Travis CI and your computer for a shameful breaking
+        let packets = NonZeroUsize::new(25).unwrap();
+
+        let mut config = default_config();
+        config.packets = packets;
+
+        // Check that our tester has successfully sent all the packets
+        assert_eq!(
+            setup_tester(&config)
+                .execute()
+                .expect("An error occurred during the test")
+                .packets_sent(),
+            packets.get()
+        );
     }
 
     #[test]
     fn correctly_constructs_tester() {
         // Specify any valid-formatted addresses, this isn't essential
-        let mut config = default_config("127.0.0.1:53364".parse().unwrap());
+        let mut config = default_config();
         config.sender = "127.0.0.1:56978".parse().unwrap();
 
         // Setup our tester with the previous receiver address
@@ -159,58 +176,12 @@ mod tests {
             tester
                 .socket
                 .local_addr()
-                .expect("Cannot get the testing socket local address"),
+                .expect("Cannot get the tester local address"),
             config.sender
         );
         assert_eq!(
-            NonZeroUsize::new(tester.buffer.len())
-                .expect("The buffer might not be generated (its length equals to zero)"),
+            NonZeroUsize::new(tester.packet.len()).expect("The packet length is zero"),
             config.length
-        );
-    }
-
-    #[test]
-    fn end_conditions_work() {
-        let server = setup_server();
-        let config = default_config(
-            server
-                .local_addr()
-                .expect("Cannot get a local address of a server"),
-        );
-        let tester = setup_tester(&config);
-        let mut summary = TestSummary::new();
-
-        // The default duration and the default packets count are too big,
-        // so this line must return false
-        assert_eq!(tester.check_end_cond(&summary), false);
-
-        // Update the summary and check that all the packets was sent
-        summary.update(1549335, std::usize::MAX);
-        assert_eq!(tester.check_end_cond(&summary), true);
-    }
-
-    #[test]
-    fn sends_all_packets() {
-        // Assign a very low required packets count to prevent our
-        // lovely Travis CI and your computer for a shameful breaking
-        const REQUIRED_PACKETS: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(25) };
-
-        // Setup the testing server and modify the default config
-        let server = setup_server();
-        let mut config = default_config(
-            server
-                .local_addr()
-                .expect("Cannot get the testing server local address"),
-        );
-        config.packets = REQUIRED_PACKETS;
-
-        // Check that our tester has successfully sent all the packets
-        assert_eq!(
-            setup_tester(&config)
-                .execute()
-                .expect("An error occurred during the test")
-                .packets_sent(),
-            REQUIRED_PACKETS.get()
         );
     }
 }

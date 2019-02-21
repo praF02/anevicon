@@ -21,6 +21,7 @@ use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::net::SocketAddr;
 use std::num::{NonZeroUsize, ParseIntError};
+use std::path::PathBuf;
 use std::time::Duration;
 
 use humantime::{format_duration, parse_duration};
@@ -69,9 +70,9 @@ pub struct ArgsConfig {
     )]
     pub duration: Duration,
 
-    /// A size of each UDP-packet, specified in bytes. Note that
-    /// your system or a target server might not be able to handle
-    /// the default value.
+    /// A size of each random-generated UDP-packet, specified in
+    /// bytes. Note that your system or a target server might not be
+    /// able to handle the default value.
     #[structopt(
         short = "l",
         long = "length",
@@ -140,6 +141,17 @@ pub struct ArgsConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Option<Duration>,
+
+    /// A file for sending as a packet. If this option is specified,
+    /// then the program will not generate a random set of bytes,
+    /// but instead read file content.
+    #[structopt(
+        short = "f",
+        long = "file",
+        takes_value = true,
+        value_name = "FILENAME"
+    )]
+    pub file: Option<PathBuf>,
 
     /// Enable the debugging mode
     #[structopt(long = "debug")]

@@ -21,10 +21,12 @@ use log::error;
 use structopt::StructOpt;
 
 use config::ArgsConfig;
+use helpers::construct_packet;
 use logging::setup_logging;
 use tester::Tester;
 
 mod config;
+mod helpers;
 mod logging;
 mod summary;
 mod tester;
@@ -34,7 +36,15 @@ fn main() {
 
     setup_logging(config.debug);
 
-    let tester = match Tester::from_args_config(&config) {
+    let packet = match construct_packet(&config) {
+        Err(error) => {
+            error!("Cannot construct a packet: {}!", error);
+            std::process::exit(1);
+        }
+        Ok(packet) => packet,
+    };
+
+    let tester = match Tester::new(&config, &packet) {
         Err(error) => {
             error!("Cannot setup the tester: {}!", error);
             std::process::exit(1);
