@@ -36,6 +36,8 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
 
+    // Run a test until either all packets will be sent or alloted
+    // time will pass. Return the test summary for future analysis.
     loop {
         for _ in 0..args_config.display_periodicity.get() {
             summary.update(socket.send(packet)?, 1);
@@ -101,19 +103,6 @@ mod tests {
     }
 
     #[test]
-    fn end_conditions_work() {
-        let mut summary = TestSummary::new();
-
-        // The default duration and the default packets count are too big,
-        // so this line must return false
-        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), false);
-
-        // Update the summary and check that all the packets was sent
-        summary.update(1549335, std::usize::MAX);
-        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), true);
-    }
-
-    #[test]
     fn sends_all_packets() {
         // Assign a very low required packets count to prevent our
         // lovely Travis CI and your computer for a shameful breaking
@@ -129,5 +118,18 @@ mod tests {
                 .packets_sent(),
             packets.get()
         );
+    }
+
+    #[test]
+    fn end_conditions_work() {
+        let mut summary = TestSummary::new();
+
+        // The default duration and the default packets count are too big,
+        // so this line must return false
+        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), false);
+
+        // Update the summary and check that all the packets was sent
+        summary.update(1549335, std::usize::MAX);
+        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), true);
     }
 }

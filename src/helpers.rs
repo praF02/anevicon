@@ -86,38 +86,20 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
+    use lazy_static::lazy_static;
     use structopt::StructOpt;
     use tempfile::NamedTempFile;
 
-    fn default_config() -> ArgsConfig {
+    lazy_static! {
         // The first command-line argument doesn't have any meaning for CLAP.
         // The specified receiver address hasn't any meaning for the test.
-        ArgsConfig::from_iter_safe(vec!["anevicon", "--receiver", "0.0.0.0:56686"])
-            .expect("The command-line arguments are incorrectly specified")
+        static ref DEFAULT_CONFIG: ArgsConfig =
+            ArgsConfig::from_iter_safe(vec!["anevicon", "--receiver", "0.0.0.0:56686"])
+            .expect("The command-line arguments are incorrectly specified");
     }
 
-    #[test]
-    #[should_panic(expected = "Zero packet size")]
-    fn test_read_zero_file() {
-        let temp = NamedTempFile::new().expect("Cannot create a temp file");
-
-        // Check that the function must return the 'ZeroSize' error
-        if let Err(ReadPacketError::ZeroSize) = read_packet(temp.path()) {
-            panic!("Zero packet size");
-        } else {
-            panic!("Must return the 'ZeroSize' error");
-        }
-    }
-
-    #[test]
-    fn test_read_valid_file() {
-        let mut temp = NamedTempFile::new().expect("Cannot create a temp file");
-
-        let content = vec![26; 4096];
-        temp.write_all(&content).unwrap();
-
-        let read_file = read_packet(temp.path()).expect("Cannot read a temp file");
-        assert_eq!(read_file, content);
+    fn test_file() -> NamedTempFile {
+        NamedTempFile::new().expect("Cannot create a temp file")
     }
 
     #[test]
@@ -131,30 +113,55 @@ mod tests {
     }
 
     #[test]
-    fn test_construct_packet() {
-        let mut temp = NamedTempFile::new().expect("Cannot create a temp file");
+    #[should_panic(expected = "Zero packet size")]
+    fn test_read_zero_file() {
+        let temp_file = test_file();
+
+        // Check that the function must return the 'ZeroSize' error
+        if let Err(ReadPacketError::ZeroSize) = read_packet(temp_file.path()) {
+            panic!("Zero packet size");
+        } else {
+            panic!("Must return the 'ZeroSize' error");
+        }
+    }
+
+    #[test]
+    fn test_read_valid_file() {
+        let mut temp_file = test_file();
+
+        let content = vec![26; 4096];
+        temp_file.write_all(&content).unwrap();
+
+        let read_file = read_packet(temp_file.path()).expect("Cannot read a temp file");
+        assert_eq!(read_file, content);
+    }
+
+    #[test]
+    fn test_choose_random_packet() {
+        // The function must generate a random set of bytes as a packet
+        assert_eq!(
+            construct_packet(&DEFAULT_CONFIG)
+                .expect("Cannot construct a packet")
+                .len(),
+            DEFAULT_CONFIG.length.get()
+        );
+    }
+
+    #[test]
+    fn test_choose_file_packet() {
+        let mut temp_file = test_file();
 
         let content = vec![165; 4096];
-        temp.write_all(&content).unwrap();
+        temp_file.write_all(&content).unwrap();
 
-        let mut config = default_config();
-        config.file = Some(PathBuf::from(temp.path().to_str().unwrap()));
+        let mut config = DEFAULT_CONFIG.clone();
+        config.file = Some(PathBuf::from(temp_file.path().to_str().unwrap()));
 
         // Now we have a file specified, and the function must read it
         // even with the existing '--length' option (just ignore it)
         assert_eq!(
             construct_packet(&config).expect("Cannot construct a packet"),
             content
-        );
-
-        // Erase a file from our config and then check that the function
-        // will generate a random set of bytes as a packet
-        config.file = None;
-        assert_eq!(
-            construct_packet(&config)
-                .expect("Cannot construct a packet")
-                .len(),
-            config.length.get()
         );
     }
 }
