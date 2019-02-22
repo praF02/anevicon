@@ -17,12 +17,16 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
-use log::error;
+use std::sync::{Arc, RwLock};
+use std::thread;
+
+use log::{error, info};
 use structopt::StructOpt;
 
 use config::ArgsConfig;
 use helpers::construct_packet;
 use logging::setup_logging;
+use summary::TestSummary;
 use tester::Tester;
 
 mod config;
@@ -33,27 +37,51 @@ mod tester;
 
 fn main() {
     let config = ArgsConfig::from_args();
-
     setup_logging(config.debug);
 
-    let packet = match construct_packet(&config) {
+    info!("The test is starting with {}.", config);
+    thread::sleep(config.wait);
+
+    setup_threads(config);
+}
+
+fn setup_threads(args_config: ArgsConfig) {
+    let threads_count = args_config.threads.get();
+    let mut threads = Vec::with_capacity(threads_count);
+
+    let packet = match construct_packet(&args_config) {
         Err(error) => {
             error!("Cannot construct a packet >>> {}!", error);
             std::process::exit(1);
         }
-        Ok(packet) => packet,
+        Ok(packet) => Arc::new(RwLock::new(packet)),
     };
 
-    let tester = match Tester::new(&config, &packet) {
-        Err(error) => {
-            error!("Cannot setup the tester >>> {}!", error);
-            std::process::exit(1);
-        }
-        Ok(tester) => tester,
-    };
+    let lock_config = Arc::new(RwLock::new(args_config));
+    let summary = Arc::new(RwLock::new(TestSummary::new()));
 
-    if let Err(error) = tester.execute() {
-        error!("An error occurred during the test >>> {}!", error);
-        std::process::exit(1);
+    for _ in 0..threads_count {
+        let lock_config = lock_config.clone();
+        let packet = packet.clone();
+        let summary = summary.clone();
+
+        threads.push(thread::spawn(move || {
+            let tester = match Tester::new(lock_config, packet) {
+                Err(error) => {
+                    error!("Cannot setup the tester >>> {}!", error);
+                    std::process::exit(1);
+                }
+                Ok(tester) => tester,
+            };
+
+            if let Err(error) = tester.execute(summary) {
+                error!("An error occurred during the test >>> {}!", error);
+                std::process::exit(1);
+            }
+        }));
     }
+
+    threads
+        .into_iter()
+        .for_each(|thread| thread.join().expect("The thread has panicked"));
 }
