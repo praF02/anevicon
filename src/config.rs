@@ -107,8 +107,8 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets per displaying test summaries. It is
-    /// not recommended to set this option to a small value (say, 6)
+    /// A count of packets per displaying test summaries. It is not
+    /// recommended to set this option to a small value (say, 6)
     /// for the performance reasons.
     #[structopt(
         long = "display-periodicity",
@@ -153,19 +153,6 @@ pub struct ArgsConfig {
     )]
     pub file: Option<PathBuf>,
 
-    /// A count of working threads. Multiple threads might be
-    /// helpful if you want to send lots of packets of a small size,
-    /// otherwise, this has no profit.
-    #[structopt(
-        short = "t",
-        long = "threads",
-        takes_value = true,
-        value_name = "COUTN",
-        default_value = "1",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub threads: NonZeroUsize,
-
     /// Enable the debugging mode
     #[structopt(long = "debug")]
     pub debug: bool,
@@ -195,7 +182,6 @@ impl Display for ArgsConfig {
              packets: {packets}, \
              send-timeout: {send_timeout}, \
              file: {file}, \
-             threads: {threads}, \
              debug: {debug}",
             receiver = self.receiver,
             sender = self.sender,
@@ -207,7 +193,6 @@ impl Display for ArgsConfig {
             packets = self.packets,
             send_timeout = send_timeout,
             file = file,
-            threads = self.threads,
             debug = self.debug,
         )
     }
