@@ -134,6 +134,14 @@ Wait 7 seconds, and then start to test, displaying summaries after every 400 pac
 $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms
 ```
 
+## Questions
+
+### Why on Rust?
+The [Rust programming language](https://www.rust-lang.org/) lets you describe the set of guarantees about your code using its type system, and what is more, it is a system programming language even without a garbage collector, that is, it gives us bare-metal performance.
+
+### Why not multithreading?
+Practice shows us that running multiple threads each sending a big amount of packets and run only one thread which does the same work, has equality performance. You can make sure of it by running the same Anevicon command twice at the same time.
+
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
  
