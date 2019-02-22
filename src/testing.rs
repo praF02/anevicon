@@ -71,3 +71,63 @@ fn check_end_cond(args_config: &ArgsConfig, summary: &TestSummary) -> bool {
 
     false
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::num::NonZeroUsize;
+
+    use lazy_static::lazy_static;
+    use structopt::StructOpt;
+
+    use super::super::helpers::random_packet;
+
+    lazy_static! {
+        static ref DEFAULT_PACKET: Vec<u8> =
+            unsafe { random_packet(NonZeroUsize::new_unchecked(65000)) };
+
+        static ref DEFAULT_SERVER: UdpSocket = UdpSocket::bind("0.0.0.0:0")
+            .expect("Cannot setup the testing server with the address 0.0.0.0:0");
+
+        // The first command-line argument doesn't have any meaning for CLAP
+        static ref DEFAULT_CONFIG: ArgsConfig =
+            ArgsConfig::from_iter_safe(vec![
+                "anevicon",
+                "--receiver",
+                &DEFAULT_SERVER.local_addr().unwrap().to_string(),
+            ])
+            .expect("The command-line arguments are incorrectly specified");
+    }
+
+    #[test]
+    fn end_conditions_work() {
+        let mut summary = TestSummary::new();
+
+        // The default duration and the default packets count are too big,
+        // so this line must return false
+        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), false);
+
+        // Update the summary and check that all the packets was sent
+        summary.update(1549335, std::usize::MAX);
+        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), true);
+    }
+
+    #[test]
+    fn sends_all_packets() {
+        // Assign a very low required packets count to prevent our
+        // lovely Travis CI and your computer for a shameful breaking
+        let packets = unsafe { NonZeroUsize::new_unchecked(25) };
+
+        let mut config = DEFAULT_CONFIG.clone();
+        config.packets = packets;
+
+        // Check that our tester has successfully sent all the packets
+        assert_eq!(
+            execute(&config, &DEFAULT_PACKET)
+                .expect("An error occurred during the test")
+                .packets_sent(),
+            packets.get()
+        );
+    }
+}

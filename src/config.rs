@@ -27,7 +27,7 @@ use std::time::Duration;
 use humantime::{format_duration, parse_duration};
 use structopt::StructOpt;
 
-#[derive(Debug, Eq, PartialEq, StructOpt)]
+#[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
 #[structopt(
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
     about = "An UDP-based server stress-testing tool, written in Rust.",
