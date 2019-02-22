@@ -53,9 +53,8 @@ OPTIONS:
             test will be performed until you explicitly stop the process.
             [default: 64years 64hours 64secs]
     -f, --file <FILENAME>
-            A file for sending as a packet. If this option is specified, then
-            the program will not generate a random set of bytes, but instead
-            read file content.
+            A file for sending instead of random-generated packets. Note that
+            the `--length` option makes no sense when a file is specified.
     -l, --length <BYTES>
             A size of each random-generated UDP-packet, specified in bytes. Note
             that your system or a target server might not be able to handle the
