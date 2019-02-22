@@ -69,7 +69,9 @@ pub enum ReadPacketError {
 impl Display for ReadPacketError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            ReadPacketError::ReadFailed(error) => write!(fmt, "{}", error),
+            ReadPacketError::ReadFailed(error) => {
+                write!(fmt, "Error while reading the file >>> {}", error)
+            }
             ReadPacketError::ZeroSize => write!(fmt, "Zero packet size"),
         }
     }

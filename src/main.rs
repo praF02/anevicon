@@ -38,7 +38,7 @@ fn main() {
 
     let packet = match construct_packet(&config) {
         Err(error) => {
-            error!("Cannot construct a packet: {}!", error);
+            error!("Cannot construct a packet >>> {}!", error);
             std::process::exit(1);
         }
         Ok(packet) => packet,
@@ -46,14 +46,14 @@ fn main() {
 
     let tester = match Tester::new(&config, &packet) {
         Err(error) => {
-            error!("Cannot setup the tester: {}!", error);
+            error!("Cannot setup the tester >>> {}!", error);
             std::process::exit(1);
         }
         Ok(tester) => tester,
     };
 
     if let Err(error) = tester.execute() {
-        error!("An error occurred during the test: {}!", error);
+        error!("An error occurred during the test >>> {}!", error);
         std::process::exit(1);
     }
 }
