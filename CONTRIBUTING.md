@@ -12,4 +12,4 @@ curl https://sh.rustup.rs -sSf | sh
 ## Where to go?
  - **[Issues](https://github.com/Gymmasssorla/anevicon/issues)** are meant for reporting found bugs and new functionality suggestions. Discussions are welcome too, and I will try to answer you in near future.
  
- - **[Pulls](https://github.com/Gymmasssorla/anevicon/pulls)** are meant for implementing new functionality and fixing bugs. You can suggest your work without asking for permission or any other coordination. Other people can criticize your code, and you should answer them.
+ - **[Pulls](https://github.com/Gymmasssorla/anevicon/pulls)** are meant for implementing new functionality and fixing bugs. Note that other people can criticize your code, and you should answer them.
