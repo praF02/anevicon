@@ -9,9 +9,6 @@ To setup your development environment for contribution, you only need to [instal
 curl https://sh.rustup.rs -sSf | sh
 ```
 
-## Formatting
-To make the code readable and maintainable, we use the great tool from the original Rust team called [rustfmt](https://github.com/rust-lang/rustfmt). You need to format your code before pushing any changes just by typing the `cargo fmt` command in your terminal.
-
 ## Building and testing
 As it should be in correct projects, all the building and testing procedures are performed by [Travis CI](https://travis-ci.com/Gymmasssorla/anevicon). But, of course, you can do it by yourself using the following commands:
 
@@ -19,6 +16,9 @@ As it should be in correct projects, all the building and testing procedures are
 $ cargo build --verbose --all
 $ cargo test --verbose --all
 ```
+
+## Formatting
+To make the code readable and maintainable, we use the great tool from the original Rust team called [rustfmt](https://github.com/rust-lang/rustfmt). You need to format your code before pushing any changes just by typing the `cargo fmt` command in your terminal.
 
 ## Where to go?
  - **[Issues](https://github.com/Gymmasssorla/anevicon/issues)** are meant for reporting found bugs and new functionality suggestions. Discussions are welcome too, and I will try to answer you in near future.
