@@ -36,7 +36,7 @@ pub fn setup_logging(debug: bool) {
     Dispatch::new()
         .format(move |out, message, record| {
             out.finish(format_args!(
-                "[{anevicon}] {level} [{date_time}]: {message}",
+                "[{anevicon}] [{level}] [{date_time}]: {message}",
                 anevicon = "anevicon".magenta().bold(),
                 level = colors.color(record.level()).to_string().underline(),
                 date_time = strftime("%x %X %z", &time::now()).unwrap().cyan(),
