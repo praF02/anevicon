@@ -80,7 +80,7 @@ impl Display for TestSummary {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(
             fmt,
-            "packets sent: {packets} ({megabytes} MB), \
+            "Packets sent: {packets} ({megabytes} MB), \
              the average speed: {mbps} Mbps ({packets_per_sec} packets/sec), \
              time passed: {time_passed}",
             packets = self.packets_sent(),

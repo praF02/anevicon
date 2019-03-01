@@ -172,7 +172,7 @@ impl Display for ArgsConfig {
 
         write!(
             fmt,
-            "receiver: {receiver}, \
+            "Receiver: {receiver}, \
              sender: {sender}, \
              duration: {duration}, \
              length: {length}, \
