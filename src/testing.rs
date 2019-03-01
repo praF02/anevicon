@@ -32,7 +32,6 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     socket.connect(args_config.receiver)?;
     socket.set_write_timeout(args_config.send_timeout)?;
 
-    info!("The test is starting with >>> {}.", args_config);
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
 
