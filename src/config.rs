@@ -153,6 +153,16 @@ pub struct ArgsConfig {
     )]
     pub file: Option<PathBuf>,
 
+    /// A file for redirecting all user messages. Traces and other
+    /// debugging information will still be written to stderr.
+    #[structopt(
+        short = "o",
+        long = "output",
+        takes_value = true,
+        value_name = "FILENAME"
+    )]
+    pub output: Option<PathBuf>,
+
     /// Enable the debugging mode
     #[structopt(long = "debug")]
     pub debug: bool,

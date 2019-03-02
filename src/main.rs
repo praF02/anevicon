@@ -33,7 +33,13 @@ mod testing;
 
 fn main() {
     let config = ArgsConfig::from_args();
-    setup_logging(config.debug);
+
+    if let Err(error) = setup_logging(config.debug, &config.output) {
+        logging::raw_fatal(format_args!(
+            "Cannot setup the logging system >>> {}!",
+            error
+        ));
+    }
 
     let packet = match construct_packet(&config) {
         Err(error) => {
