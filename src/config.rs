@@ -36,7 +36,7 @@ use structopt::StructOpt;
 )]
 pub struct ArgsConfig {
     /// A receiver of generated traffic, specified as an IP-address
-    /// and a port number, separated by the colon character.
+    /// and a port number, separated by a colon.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -47,7 +47,7 @@ pub struct ArgsConfig {
     pub receiver: SocketAddr,
 
     /// A sender of generated traffic, specified as an IP-address
-    /// and a port number, separated by the colon character.
+    /// and a port number, separated by a colon.
     #[structopt(
         short = "s",
         long = "sender",
@@ -57,9 +57,8 @@ pub struct ArgsConfig {
     )]
     pub sender: SocketAddr,
 
-    /// A program working time. The default value is too big, that
-    /// is, a test will be performed until you explicitly stop
-    /// the process.
+    /// A program working time. By default, a test will be
+    /// performed until you stop the process.
     #[structopt(
         short = "d",
         long = "duration",
@@ -71,8 +70,7 @@ pub struct ArgsConfig {
     pub duration: Duration,
 
     /// A size of each random-generated UDP-packet, specified in
-    /// bytes. Note that your system or a target server might not be
-    /// able to handle the default value.
+    /// bytes.
     #[structopt(
         short = "l",
         long = "length",
@@ -83,8 +81,8 @@ pub struct ArgsConfig {
     )]
     pub length: NonZeroUsize,
 
-    /// A waiting time before a test execution. It is mainly
-    /// used to prevent a launch of an erroneous (unwanted) test.
+    /// A waiting time before a test execution used to prevent a
+    /// launch of an erroneous (unwanted) test.
     #[structopt(
         short = "w",
         long = "wait",
@@ -95,9 +93,8 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A periodicity of sending packets. The default value equals
-    /// to zero seconds, that is, all packets will be sent
-    /// momentarily.
+    /// A periodicity of sending packets. By default, all packets
+    /// will be sent momentarily.
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -107,9 +104,8 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets per displaying test summaries. It is not
-    /// recommended to set this option to a small value (say, 6)
-    /// for the performance reasons.
+    /// A count of packets per displaying test summaries. It is
+    /// recommended to not edit this value.
     #[structopt(
         long = "display-periodicity",
         takes_value = true,
@@ -119,8 +115,8 @@ pub struct ArgsConfig {
     )]
     pub display_periodicity: NonZeroUsize,
 
-    /// A count of packets for sending. The default value equals to
-    /// the largest number available for the inner data type.
+    /// A count of packets for sending. When this limit is reached,
+    /// then the program will exit.
     #[structopt(
         short = "p",
         long = "packets",
@@ -131,20 +127,19 @@ pub struct ArgsConfig {
     )]
     pub packets: NonZeroUsize,
 
-    /// If sending calls will continue longer than this timeout, the
-    /// program will exit with an error. By default, all the sending
-    /// calls will continue indefinitely.
+    /// A timeout of sending every single packet. If a timeout is
+    /// reached, an error will be printed.
     #[structopt(
         long = "send-timeout",
         takes_value = true,
         value_name = "TIME-SPAN",
+        default_value = "10secs",
         parse(try_from_str = "parse_duration")
     )]
-    pub send_timeout: Option<Duration>,
+    pub send_timeout: Duration,
 
-    /// A file for sending instead of random-generated packets. Note
-    /// that the `--length` option makes no sense when a file is
-    /// specified.
+    /// A file for sending instead of random-generated packets. The
+    /// `--length` will be ignored.
     #[structopt(
         short = "f",
         long = "file",
@@ -153,8 +148,8 @@ pub struct ArgsConfig {
     )]
     pub file: Option<PathBuf>,
 
-    /// A file for redirecting all user messages. Traces and other
-    /// debugging information will still be written to stderr.
+    /// A file for redirecting all user messages (notifications,
+    /// warnings, and errors).
     #[structopt(
         short = "o",
         long = "output",

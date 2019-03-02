@@ -30,7 +30,7 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     // Complete any necessary stuff with the specified socket
     let socket = UdpSocket::bind(args_config.sender)?;
     socket.connect(args_config.receiver)?;
-    socket.set_write_timeout(args_config.send_timeout)?;
+    socket.set_write_timeout(Some(args_config.send_timeout))?;
 
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
