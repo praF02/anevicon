@@ -36,21 +36,21 @@ fn main() {
 
     if let Err(error) = setup_logging(config.debug, &config.output) {
         logging::raw_fatal(format_args!(
-            "Cannot setup the logging system >>> {}!",
+            "Opening the output file failed >>> {}!",
             error
         ));
     }
 
     let packet = match construct_packet(&config) {
         Err(error) => {
-            error!("Cannot construct a packet >>> {}!", error);
+            error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);
         }
         Ok(packet) => packet,
     };
 
     if let Err(error) = execute(&config, &packet) {
-        error!("An error occurred during the test >>> {}!", error);
+        error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
 }

@@ -48,23 +48,21 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
             thread::sleep(args_config.send_periodicity);
         }
 
-        info!("Running with >>> {}.", summary);
+        info!("{}.", summary);
     }
 }
 
 fn check_end_cond(args_config: &ArgsConfig, summary: &TestSummary) -> bool {
     if summary.time_passed() >= args_config.duration {
         info!(
-            "The test is stopping because \
-             the allotted time has passed. The total result is >>> {}.",
+            "The allotted time has passed. The total result is >>> {}.",
             summary
         );
         return true;
     }
     if summary.packets_sent() == args_config.packets.get() {
         info!(
-            "The test is stopping because \
-             all the required packets were sent. The total result is >>> {}.",
+            "All the required packets were sent. The total result is >>> {}.",
             summary
         );
         return true;
