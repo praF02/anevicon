@@ -126,6 +126,14 @@ By default, Anevicon will generate a random set of bytes which will be used as a
 $ anevicon --receiver 93.184.216.34:80 --file message.txt
 ```
 
+### Custom output file
+To specify a custom output file for all notifications, warnings, and errors, there is one more option called `--output`. Note that all debugging information will still be written to a terminal.
+
+```bash
+# Test the 80 port of example.com with the custom output file 'out.txt'
+$ anevicon --receiver 93.184.216.34:80 --output out.txt
+```
+
 ### Specific options
 Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, wait 270 macroseconds between sending two packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
