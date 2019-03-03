@@ -53,14 +53,14 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
 }
 
 fn check_end_cond(args_config: &ArgsConfig, summary: &TestSummary) -> bool {
-    if summary.time_passed() >= args_config.duration {
+    if summary.time_passed() >= args_config.test_duration {
         info!(
             "The allotted time has passed. The total result is >>> {}.",
             summary
         );
         return true;
     }
-    if summary.packets_sent() == args_config.packets.get() {
+    if summary.packets_sent() == args_config.packets_count.get() {
         info!(
             "All the required packets were sent. The total result is >>> {}.",
             summary
@@ -106,7 +106,7 @@ mod tests {
         let packets = unsafe { NonZeroUsize::new_unchecked(25) };
 
         let mut config = DEFAULT_CONFIG.clone();
-        config.packets = packets;
+        config.packets_count = packets;
 
         // Check that our tester has successfully sent all the packets
         assert_eq!(

@@ -18,7 +18,6 @@
  */
 
 use log::error;
-use structopt::StructOpt;
 
 use config::ArgsConfig;
 use helpers::construct_packet;
@@ -32,7 +31,7 @@ mod summary;
 mod testing;
 
 fn main() {
-    let config = ArgsConfig::from_args();
+    let config = ArgsConfig::setup();
 
     if let Err(error) = setup_logging(config.debug, &config.output) {
         logging::raw_fatal(format_args!(

@@ -25,6 +25,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use humantime::parse_duration;
+use structopt::clap::ArgGroup;
 use structopt::StructOpt;
 
 #[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
@@ -35,53 +36,51 @@ use structopt::StructOpt;
     set_term_width = 80
 )]
 pub struct ArgsConfig {
-    /// A receiver of generated traffic, specified as an IP-address
-    /// and a port number, separated by a colon.
+    /// A receiver of generated traffic, specified as an IP-address and a
+    /// port number, separated by a colon.
     #[structopt(
         short = "r",
         long = "receiver",
         takes_value = true,
-        value_name = "ADDRESS",
+        value_name = "SOCKET-ADDRESS",
         required = true
     )]
     pub receiver: SocketAddr,
 
-    /// A sender of generated traffic, specified as an IP-address
-    /// and a port number, separated by a colon.
+    /// A sender of generated traffic, specified as an IP-address and a
+    /// port number, separated by a colon.
     #[structopt(
         short = "s",
         long = "sender",
         takes_value = true,
-        value_name = "ADDRESS",
+        value_name = "SOCKET-ADDRESS",
         default_value = "0.0.0.0:0"
     )]
     pub sender: SocketAddr,
 
-    /// A program working time. By default, a test will be
-    /// performed until you stop the process.
+    /// A whole test duration. By default, a test will be performed until
+    /// you explicitly stop the process.
     #[structopt(
-        short = "d",
-        long = "duration",
+        long = "test-duration",
         takes_value = true,
         value_name = "TIME-SPAN",
         default_value = "64years 64hours 64secs",
         parse(try_from_str = "parse_duration")
     )]
-    pub duration: Duration,
+    pub test_duration: Duration,
 
-    /// A size of each random-generated UDP-packet, specified in
-    /// bytes.
+    /// A count of packets for sending. When this limit is reached, then
+    /// the program will exit.
     #[structopt(
         short = "l",
-        long = "length",
+        long = "packet-length",
         takes_value = true,
-        value_name = "BYTES",
-        default_value = "65000",
+        value_name = "POSITIVE-INTEGER",
         parse(try_from_str = "parse_non_zero_usize")
     )]
-    pub length: NonZeroUsize,
+    pub packet_length: Option<NonZeroUsize>,
 
-    /// A waiting time before a test execution used to prevent a
+    /// A waiting time span before a test execution used to prevent a
     /// launch of an erroneous (unwanted) test.
     #[structopt(
         short = "w",
@@ -93,8 +92,8 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A periodicity of sending packets. By default, all packets
-    /// will be sent momentarily.
+    /// A periodicity of sending packets. By default, all packets will be
+    /// sent momentarily (without any periodicity).
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -104,8 +103,8 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets per displaying test summaries. It is
-    /// recommended to not edit this value.
+    /// A count of packets per displaying test summaries. It is highly
+    /// recommended to not set a too small value (say, 6).
     #[structopt(
         long = "display-periodicity",
         takes_value = true,
@@ -115,20 +114,20 @@ pub struct ArgsConfig {
     )]
     pub display_periodicity: NonZeroUsize,
 
-    /// A count of packets for sending. When this limit is reached,
-    /// then the program will exit.
+    /// A count of packets for sending. When this limit is reached, then
+    /// the program will exit.
     #[structopt(
         short = "p",
-        long = "packets",
+        long = "packets-count",
         takes_value = true,
-        value_name = "COUNT",
+        value_name = "POSITIVE-INTEGER",
         default_value = "18446744073709551615",
         parse(try_from_str = "parse_non_zero_usize")
     )]
-    pub packets: NonZeroUsize,
+    pub packets_count: NonZeroUsize,
 
-    /// A timeout of sending every single packet. If a timeout is
-    /// reached, an error will be printed.
+    /// A timeout of sending every single packet. If a timeout is reached,
+    /// an error will be printed.
     #[structopt(
         long = "send-timeout",
         takes_value = true,
@@ -138,18 +137,18 @@ pub struct ArgsConfig {
     )]
     pub send_timeout: Duration,
 
-    /// A file for sending instead of random-generated packets. The
-    /// `--length` will be ignored.
+    /// A file for sending instead of random-generated packets. You cannot
+    /// use this option and the `--packet-length` together.
     #[structopt(
         short = "f",
-        long = "file",
+        long = "send-file",
         takes_value = true,
         value_name = "FILENAME"
     )]
-    pub file: Option<PathBuf>,
+    pub send_file: Option<PathBuf>,
 
-    /// A file for redirecting all user messages (notifications,
-    /// warnings, and errors).
+    /// A file for redirecting all user messages (notifications, warnings,
+    /// and errors) without debugging information.
     #[structopt(
         short = "o",
         long = "output",
@@ -159,8 +158,26 @@ pub struct ArgsConfig {
     pub output: Option<PathBuf>,
 
     /// Enable the debugging mode
-    #[structopt(long = "debug")]
+    #[structopt(short = "d", long = "debug", takes_value = false)]
     pub debug: bool,
+}
+
+impl ArgsConfig {
+    pub fn setup() -> ArgsConfig {
+        let matches = ArgsConfig::clap()
+            .group(ArgGroup::with_name("message").args(&["send_file", "packet_length"]))
+            .get_matches();
+
+        let mut args_config = ArgsConfig::from_clap(&matches);
+
+        // If an user hasn't specified a file, then set the default packet
+        // length
+        if !matches.is_present("send_file") {
+            args_config.packet_length = Some(unsafe { NonZeroUsize::new_unchecked(65000) });
+        }
+
+        args_config
+    }
 }
 
 pub fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
