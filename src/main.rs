@@ -40,7 +40,7 @@ fn main() {
         ));
     }
 
-    let packet = match construct_packet(&config) {
+    let packet = match construct_packet(&config.send_file, &config.packet_length) {
         Err(error) => {
             error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);

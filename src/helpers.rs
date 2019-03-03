@@ -22,27 +22,28 @@ use std::fmt::{self, Display, Formatter};
 use std::fs;
 use std::io;
 use std::num::NonZeroUsize;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use rand::{thread_rng, RngCore};
 
-use super::config::ArgsConfig;
-
-pub fn construct_packet(args_config: &ArgsConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If our user specified a file, then use file content as a packet.
-    // Otherwise, generate a random set of bytes to use as a packet
-    if let Some(ref filename) = args_config.send_file {
+pub fn construct_packet(
+    send_file: &Option<PathBuf>,
+    packet_length: &Option<NonZeroUsize>,
+) -> Result<Vec<u8>, ReadPacketError> {
+    // If an user has specified a file, then use file content as a packet.
+    // Otherwise, generate a random set of bytes
+    if let Some(ref filename) = send_file {
         read_packet(filename)
     } else {
         // If a file wasn't specified, then at least packet length must
         // be explicitly or implicitly specified
-        Ok(random_packet(args_config.packet_length.unwrap()))
+        Ok(random_packet(packet_length.unwrap()))
     }
 }
 
 pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
-    // Create a sending buffer without an unnecessary initialization
-    // because we'll fill this buffer with random values next
+    // Create a packet without an unnecessary initialization because
+    // we'll fill this buffer with random values next
     let mut buffer = Vec::with_capacity(length.get());
     unsafe {
         buffer.set_len(length.get());
@@ -88,17 +89,7 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
-    use lazy_static::lazy_static;
-    use structopt::StructOpt;
     use tempfile::NamedTempFile;
-
-    lazy_static! {
-        // The first command-line argument doesn't have any meaning for CLAP.
-        // The specified receiver address hasn't any meaning for the test
-        static ref DEFAULT_CONFIG: ArgsConfig =
-            ArgsConfig::from_iter_safe(vec!["anevicon", "--receiver", "0.0.0.0:56686"])
-            .expect("The command-line arguments are incorrectly specified");
-    }
 
     fn test_file() -> NamedTempFile {
         NamedTempFile::new().expect("Cannot create a temp file")
@@ -140,12 +131,14 @@ mod tests {
 
     #[test]
     fn test_choose_random_packet() {
+        let packet_length = unsafe { NonZeroUsize::new_unchecked(24550) };
+
         // The function must generate a random set of bytes as a packet
         assert_eq!(
-            construct_packet(&DEFAULT_CONFIG)
+            construct_packet(&None, &Some(packet_length))
                 .expect("Cannot construct a packet")
                 .len(),
-            DEFAULT_CONFIG.packet_length.get()
+            packet_length.get()
         );
     }
 
@@ -156,13 +149,14 @@ mod tests {
         let content = vec![165; 4096];
         temp_file.write_all(&content).unwrap();
 
-        let mut config = DEFAULT_CONFIG.clone();
-        config.send_file = Some(PathBuf::from(temp_file.path().to_str().unwrap()));
-
         // Now we have a file specified, and the function must read it
         // even with the existing '--length' option (just ignore it)
         assert_eq!(
-            construct_packet(&config).expect("Cannot construct a packet"),
+            construct_packet(
+                &Some(PathBuf::from(temp_file.path().to_str().unwrap())),
+                &None
+            )
+            .expect("Cannot construct a packet"),
             content
         );
     }
