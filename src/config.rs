@@ -70,7 +70,7 @@ pub struct ArgsConfig {
     pub test_duration: Duration,
 
     /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit.
+    /// the program will exit. The default value is 65000.
     #[structopt(
         short = "l",
         long = "packet-length",
