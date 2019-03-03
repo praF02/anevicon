@@ -17,7 +17,7 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
-use log::error;
+use log::{error, trace};
 
 use config::ArgsConfig;
 use helpers::construct_packet;
@@ -39,6 +39,8 @@ fn main() {
             error
         ));
     }
+
+    trace!("{:?}", config);
 
     let packet = match construct_packet(&config.send_file, &config.packet_length) {
         Err(error) => {
