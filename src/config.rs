@@ -58,28 +58,6 @@ pub struct ArgsConfig {
     )]
     pub sender: SocketAddr,
 
-    /// A whole test duration. By default, a test will be performed until
-    /// you explicitly stop the process.
-    #[structopt(
-        long = "test-duration",
-        takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "64years 64hours 64secs",
-        parse(try_from_str = "parse_duration")
-    )]
-    pub test_duration: Duration,
-
-    /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit. The default value is 65000.
-    #[structopt(
-        short = "l",
-        long = "packet-length",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub packet_length: Option<NonZeroUsize>,
-
     /// A waiting time span before a test execution used to prevent a
     /// launch of an erroneous (unwanted) test.
     #[structopt(
@@ -114,18 +92,6 @@ pub struct ArgsConfig {
     )]
     pub display_periodicity: NonZeroUsize,
 
-    /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit.
-    #[structopt(
-        short = "p",
-        long = "packets-count",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        default_value = "18446744073709551615",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub packets_count: NonZeroUsize,
-
     /// A timeout of sending every single packet. If a timeout is reached,
     /// an error will be printed.
     #[structopt(
@@ -137,16 +103,18 @@ pub struct ArgsConfig {
     )]
     pub send_timeout: Duration,
 
-    /// A file for sending instead of random-generated packets. You cannot
-    /// use this option and the `--packet-length` together.
-    #[structopt(
-        short = "f",
-        long = "send-file",
-        takes_value = true,
-        value_name = "FILENAME"
-    )]
-    pub send_file: Option<PathBuf>,
+    #[structopt(flatten)]
+    pub logging_config: LoggingConfig,
 
+    #[structopt(flatten)]
+    pub stop_conditions_config: StopConditionsConfig,
+
+    #[structopt(flatten)]
+    pub packet_config: PacketConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct LoggingConfig {
     /// A file for redirecting all user messages (notifications, warnings,
     /// and errors) without debugging information.
     #[structopt(
@@ -162,6 +130,56 @@ pub struct ArgsConfig {
     pub debug: bool,
 }
 
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct StopConditionsConfig {
+    /// A count of packets for sending. When this limit is reached, then
+    /// the program will exit.
+    #[structopt(
+        short = "p",
+        long = "packets-count",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "18446744073709551615",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packets_count: NonZeroUsize,
+
+    /// A whole test duration. By default, a test will be performed until
+    /// you explicitly stop the process.
+    #[structopt(
+        long = "test-duration",
+        takes_value = true,
+        value_name = "TIME-SPAN",
+        default_value = "64years 64hours 64secs",
+        parse(try_from_str = "parse_duration")
+    )]
+    pub test_duration: Duration,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct PacketConfig {
+    /// A count of packets for sending. When this limit is reached, then
+    /// the program will exit. The default value is 65000.
+    #[structopt(
+        short = "l",
+        long = "packet-length",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packet_length: Option<NonZeroUsize>,
+
+    /// A file for sending instead of random-generated packets. You cannot
+    /// use this option and the `--packet-length` together.
+    #[structopt(
+        short = "f",
+        long = "send-file",
+        takes_value = true,
+        value_name = "FILENAME"
+    )]
+    pub send_file: Option<PathBuf>,
+}
+
 impl ArgsConfig {
     pub fn setup() -> ArgsConfig {
         let matches = ArgsConfig::clap()
@@ -173,7 +191,8 @@ impl ArgsConfig {
         // If an user hasn't specified a file, then set the default packet
         // length
         if !matches.is_present("send_file") {
-            args_config.packet_length = Some(unsafe { NonZeroUsize::new_unchecked(65000) });
+            args_config.packet_config.packet_length =
+                Some(unsafe { NonZeroUsize::new_unchecked(65000) });
         }
 
         args_config

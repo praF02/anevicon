@@ -22,22 +22,21 @@ use std::fmt::{self, Display, Formatter};
 use std::fs;
 use std::io;
 use std::num::NonZeroUsize;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+
+use super::config::PacketConfig;
 
 use rand::{thread_rng, RngCore};
 
-pub fn construct_packet(
-    send_file: &Option<PathBuf>,
-    packet_length: &Option<NonZeroUsize>,
-) -> Result<Vec<u8>, ReadPacketError> {
+pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
     // If an user has specified a file, then use file content as a packet.
     // Otherwise, generate a random set of bytes
-    if let Some(ref filename) = send_file {
+    if let Some(ref filename) = packet_config.send_file {
         read_packet(filename)
     } else {
         // If a file wasn't specified, then at least packet length must
         // be explicitly or implicitly specified
-        Ok(random_packet(packet_length.unwrap()))
+        Ok(random_packet(packet_config.packet_length.unwrap()))
     }
 }
 
@@ -135,9 +134,12 @@ mod tests {
 
         // The function must generate a random set of bytes as a packet
         assert_eq!(
-            construct_packet(&None, &Some(packet_length))
-                .expect("Cannot construct a packet")
-                .len(),
+            construct_packet(&PacketConfig {
+                send_file: None,
+                packet_length: Some(packet_length)
+            })
+            .expect("Cannot construct a packet")
+            .len(),
             packet_length.get()
         );
     }
@@ -152,10 +154,10 @@ mod tests {
         // Now we have a file specified, and the function must read it
         // even with the existing '--length' option (just ignore it)
         assert_eq!(
-            construct_packet(
-                &Some(PathBuf::from(temp_file.path().to_str().unwrap())),
-                &None
-            )
+            construct_packet(&PacketConfig {
+                send_file: Some(PathBuf::from(temp_file.path().to_str().unwrap())),
+                packet_length: None
+            })
             .expect("Cannot construct a packet"),
             content
         );

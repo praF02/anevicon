@@ -23,7 +23,7 @@ use std::thread;
 
 use log::info;
 
-use super::config::ArgsConfig;
+use super::config::{ArgsConfig, StopConditionsConfig};
 use super::summary::TestSummary;
 
 pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummary> {
@@ -41,7 +41,7 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
         for _ in 0..args_config.display_periodicity.get() {
             summary.update(socket.send(packet)?, 1);
 
-            if check_end_cond(args_config, &summary) {
+            if check_end_cond(&args_config.stop_conditions_config, &summary) {
                 return Ok(summary);
             }
 
@@ -52,15 +52,15 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     }
 }
 
-fn check_end_cond(args_config: &ArgsConfig, summary: &TestSummary) -> bool {
-    if summary.time_passed() >= args_config.test_duration {
+fn check_end_cond(stop_conditions_config: &StopConditionsConfig, summary: &TestSummary) -> bool {
+    if summary.time_passed() >= stop_conditions_config.test_duration {
         info!(
             "The allotted time has passed. The total result is >>> {}.",
             summary
         );
         return true;
     }
-    if summary.packets_sent() == args_config.packets_count.get() {
+    if summary.packets_sent() == stop_conditions_config.packets_count.get() {
         info!(
             "All the required packets were sent. The total result is >>> {}.",
             summary
@@ -76,6 +76,7 @@ mod tests {
     use super::*;
 
     use std::num::NonZeroUsize;
+    use std::time::Duration;
 
     use lazy_static::lazy_static;
     use structopt::StructOpt;
@@ -106,7 +107,7 @@ mod tests {
         let packets = unsafe { NonZeroUsize::new_unchecked(25) };
 
         let mut config = DEFAULT_CONFIG.clone();
-        config.packets_count = packets;
+        config.stop_conditions_config.packets_count = packets;
 
         // Check that our tester has successfully sent all the packets
         assert_eq!(
@@ -120,13 +121,17 @@ mod tests {
     #[test]
     fn end_conditions_work() {
         let mut summary = TestSummary::new();
+        let stop_config = StopConditionsConfig {
+            test_duration: Duration::from_secs(99999),
+            packets_count: unsafe { NonZeroUsize::new_unchecked(std::usize::MAX) },
+        };
 
         // The default duration and the default packets count are too big,
         // so this line must return false
-        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), false);
+        assert_eq!(check_end_cond(&stop_config, &summary), false);
 
         // Update the summary and check that all the packets was sent
         summary.update(1549335, std::usize::MAX);
-        assert_eq!(check_end_cond(&DEFAULT_CONFIG, &summary), true);
+        assert_eq!(check_end_cond(&stop_config, &summary), true);
     }
 }

@@ -33,7 +33,7 @@ mod testing;
 fn main() {
     let config = ArgsConfig::setup();
 
-    if let Err(error) = setup_logging(config.debug, &config.output) {
+    if let Err(error) = setup_logging(&config.logging_config) {
         logging::raw_fatal(format_args!(
             "Opening the output file failed >>> {}!",
             error
@@ -42,7 +42,7 @@ fn main() {
 
     trace!("{:?}", config);
 
-    let packet = match construct_packet(&config.send_file, &config.packet_length) {
+    let packet = match construct_packet(&config.packet_config) {
         Err(error) => {
             error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);

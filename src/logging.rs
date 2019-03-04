@@ -23,7 +23,8 @@
 use std::fmt::Arguments;
 use std::fs::File;
 use std::io::{self, stderr, stdout};
-use std::path::PathBuf;
+
+use super::config::LoggingConfig;
 
 use colored::Colorize;
 use fern::colors::{Color, ColoredLevelConfig};
@@ -43,7 +44,7 @@ pub fn raw_fatal(message: Arguments) -> ! {
     std::process::exit(1);
 }
 
-pub fn setup_logging(debug: bool, output: &Option<PathBuf>) -> io::Result<()> {
+pub fn setup_logging(logging_config: &LoggingConfig) -> io::Result<()> {
     let colors = ColoredLevelConfig::new()
         .info(Color::Green)
         .warn(Color::Yellow)
@@ -51,12 +52,12 @@ pub fn setup_logging(debug: bool, output: &Option<PathBuf>) -> io::Result<()> {
         .debug(Color::Magenta)
         .trace(Color::Cyan);
 
-    if let Some(filename) = output {
+    if let Some(ref filename) = logging_config.output {
         Dispatch::new()
-            .chain(terminal_dispatch(false, debug, colors))
+            .chain(terminal_dispatch(false, logging_config.debug, colors))
             .chain(file_dispatch(log_file(filename)?))
     } else {
-        Dispatch::new().chain(terminal_dispatch(true, debug, colors))
+        Dispatch::new().chain(terminal_dispatch(true, logging_config.debug, colors))
     }
     .apply()
     .expect("Applying the dispatch has failed");
