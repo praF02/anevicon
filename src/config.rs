@@ -126,16 +126,6 @@ pub struct ArgsConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct LoggingConfig {
-    /// A file for redirecting all user messages (notifications, warnings,
-    /// and errors) without debugging information.
-    #[structopt(
-        short = "o",
-        long = "output",
-        takes_value = true,
-        value_name = "FILENAME"
-    )]
-    pub output: Option<PathBuf>,
-
     /// Enable the debugging mode
     #[structopt(short = "d", long = "debug", takes_value = false)]
     pub debug: bool,
