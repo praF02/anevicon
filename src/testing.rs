@@ -32,8 +32,8 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     let test_name = args_config.test_name.magenta().italic();
 
     info!(
-        "The test {test_name} is connecting to the remote server {server_address} \
-         using the {sender_address} sender address...",
+        "The test {test_name} is initializing the socket to the remote server \
+         {server_address} using the {sender_address} sender address...",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         sender_address = args_config.sender.to_string().cyan(),
@@ -45,8 +45,8 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     socket.set_write_timeout(Some(args_config.send_timeout))?;
 
     info!(
-        "The test {test_name} has connected to the remote server successfully. Now \
-         sleeping {sleeping_time} and then starting to test...",
+        "The test {test_name} has initialized the socket to the remote server \
+         successfully. Now sleeping {sleeping_time} and then starting to test...",
         test_name = test_name,
         sleeping_time = format_duration(args_config.wait).to_string().cyan(),
     );

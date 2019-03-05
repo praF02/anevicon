@@ -21,7 +21,7 @@ use std::fmt::{self, Display, Formatter};
 use std::time::{Duration, Instant};
 
 use humantime::format_duration;
-use termion::{color, style};
+use termion::color;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
