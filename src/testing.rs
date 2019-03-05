@@ -30,8 +30,8 @@ use super::summary::TestSummary;
 
 pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummary> {
     info!(
-        "The test <{test_name}> is connecting to the remote server <{server_address}> \
-         using the <{sender_address}> sender address...",
+        "The test {test_name} is connecting to the remote server {server_address} \
+         using the {sender_address} sender address...",
         test_name = args_config.test_name.magenta().italic(),
         server_address = args_config.receiver.to_string().cyan(),
         sender_address = args_config.sender.to_string().cyan(),
@@ -43,18 +43,21 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     socket.set_write_timeout(Some(args_config.send_timeout))?;
 
     info!(
-        "The test <{test_name}> has connected to the remote server successfully. Now \
+        "The test {test_name} has connected to the remote server successfully. Now \
          sleeping {sleeping_time} and then starting to test...",
         test_name = args_config.test_name.magenta().italic(),
-        sleeping_time = format_duration(args_config.wait),
+        sleeping_time = format_duration(args_config.wait)
+            .to_string()
+            .italic()
+            .cyan(),
     );
 
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
 
     info!(
-        "The test <{test_name}> has started to test the <{server_address}> server \
-         until either <{packets_count}> packets will be sent or <{test_duration}> \
+        "The test {test_name} has started to test the {server_address} server \
+         until either {packets_count} packets will be sent or {test_duration} \
          will be passed.",
         test_name = args_config.test_name.magenta().italic(),
         server_address = args_config.receiver.to_string().cyan(),
@@ -79,12 +82,12 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
             if let Some(reason) = check_end_cond(&args_config.stop_conditions_config, &summary) {
                 match reason {
                     EndReason::TimePassed => info!(
-                        "The allotted time of the test <{test_name}> has passed >>> {summary}.",
+                        "The allotted time of the test {test_name} has passed >>> {summary}.",
                         test_name = args_config.test_name.magenta().italic(),
                         summary = summary
                     ),
                     EndReason::PacketsSent => info!(
-                        "The test <{test_name}> has sent all the required packets >>> {summary}.",
+                        "The test {test_name} has sent all the required packets >>> {summary}.",
                         test_name = args_config.test_name.magenta().italic(),
                         summary = summary
                     ),
@@ -97,7 +100,7 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
         }
 
         info!(
-            "The test <{test_name}> is running >>> {summary}.",
+            "The test {test_name} is running >>> {summary}.",
             test_name = args_config.test_name.magenta().italic(),
             summary = summary,
         );
