@@ -103,6 +103,17 @@ pub struct ArgsConfig {
     )]
     pub send_timeout: Duration,
 
+    /// A name of a future test. This option lets produce the program
+    /// beautiful output and doesn't make any sense on test performing.
+    #[structopt(
+        short = "n",
+        long = "test-name",
+        takes_value = true,
+        value_name = "STRING",
+        default_value = "unnamed"
+    )]
+    pub test_name: String,
+
     #[structopt(flatten)]
     pub logging_config: LoggingConfig,
 

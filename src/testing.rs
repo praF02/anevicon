@@ -21,16 +21,33 @@ use std::io;
 use std::net::UdpSocket;
 use std::thread;
 
+use colored::Colorize as _;
+use humantime::format_duration;
 use log::info;
 
 use super::config::{ArgsConfig, StopConditionsConfig};
 use super::summary::TestSummary;
 
 pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummary> {
+    info!(
+        "The test <{test_name}> is connecting to the remote server <{server_address}> \
+         using the <{sender_address}> sender address...",
+        test_name = args_config.test_name.magenta().italic(),
+        server_address = args_config.receiver.to_string().cyan(),
+        sender_address = args_config.sender.to_string().cyan(),
+    );
+
     // Complete any necessary stuff with the specified socket
     let socket = UdpSocket::bind(args_config.sender)?;
     socket.connect(args_config.receiver)?;
     socket.set_write_timeout(Some(args_config.send_timeout))?;
+
+    info!(
+        "The test <{test_name}> has connected to the remote server successfully. Now \
+         sleeping {sleeping_time}...",
+        test_name = args_config.test_name.magenta().italic(),
+        sleeping_time = format_duration(args_config.wait),
+    );
 
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
@@ -41,34 +58,51 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
         for _ in 0..args_config.display_periodicity.get() {
             summary.update(socket.send(packet)?, 1);
 
-            if check_end_cond(&args_config.stop_conditions_config, &summary) {
+            if let Some(reason) = check_end_cond(&args_config.stop_conditions_config, &summary) {
+                match reason {
+                    EndReason::TimePassed => info!(
+                        "The allotted time of the test <{test_name}> has passed >>> {summary}.",
+                        test_name = args_config.test_name.magenta().italic(),
+                        summary = summary
+                    ),
+                    EndReason::PacketsSent => info!(
+                        "The test <{test_name}> has sent all the required packets >>> {summary}.",
+                        test_name = args_config.test_name.magenta().italic(),
+                        summary = summary
+                    ),
+                }
+
                 return Ok(summary);
             }
 
             thread::sleep(args_config.send_periodicity);
         }
 
-        info!("{}.", summary);
+        info!(
+            "The test <{test_name}> is running >>> {summary}.",
+            test_name = args_config.test_name.magenta().italic(),
+            summary = summary,
+        );
     }
 }
 
-fn check_end_cond(stop_conditions_config: &StopConditionsConfig, summary: &TestSummary) -> bool {
+fn check_end_cond(
+    stop_conditions_config: &StopConditionsConfig,
+    summary: &TestSummary,
+) -> Option<EndReason> {
     if summary.time_passed() >= stop_conditions_config.test_duration {
-        info!(
-            "The allotted time has passed. The total result is >>> {}.",
-            summary
-        );
-        return true;
+        Some(EndReason::TimePassed)
+    } else if summary.packets_sent() == stop_conditions_config.packets_count.get() {
+        Some(EndReason::PacketsSent)
+    } else {
+        None
     }
-    if summary.packets_sent() == stop_conditions_config.packets_count.get() {
-        info!(
-            "All the required packets were sent. The total result is >>> {}.",
-            summary
-        );
-        return true;
-    }
+}
 
-    false
+#[derive(Debug, Eq, PartialEq)]
+enum EndReason {
+    TimePassed,
+    PacketsSent,
 }
 
 #[cfg(test)]
@@ -127,11 +161,14 @@ mod tests {
         };
 
         // The default duration and the default packets count are too big,
-        // so this line must return false
-        assert_eq!(check_end_cond(&stop_config, &summary), false);
+        // so this line must return None
+        assert_eq!(check_end_cond(&stop_config, &summary), None);
 
         // Update the summary and check that all the packets was sent
         summary.update(1549335, std::usize::MAX);
-        assert_eq!(check_end_cond(&stop_config, &summary), true);
+        assert_eq!(
+            check_end_cond(&stop_config, &summary),
+            Some(EndReason::PacketsSent)
+        );
     }
 }
