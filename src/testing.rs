@@ -29,10 +29,12 @@ use super::config::{ArgsConfig, StopConditionsConfig};
 use super::summary::TestSummary;
 
 pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummary> {
+    let test_name = args_config.test_name.magenta().italic();
+
     info!(
         "The test {test_name} is connecting to the remote server {server_address} \
          using the {sender_address} sender address...",
-        test_name = args_config.test_name.magenta().italic(),
+        test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         sender_address = args_config.sender.to_string().cyan(),
     );
@@ -45,11 +47,8 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     info!(
         "The test {test_name} has connected to the remote server successfully. Now \
          sleeping {sleeping_time} and then starting to test...",
-        test_name = args_config.test_name.magenta().italic(),
-        sleeping_time = format_duration(args_config.wait)
-            .to_string()
-            .italic()
-            .cyan(),
+        test_name = test_name,
+        sleeping_time = format_duration(args_config.wait).to_string().cyan(),
     );
 
     thread::sleep(args_config.wait);
@@ -59,17 +58,15 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
         "The test {test_name} has started to test the {server_address} server \
          until either {packets_count} packets will be sent or {test_duration} \
          will be passed.",
-        test_name = args_config.test_name.magenta().italic(),
+        test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         packets_count = args_config
             .stop_conditions_config
             .packets_count
             .to_string()
-            .italic()
             .cyan(),
         test_duration = format_duration(args_config.stop_conditions_config.test_duration)
             .to_string()
-            .italic()
             .cyan(),
     );
 
@@ -83,12 +80,12 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
                 match reason {
                     EndReason::TimePassed => info!(
                         "The allotted time of the test {test_name} has passed >>> {summary}.",
-                        test_name = args_config.test_name.magenta().italic(),
+                        test_name = test_name,
                         summary = summary
                     ),
                     EndReason::PacketsSent => info!(
                         "The test {test_name} has sent all the required packets >>> {summary}.",
-                        test_name = args_config.test_name.magenta().italic(),
+                        test_name = test_name,
                         summary = summary
                     ),
                 }
@@ -101,7 +98,7 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
 
         info!(
             "The test {test_name} is running >>> {summary}.",
-            test_name = args_config.test_name.magenta().italic(),
+            test_name = test_name,
             summary = summary,
         );
     }

@@ -89,8 +89,8 @@ impl Display for TestSummary {
             mbps = self.megabites_per_sec(),
             packets_per_sec = self.packets_per_sec(),
             time_passed = format_duration(self.time_passed()),
-            style = format_args!("{}{}", color::Fg(color::Cyan), style::Italic),
-            reset_style = format_args!("{}{}", color::Fg(color::Reset), style::Reset),
+            style = format_args!("{}", color::Fg(color::Cyan)),
+            reset_style = format_args!("{}", color::Fg(color::Reset)),
         )
     }
 }
