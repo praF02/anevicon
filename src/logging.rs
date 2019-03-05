@@ -72,7 +72,7 @@ fn terminal_dispatch(need_stdout: bool, need_debug: bool, colors: ColoredLevelCo
             out.finish(format_args!(
                 "[{level}] [{time}]: {message}",
                 level = colors.color(record.level()).to_string().underline(),
-                time = strftime("%X", &time::now()).unwrap().cyan(),
+                time = strftime("%X", &time::now()).unwrap().magenta(),
                 message = message,
             ));
         })
