@@ -44,7 +44,7 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
 
     info!(
         "The test <{test_name}> has connected to the remote server successfully. Now \
-         sleeping {sleeping_time}...",
+         sleeping {sleeping_time} and then starting to attack...",
         test_name = args_config.test_name.magenta().italic(),
         sleeping_time = format_duration(args_config.wait),
     );
