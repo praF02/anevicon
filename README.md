@@ -107,7 +107,7 @@ Note that the command above might not work on your system due to the security re
 
 ```bash
 # Test the 80 port of the example.com site with the two limit options
-$ anevicon --receiver 93.184.216.34:80 --duration 3min --packets 7000
+$ anevicon --receiver 93.184.216.34:80 --test-duration 3min --packets-count 7000
 ```
 
 ### Packet size
@@ -115,7 +115,7 @@ Note that the test below will end when, and only when one of two specified end c
 
 ```bash
 # Test the 80 port of example.com with the packet length of 4092 bytes
-$ anevicon --receiver 93.184.216.34:80 --length 4092
+$ anevicon --receiver 93.184.216.34:80 --packet-length 4092
 ```
 
 ### Custom message
@@ -123,7 +123,7 @@ By default, Anevicon will generate a random set of bytes which will be used as a
 
 ```bash
 # Test the 80 port of example.com with the custom file 'message.txt'
-$ anevicon --receiver 93.184.216.34:80 --file message.txt
+$ anevicon --receiver 93.184.216.34:80 --send-file message.txt
 ```
 
 ### Custom output file
