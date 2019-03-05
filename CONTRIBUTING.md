@@ -17,6 +17,9 @@ $ cargo build --verbose --all
 $ cargo test --verbose --all
 ```
 
+## Debugging
+You can receive addditional debugging information and some traces by specifying the `--debug` option before running the compiled program. It's possible to print your own messages using the [`trace!()`](https://docs.rs/log/0.4.6/log/macro.trace.html) and the [`debug!()`](https://docs.rs/log/0.4.6/log/macro.debug.html) macros.
+
 ## Formatting
 To make the code readable and maintainable, we use the great tool from the original Rust team called [rustfmt](https://github.com/rust-lang/rustfmt). You need to format your code before pushing any changes just by typing the `cargo fmt` command in your terminal.
 
