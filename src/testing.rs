@@ -153,7 +153,7 @@ mod tests {
     }
 
     #[test]
-    fn end_conditions_work() {
+    fn stops_if_packets_sent() {
         let mut summary = TestSummary::new();
         let stop_config = StopConditionsConfig {
             test_duration: Duration::from_secs(99999),
@@ -164,11 +164,31 @@ mod tests {
         // so this line must return None
         assert_eq!(check_end_cond(&stop_config, &summary), None);
 
-        // Update the summary and check that all the packets was sent
-        summary.update(1549335, std::usize::MAX);
+        // Update the summary and check that all the packets were sent
+        summary.update(1549335, stop_config.packets_count.get());
         assert_eq!(
             check_end_cond(&stop_config, &summary),
             Some(EndReason::PacketsSent)
+        );
+    }
+
+    #[test]
+    fn stops_if_time_passed() {
+        let summary = TestSummary::new();
+        let stop_config = StopConditionsConfig {
+            test_duration: Duration::from_secs(5),
+            packets_count: unsafe { NonZeroUsize::new_unchecked(std::usize::MAX) },
+        };
+
+        // The default required time is not reached at this point, so this
+        // line must return None
+        assert_eq!(check_end_cond(&stop_config, &summary), None);
+
+        // Sleep five seconds and check that the alloted time has passed
+        thread::sleep(stop_config.test_duration);
+        assert_eq!(
+            check_end_cond(&stop_config, &summary),
+            Some(EndReason::TimePassed)
         );
     }
 }
