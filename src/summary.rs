@@ -21,6 +21,7 @@ use std::fmt::{self, Display, Formatter};
 use std::time::{Duration, Instant};
 
 use humantime::format_duration;
+use termion::{color, style};
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
@@ -80,14 +81,16 @@ impl Display for TestSummary {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(
             fmt,
-            "Packets sent: {packets} ({megabytes} MB), \
-             the average speed: {mbps} Mbps ({packets_per_sec} packets/sec), \
-             time passed: {time_passed}",
+            "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, \
+             the average speed: {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, \
+             time passed: {style}{time_passed}{reset_style}",
             packets = self.packets_sent(),
             megabytes = self.megabytes_sent(),
             mbps = self.megabites_per_sec(),
             packets_per_sec = self.packets_per_sec(),
-            time_passed = format_duration(self.time_passed())
+            time_passed = format_duration(self.time_passed()),
+            style = format_args!("{}{}", color::Fg(color::Cyan), style::Italic),
+            reset_style = format_args!("{}{}", color::Fg(color::Reset), style::Reset),
         )
     }
 }
