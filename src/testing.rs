@@ -44,13 +44,31 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
 
     info!(
         "The test <{test_name}> has connected to the remote server successfully. Now \
-         sleeping {sleeping_time} and then starting to attack...",
+         sleeping {sleeping_time} and then starting to test...",
         test_name = args_config.test_name.magenta().italic(),
         sleeping_time = format_duration(args_config.wait),
     );
 
     thread::sleep(args_config.wait);
     let mut summary = TestSummary::new();
+
+    info!(
+        "The test <{test_name}> has started to test the <{server_address}> server \
+         until either <{packets_count}> packets will be sent or <{test_duration}> \
+         will be passed.",
+        test_name = args_config.test_name.magenta().italic(),
+        server_address = args_config.receiver.to_string().cyan(),
+        packets_count = args_config
+            .stop_conditions_config
+            .packets_count
+            .to_string()
+            .italic()
+            .cyan(),
+        test_duration = format_duration(args_config.stop_conditions_config.test_duration)
+            .to_string()
+            .italic()
+            .cyan(),
+    );
 
     // Run a test until either all packets will be sent or alloted
     // time will pass. Return the test summary for future analysis.
