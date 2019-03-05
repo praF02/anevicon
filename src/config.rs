@@ -110,7 +110,7 @@ pub struct ArgsConfig {
         long = "test-name",
         takes_value = true,
         value_name = "STRING",
-        default_value = "unnamed"
+        default_value = "Unnamed"
     )]
     pub test_name: String,
 
