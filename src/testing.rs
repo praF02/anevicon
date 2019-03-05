@@ -23,7 +23,7 @@ use std::thread;
 
 use colored::Colorize as _;
 use humantime::format_duration;
-use log::info;
+use log::{error, info};
 
 use super::config::{ArgsConfig, StopConditionsConfig};
 use super::summary::TestSummary;
@@ -74,7 +74,10 @@ pub fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<TestSummar
     // time will pass. Return the test summary for future analysis.
     loop {
         for _ in 0..args_config.display_periodicity.get() {
-            summary.update(socket.send(packet)?, 1);
+            match socket.send(packet) {
+                Err(error) => error!("An error occurred while sending a packet >>> {}!", error),
+                Ok(bytes) => summary.update(bytes, 1),
+            }
 
             if let Some(reason) = check_end_cond(&args_config.stop_conditions_config, &summary) {
                 match reason {
