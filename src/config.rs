@@ -24,7 +24,7 @@ use std::num::{NonZeroUsize, ParseIntError};
 use std::path::PathBuf;
 use std::time::Duration;
 
-use super::testing::TestLaunchOptions;
+use anevicon_core::testing::TestLaunchOptions;
 
 use humantime::parse_duration;
 use structopt::clap::ArgGroup;

@@ -17,39 +17,5 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
-use log::{error, trace};
-
-use anevicon_core::testing::execute;
-use config::ArgsConfig;
-use helpers::construct_packet;
-use logging::setup_logging;
-
-mod config;
-mod helpers;
-mod logging;
-
-fn main() {
-    let config = ArgsConfig::setup();
-
-    if let Err(error) = setup_logging(&config.logging_config) {
-        logging::raw_fatal(format_args!(
-            "Opening the output file failed >>> {}!",
-            error
-        ));
-    }
-
-    trace!("{:?}", config);
-
-    let packet = match construct_packet(&config.packet_config) {
-        Err(error) => {
-            error!("Constructing the packet failed >>> {}!", error);
-            std::process::exit(1);
-        }
-        Ok(packet) => packet,
-    };
-
-    if let Err(error) = execute(&config.to_launch_options(&packet)) {
-        error!("Testing the server failed >>> {}!", error);
-        std::process::exit(1);
-    }
-}
+pub mod summary;
+pub mod testing;
