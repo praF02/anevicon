@@ -17,30 +17,40 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
-use log::{error, trace};
+use anevicon_core::summary::TestSummary;
+use anevicon_core::testing;
 
-use anevicon_core::testing::execute;
 use config::ArgsConfig;
 use helpers::construct_packet;
 use logging::setup_logging;
+
+use std::io;
+use std::net::UdpSocket;
+use std::num::NonZeroUsize;
+use std::thread;
 
 mod config;
 mod helpers;
 mod logging;
 
-fn main() {
-    let config = ArgsConfig::setup();
+use colored::Colorize as _;
+use humantime::format_duration;
+use log::{error, info, trace, warn};
+use termion::color;
 
-    if let Err(error) = setup_logging(&config.logging_config) {
+fn main() {
+    let args_config = ArgsConfig::setup();
+
+    if let Err(error) = setup_logging(&args_config.logging_config) {
         logging::raw_fatal(format_args!(
             "Opening the output file failed >>> {}!",
             error
         ));
     }
 
-    trace!("{:?}", config);
+    trace!("{:?}", args_config);
 
-    let packet = match construct_packet(&config.packet_config) {
+    let packet = match construct_packet(&args_config.packet_config) {
         Err(error) => {
             error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);
@@ -48,8 +58,111 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    if let Err(error) = execute(&config.to_launch_options(&packet)) {
+    if let Err(error) = execute(&args_config, &packet) {
         error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
+}
+
+fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
+    let test_name = args_config.test_name.magenta().italic();
+
+    info!(
+        "The test {test_name} is initializing the socket to the remote server \
+         {server_address} using the {sender_address} sender address...",
+        test_name = test_name,
+        server_address = args_config.receiver.to_string().cyan(),
+        sender_address = args_config.sender.to_string().cyan(),
+    );
+
+    let socket = UdpSocket::bind(args_config.sender)?;
+    socket.connect(args_config.receiver)?;
+    socket.set_write_timeout(Some(args_config.send_timeout))?;
+
+    warn!(
+        "The test {test_name} has initialized the socket to the remote server \
+         successfully. Now sleeping {sleeping_time} and then starting to test...",
+        test_name = test_name,
+        sleeping_time = format_duration(args_config.wait).to_string().cyan(),
+    );
+
+    thread::sleep(args_config.wait);
+
+    info!(
+        "The test {test_name} has started to test the {server_address} server \
+         until either {packets_count} packets will be sent or {test_duration} \
+         will be passed.",
+        test_name = test_name,
+        server_address = args_config.receiver.to_string().cyan(),
+        packets_count = args_config
+            .stop_conditions_config
+            .packets_count
+            .to_string()
+            .cyan(),
+        test_duration = format_duration(args_config.stop_conditions_config.test_duration)
+            .to_string()
+            .cyan(),
+    );
+
+    let mut summary = TestSummary::new();
+
+    // Run a test until either all packets will be sent or alloted
+    // time will pass. Return the test summary for future analysis.
+    loop {
+        for _ in 0..args_config.display_periodicity.get() {
+            testing::execute(
+                &socket,
+                packet,
+                unsafe { NonZeroUsize::new_unchecked(1) },
+                &mut summary,
+                |error| {
+                    error!("An error occurred while sending a packet >>> {}!", error);
+                    testing::HandleErrorResult::Continue
+                },
+            );
+
+            if summary.time_passed() >= args_config.stop_conditions_config.test_duration {
+                info!(
+                    "The allotted time of the test {test_name} has passed >>> {summary}.",
+                    test_name = test_name,
+                    summary = format_summary(&summary)
+                );
+
+                return Ok(());
+            } else if summary.packets_sent()
+                == args_config.stop_conditions_config.packets_count.get()
+            {
+                info!(
+                    "The test {test_name} has sent all the required packets >>> {summary}.",
+                    test_name = test_name,
+                    summary = format_summary(&summary)
+                );
+
+                return Ok(());
+            }
+
+            thread::sleep(args_config.send_periodicity);
+        }
+
+        info!(
+            "The test {test_name} is running >>> {summary}.",
+            test_name = test_name,
+            summary = format_summary(&summary),
+        );
+    }
+}
+
+fn format_summary(summary: &TestSummary) -> String {
+    format!(
+        "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, \
+         the average speed: {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, \
+         time passed: {style}{time_passed}{reset_style}",
+        packets = summary.packets_sent(),
+        megabytes = summary.megabytes_sent(),
+        mbps = summary.megabites_per_sec(),
+        packets_per_sec = summary.packets_per_sec(),
+        time_passed = format_duration(summary.time_passed()),
+        style = format_args!("{}", color::Fg(color::Cyan)),
+        reset_style = format_args!("{}", color::Fg(color::Reset)),
+    )
 }
