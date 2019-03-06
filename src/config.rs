@@ -71,7 +71,8 @@ pub struct ArgsConfig {
     pub wait: Duration,
 
     /// A periodicity of sending packets. By default, all packets will be
-    /// sent momentarily (without any periodicity).
+    /// sent momentarily (without any periodicity). This option can be used
+    /// to decrease test intensity.
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -134,7 +135,7 @@ pub struct LoggingConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct StopConditionsConfig {
     /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit.
+    /// the program will exit. See also the `--test-duration` option.
     #[structopt(
         short = "p",
         long = "packets-count",
@@ -145,8 +146,8 @@ pub struct StopConditionsConfig {
     )]
     pub packets_count: NonZeroUsize,
 
-    /// A whole test duration. By default, a test will be performed until
-    /// you explicitly stop the process.
+    /// A whole test duration. When this limit is reached, then the program
+    /// will exit. See also the `--packets-count` option.
     #[structopt(
         long = "test-duration",
         takes_value = true,
@@ -159,8 +160,8 @@ pub struct StopConditionsConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
-    /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit. The default value is 65000.
+    /// A count of bytes included in a random-generated packet. The default
+    /// value is 65000.
     #[structopt(
         short = "l",
         long = "packet-length",
