@@ -24,6 +24,8 @@ use std::num::{NonZeroUsize, ParseIntError};
 use std::path::PathBuf;
 use std::time::Duration;
 
+use super::testing::TestLaunchOptions;
+
 use humantime::parse_duration;
 use structopt::clap::ArgGroup;
 use structopt::StructOpt;
@@ -123,6 +125,23 @@ pub struct ArgsConfig {
 
     #[structopt(flatten)]
     pub packet_config: PacketConfig,
+}
+
+impl ArgsConfig {
+    pub fn to_launch_options<'a>(&self, packet: &'a [u8]) -> TestLaunchOptions<'a> {
+        TestLaunchOptions {
+            receiver: self.receiver,
+            sender: self.sender,
+            wait: self.wait,
+            send_periodicity: self.send_periodicity,
+            display_periodicity: self.display_periodicity,
+            send_timeout: self.send_timeout,
+            test_name: self.test_name.clone(),
+            packets_count: self.stop_conditions_config.packets_count,
+            test_duration: self.stop_conditions_config.test_duration,
+            packet,
+        }
+    }
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]

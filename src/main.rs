@@ -50,7 +50,7 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    if let Err(error) = execute(&config, &packet) {
+    if let Err(error) = execute(&config.to_launch_options(&packet)) {
         error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
