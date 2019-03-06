@@ -174,7 +174,11 @@ mod tests {
     lazy_static! {
         static ref DEFAULT_SERVER: UdpSocket = UdpSocket::bind("0.0.0.0:0")
             .expect("Cannot setup the testing server with the address 0.0.0.0:0");
-        static ref DEFAULT_PACKET: Vec<u8> = unsafe { random_packet(NonZeroUsize::new_unchecked(65000)) };
+
+        static ref DEFAULT_PACKET: Vec<u8> = unsafe {
+            random_packet(NonZeroUsize::new_unchecked(32768))
+        };
+
         static ref DEFAULT_OPTIONS: TestLaunchOptions<'static> = TestLaunchOptions {
             // Use our local testing server receiver address to be sure that
             // we send packets to the right place

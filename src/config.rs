@@ -180,7 +180,7 @@ pub struct StopConditionsConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
     /// A count of bytes included in a random-generated packet. The default
-    /// value is 65000.
+    /// value is 32768.
     #[structopt(
         short = "l",
         long = "packet-length",
@@ -213,7 +213,7 @@ impl ArgsConfig {
         // length
         if !matches.is_present("send_file") {
             args_config.packet_config.packet_length =
-                Some(unsafe { NonZeroUsize::new_unchecked(65000) });
+                Some(unsafe { NonZeroUsize::new_unchecked(32768) });
         }
 
         args_config
