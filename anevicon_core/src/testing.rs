@@ -169,15 +169,11 @@ mod tests {
 
     use lazy_static::lazy_static;
 
-    use super::super::helpers::random_packet;
-
     lazy_static! {
         static ref DEFAULT_SERVER: UdpSocket = UdpSocket::bind("0.0.0.0:0")
             .expect("Cannot setup the testing server with the address 0.0.0.0:0");
 
-        static ref DEFAULT_PACKET: Vec<u8> = unsafe {
-            random_packet(NonZeroUsize::new_unchecked(32768))
-        };
+        static ref DEFAULT_PACKET: Vec<u8> = vec![0; 32768];
 
         static ref DEFAULT_OPTIONS: TestLaunchOptions<'static> = TestLaunchOptions {
             // Use our local testing server receiver address to be sure that
@@ -256,7 +252,6 @@ mod tests {
         // line must return None
         assert_eq!(check_end_cond(&custom_options, &summary), None);
 
-        // Sleep five seconds and check that the alloted time has passed
         thread::sleep(custom_options.test_duration);
         assert_eq!(
             check_end_cond(&custom_options, &summary),
