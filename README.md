@@ -85,7 +85,7 @@ OPTIONS:
 For more information see <https://github.com/Gymmasssorla/anevicon>.
 ```
 
-## Examples
+## Using as a program
 
 ### Minimal command
 All you need is to provide the testing server address, which consists of an IP address and a port number, separated by the colon character. By default, all sending sockets will have your local address:
