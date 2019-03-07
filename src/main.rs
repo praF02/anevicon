@@ -104,7 +104,7 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
             .cyan(),
     );
 
-    let mut summary = TestSummary::new();
+    let mut summary = TestSummary::default();
 
     // Run a test until either all packets will be sent or alloted
     // time will pass. Return the test summary for future analysis.
