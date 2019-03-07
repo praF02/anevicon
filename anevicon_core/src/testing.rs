@@ -19,7 +19,9 @@
 
 /*!
  * The test abstractions to easily describe and execute your own tests.
- */
+ *
+ * For examples please take a look at the main documentation page.
+*/
 
 use std::io;
 use std::net::UdpSocket;
@@ -27,6 +29,16 @@ use std::num::NonZeroUsize;
 
 use super::summary::TestSummary;
 
+/**
+ * Sends the specified `packet` `packets_count` times, using the `socket`
+ * and at the time updating the specified `summary`.
+ *
+ * `error_handler` is used for handling errors that can be produced by
+ * the [`send`] method. You can either just print an error message or
+ * terminate the test.
+ *
+ * [`send`]: https://doc.rust-lang.org/std/net/struct.UdpSocket.html#method.send
+ */
 pub fn execute<F: Fn(io::Error) -> HandleErrorResult>(
     socket: &UdpSocket,
     packet: &[u8],
@@ -51,15 +63,27 @@ pub fn execute<F: Fn(io::Error) -> HandleErrorResult>(
     TestResult::Succeed
 }
 
+/// A test handling error result, either continuing or terminating.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum HandleErrorResult {
+    /// Continue packet sending
     Continue,
+
+    /// Terminate a whole test
     Terminate,
 }
 
+/// A test total result that returns the `execute` method.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum TestResult {
+    /// The `execute` function will return this variant if either your error
+    /// handling function returned the `HandleErrorResult::Continue` or it
+    /// wasn't called.
     Succeed,
+
+    /// The `execute` function will return this variant if and only if your
+    /// error handling function returned the `HandleErrorResult::Terminate`
+    /// variant.
     Terminated,
 }
 
