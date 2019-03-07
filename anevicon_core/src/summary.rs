@@ -23,12 +23,14 @@
  * # Examples
  *
  * ```rust
+ * use anevicon_core::summary::TestSummary;
+ *
  * // Create the default TestSummary object with zero generated traffic
  * let mut summary = TestSummary::default();
  *
  * // Update our TestSummary with 59 packets sent containing 52364 bytes
  * // totally
- * summary.update(59, 52364)
+ * summary.update(59, 52364);
  *
  * println!("The total result is: {:?}", summary);
  * ```
