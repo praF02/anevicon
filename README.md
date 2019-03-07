@@ -31,55 +31,56 @@ $ cargo install anevicon
 
 ## Usage
 ```
-anevicon 1.0.0
+anevicon 1.1.0
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
 USAGE:
-    anevicon [FLAGS] [OPTIONS] --receiver <ADDRESS>
+    anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>
 
 FLAGS:
-        --debug      Enable the debugging mode
+    -d, --debug      Enable the debugging mode
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
         --display-periodicity <PACKETS>
-            A count of packets per displaying test summaries. It is not
-            recommended to set this option to a small value (say, 6) for the
-            performance reasons. [default: 300]
-    -d, --duration <TIME-SPAN>
-            A program working time. The default value is too big, that is, a
-            test will be performed until you explicitly stop the process.
-            [default: 64years 64hours 64secs]
-    -f, --file <FILENAME>
-            A file for sending instead of random-generated packets. Note that
-            the `--length` option makes no sense when a file is specified.
-    -l, --length <BYTES>
-            A size of each random-generated UDP-packet, specified in bytes. Note
-            that your system or a target server might not be able to handle the
-            default value. [default: 65000]
-    -p, --packets <COUNT>
-            A count of packets for sending. The default value equals to the
-            largest number available for the inner data type. [default:
+            A count of packets per displaying test summaries. It is highly
+            recommended to not set a too small value (say, 6). [default: 300]
+    -l, --packet-length <POSITIVE-INTEGER>
+            A count of bytes included in a random-generated packet. The default
+            value is 32768.
+    -p, --packets-count <POSITIVE-INTEGER>
+            A count of packets for sending. When this limit is reached, then the
+            program will exit. See also the `--test-duration` option. [default:
             18446744073709551615]
-    -r, --receiver <ADDRESS>
+    -r, --receiver <SOCKET-ADDRESS>
             A receiver of generated traffic, specified as an IP-address and a
-            port number, separated by the colon character.
+            port number, separated by a colon.
+    -f, --send-file <FILENAME>
+            A file for sending instead of random-generated packets. You cannot
+            use this option and the `--packet-length` together.
         --send-periodicity <TIME-SPAN>
-            A periodicity of sending packets. The default value equals to zero
-            seconds, that is, all packets will be sent momentarily. [default:
-            0secs]
+            A periodicity of sending packets. By default, all packets will be
+            sent momentarily (without any periodicity). This option can be used
+            to decrease test intensity. [default: 0secs]
         --send-timeout <TIME-SPAN>
-            If sending calls will continue longer than this timeout, the program
-            will exit with an error. By default, all the sending calls will
-            continue indefinitely.
-    -s, --sender <ADDRESS>
+            A timeout of sending every single packet. If a timeout is reached,
+            an error will be printed. [default: 10secs]
+    -s, --sender <SOCKET-ADDRESS>
             A sender of generated traffic, specified as an IP-address and a port
-            number, separated by the colon character. [default: 0.0.0.0:0]
+            number, separated by a colon. [default: 0.0.0.0:0]
+        --test-duration <TIME-SPAN>
+            A whole test duration. When this limit is reached, then the program
+            will exit. See also the `--packets-count` option. [default: 64years
+            64hours 64secs]
+    -n, --test-name <STRING>
+            A name of a future test. This option lets produce the program
+            beautiful output and doesn't make any sense on test performing.
+            [default: Unnamed]
     -w, --wait <TIME-SPAN>
-            A waiting time before a test execution. It is mainly used to prevent
-            a launch of an erroneous (unwanted) test. [default: 5secs]
+            A waiting time span before a test execution used to prevent a launch
+            of an erroneous (unwanted) test. [default: 5secs]
 
 For more information see <https://github.com/Gymmasssorla/anevicon>.
 ```
