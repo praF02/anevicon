@@ -62,9 +62,12 @@
  * );
  * ```
  *
+ * For a real-world example please go [here].
+ *
  * [UDP-based DDoS attacks]: https://en.wikipedia.org/wiki/UDP_flood_attack
  * [the GPLv3 license]: https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE
  * [this one]: https://crates.io/crates/anevicon
+ * [here]: https://github.com/Gymmasssorla/anevicon/blob/master/src/main.rs
  */
 
 pub mod summary;
