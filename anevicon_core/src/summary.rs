@@ -17,8 +17,29 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
+/*!
+ * The module containing abstractions to analyse test execution results.
+ *
+ * # Examples
+ *
+ * ```rust
+ * // Create a default TestSummary object with zero generated
+ * // traffic
+ * let mut summary = TestSummary::new();
+ *
+ * // Update our TestSummary with 59 packets sent containing
+ * // 52364 bytes totally
+ * summary.update(59, 52364)
+ *
+ * println!("The total result is: {:?}", summary);
+ * ```
+ */
+
 use std::time::{Duration, Instant};
 
+/**
+ * The test summary abstraction to analyse test execution results.
+ */
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
     bytes_sent: usize,

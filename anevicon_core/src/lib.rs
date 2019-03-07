@@ -17,5 +17,20 @@
  * For more information see <https://github.com/Gymmasssorla/anevicon>.
  */
 
+/*!
+ * This crate can be used as a bot to build a botnet for simulating
+ * [UDP-based DDoS attacks] (but only for educational and pentesting purposes,
+ * see [the GPLv3 license], under which the library is distributed).
+ *
+ * This library was designed to be as convenient and reliable as it is
+ * possible, and without any external dependencies (except of the standard
+ * library). If you are just interested in one single program, please take
+ * a look at [this one].
+ *
+ * [UDP-based DDoS attacks]: https://en.wikipedia.org/wiki/UDP_flood_attack
+ * [the GPLv3 license]: https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE
+ * [this one]: https://crates.io/crates/anevicon
+ */
+
 pub mod summary;
 pub mod testing;
