@@ -23,12 +23,11 @@
  * # Examples
  *
  * ```rust
- * // Create a default TestSummary object with zero generated
- * // traffic
- * let mut summary = TestSummary::new();
+ * // Create the default TestSummary object with zero generated traffic
+ * let mut summary = TestSummary::default();
  *
- * // Update our TestSummary with 59 packets sent containing
- * // 52364 bytes totally
+ * // Update our TestSummary with 59 packets sent containing 52364 bytes
+ * // totally
  * summary.update(59, 52364)
  *
  * println!("The total result is: {:?}", summary);
@@ -37,9 +36,7 @@
 
 use std::time::{Duration, Instant};
 
-/**
- * The test summary abstraction to analyse test execution results.
- */
+/// The test summary abstraction to analyse test execution results.
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
     bytes_sent: usize,
@@ -48,27 +45,24 @@ pub struct TestSummary {
 }
 
 impl TestSummary {
-    pub fn new() -> TestSummary {
-        TestSummary {
-            bytes_sent: 0,
-            packets_sent: 0,
-            initial_time: Instant::now(),
-        }
-    }
-
+    /// Updates the test summary by an adding additional bytes and an
+    /// additional packets sent count.
     pub fn update(&mut self, additional_bytes: usize, additional_packets: usize) {
         self.bytes_sent += additional_bytes;
         self.packets_sent += additional_packets;
     }
 
+    /// Returns a count of megabytes sent totally.
     pub fn megabytes_sent(&self) -> usize {
         self.bytes_sent / 1024 / 1024
     }
 
+    /// Returns a count of packets sent totally.
     pub fn packets_sent(&self) -> usize {
         self.packets_sent
     }
 
+    /// Returns an average speeed, specified in Mbps (Megabites Per Second).
     pub fn megabites_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
 
@@ -79,6 +73,7 @@ impl TestSummary {
         }
     }
 
+    /// Returns an average speeed, specified in packets sent per second.
     pub fn packets_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
 
@@ -89,8 +84,24 @@ impl TestSummary {
         }
     }
 
+    /// Returns a passed time interval since a test summary creation. Note
+    /// that this method uses the monotonically non-decreasing time
+    /// structure [`Instant`].
+    ///
+    /// [`Instant`]: https://doc.rust-lang.org/std/time/struct.Instant.html
     pub fn time_passed(&self) -> Duration {
         self.initial_time.elapsed()
+    }
+}
+
+impl Default for TestSummary {
+    /// Returns the default test summary with current time specified.
+    fn default() -> TestSummary {
+        TestSummary {
+            bytes_sent: 0,
+            packets_sent: 0,
+            initial_time: Instant::now(),
+        }
     }
 }
 
@@ -101,7 +112,7 @@ mod tests {
 
     #[test]
     fn is_nondecreasing_clock() {
-        let summary = TestSummary::new();
+        let summary = TestSummary::default();
 
         let mut last_time = summary.time_passed();
         for _ in 0..50 {
@@ -119,7 +130,7 @@ mod tests {
 
     #[test]
     fn is_correct_initial_value() {
-        let summary = TestSummary::new();
+        let summary = TestSummary::default();
 
         assert_eq!(summary.megabytes_sent(), 0);
         assert_eq!(summary.packets_sent(), 0);
@@ -127,7 +138,7 @@ mod tests {
 
     #[test]
     fn ordinary_updates_work() {
-        let mut summary = TestSummary::new();
+        let mut summary = TestSummary::default();
 
         summary.update(1024 * 1024 * 23, 2698);
         assert_eq!(summary.megabytes_sent(), 23);
@@ -140,7 +151,7 @@ mod tests {
 
     #[test]
     fn truncates_megabytes_correctly() {
-        let mut summary = TestSummary::new();
+        let mut summary = TestSummary::default();
 
         summary.update(1024 * 1023, 5338);
         assert_eq!(
@@ -157,7 +168,7 @@ mod tests {
 
     #[test]
     fn zero_update_works() {
-        let mut summary = TestSummary::new();
+        let mut summary = TestSummary::default();
         summary.update(1024 * 1024 * 85, 2698);
 
         summary.update(0, 0);
@@ -175,7 +186,7 @@ mod tests {
 
     #[test]
     fn time_passed_works() {
-        let mut summary = TestSummary::new();
+        let mut summary = TestSummary::default();
 
         // Wait for a little time because the test fails without it
         sleep(Duration::from_millis(10));

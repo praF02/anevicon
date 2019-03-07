@@ -77,7 +77,7 @@ mod tests {
             .connect(server.local_addr().unwrap())
             .expect("Cannot connect the socket to the local server");
 
-        let mut summary = TestSummary::new();
+        let mut summary = TestSummary::default();
 
         assert_eq!(
             execute(
