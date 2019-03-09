@@ -1,5 +1,27 @@
-# Introduction
-This crate can be used as a bot to build a botnet for simulating [UDP-based DDoS attacks](https://en.wikipedia.org/wiki/UDP_flood_attack) (but only for educational and pentesting purposes, see [the GPLv3 license](https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE), under which the library is distributed).
+<div align="center">
+  <h1>anevicon_core</h2>
+  
+  <a href="https://gitter.im/Gymmasssorla/anevicon">
+    <img src="https://img.shields.io/badge/chat-on%20gitter-pink.svg">
+  </a>
+  <a href="https://travis-ci.com/Gymmasssorla/anevicon">
+    <img src="https://travis-ci.com/Gymmasssorla/anevicon.svg?branch=master">
+  </a>
+  <a href="https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
+  </a>
+  <a href="https://crates.io/crates/anevicon_core">
+    <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
+  </a>
+  <a href="https://docs.rs/anevicon_core">
+    <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
+  </a>
+  <a href="https://semver.org">
+    <img src="https://img.shields.io/badge/semver-follows-green.svg">
+  </a>
+  
+  This crate can be used as a bot to build a botnet for simulating [UDP-based DDoS attacks](https://en.wikipedia.org/wiki/UDP_flood_attack) (but only for educational and pentesting purposes, see [the GPLv3 license](https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE), under which the library is distributed).
+</div>
 
 ## Usage
 
@@ -42,5 +64,3 @@ fn main() {
     );
 }
 ```
-
-For more details see [the documentation](https://docs.rs/anevicon_core).
