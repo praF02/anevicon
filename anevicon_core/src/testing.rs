@@ -25,66 +25,53 @@
 
 use std::io;
 use std::net::UdpSocket;
-use std::num::NonZeroUsize;
 
 use super::summary::TestSummary;
 
 /**
- * Sends the specified `packet` `packets_count` times, using the `socket`
- * and at the time updating the specified `summary`.
- *
- * `error_handler` is used for handling errors that can be produced by
- * the [`send`] method. You can either just print an error message or
- * terminate the test.
- *
- * [`send`]: https://doc.rust-lang.org/std/net/struct.UdpSocket.html#method.send
+ * Returns the `TestIterator` instance constructed from the specified
+ * arguments. This function can be used as a main entry for your tests.
  */
-pub fn execute<F: Fn(io::Error) -> HandleErrorResult>(
-    socket: &UdpSocket,
-    packet: &[u8],
-    packets_count: NonZeroUsize,
-    summary: &mut TestSummary,
-    error_handler: F,
-) -> TestResult {
-    for _ in 0..packets_count.get() {
-        match socket.send(packet) {
-            Err(error) => match error_handler(error) {
-                HandleErrorResult::Continue => {
-                    continue;
-                }
-                HandleErrorResult::Terminate => {
-                    return TestResult::Terminated;
-                }
-            },
-            Ok(bytes) => summary.update(bytes, 1),
+pub fn execute<'a, 'b, 'c>(
+    socket: &'a UdpSocket,
+    packet: &'b [u8],
+    summary: &'c mut TestSummary,
+) -> TestIterator<'a, 'b, 'c> {
+    TestIterator {
+        socket,
+        packet,
+        summary,
+    }
+}
+
+/**
+ * The iterator that infinitly sends a packet using the specified
+ * `UdpSocket`, simultaneously updating the `TestSummary` instance.
+ */
+#[derive(Debug)]
+pub struct TestIterator<'a, 'b, 'c> {
+    socket: &'a UdpSocket,
+    packet: &'b [u8],
+    summary: &'c mut TestSummary,
+}
+
+impl<'a, 'b, 'c> Iterator for TestIterator<'a, 'b, 'c> {
+    type Item = io::Result<usize>;
+
+    /**
+     * Does the main work (see the `TestIterator` documentation). Note
+     * that this method will never return `None`, but might return an I/O
+     * error if the packet sending operation has failed.
+     */
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.socket.send(self.packet) {
+            Err(error) => Some(Err(error)),
+            Ok(bytes) => {
+                self.summary.update(bytes, 1);
+                Some(Ok(bytes))
+            }
         }
     }
-
-    TestResult::Succeed
-}
-
-/// A test handling error result, either continuing or terminating.
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum HandleErrorResult {
-    /// Continue packet sending
-    Continue,
-
-    /// Terminate a whole test
-    Terminate,
-}
-
-/// A test total result that returns the `execute` method.
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum TestResult {
-    /// The `execute` function will return this variant if either your error
-    /// handling function returned the `HandleErrorResult::Continue` or it
-    /// wasn't called.
-    Succeed,
-
-    /// The `execute` function will return this variant if and only if your
-    /// error handling function returned the `HandleErrorResult::Terminate`
-    /// variant.
-    Terminated,
 }
 
 #[cfg(test)]
@@ -93,27 +80,23 @@ mod tests {
 
     #[test]
     fn sends_all_packets() {
-        let packets_count = unsafe { NonZeroUsize::new_unchecked(25) };
-
         let server = UdpSocket::bind("0.0.0.0:0").expect("Cannot setup the server");
         let socket = UdpSocket::bind("0.0.0.0:0").expect("Cannot setup the socket");
         socket
             .connect(server.local_addr().unwrap())
             .expect("Cannot connect the socket to the local server");
 
+        let packets_required = 25;
         let mut summary = TestSummary::default();
 
-        assert_eq!(
-            execute(
-                &socket,
-                &vec![0; 32768],
-                packets_count,
-                &mut summary,
-                |error| { panic!("{}", error) }
-            ),
-            TestResult::Succeed
-        );
+        execute(&socket, &vec![0; 16384], &mut summary)
+            .take(packets_required)
+            .for_each(|result| {
+                if let Err(error) = result {
+                    panic!("{}", error)
+                }
+            });
 
-        assert_eq!(summary.packets_sent(), packets_count.get());
+        assert_eq!(summary.packets_sent(), packets_required);
     }
 }
