@@ -28,11 +28,13 @@ the standard library). If you are just interested in one single program, please 
 
 ## Usage
 
+(`Cargo.toml`):
 ```toml
 [dependencies]
 anevicon_core = "*"
 ```
 
+(`src/main.rs`):
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
@@ -59,6 +61,8 @@ println!(
     "The total seconds passed: {}", summary.time_passed().as_secs()
 );
 ```
+
+For more details please look through [the official documentation](https://docs.rs/anevicon_core).
 
 ## Cautions
  - The goal of Anevicon Core is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon Core will break **ABSOLUTELY ANY SERVER** while running on your computer.
