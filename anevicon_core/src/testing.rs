@@ -20,7 +20,9 @@
 /*!
  * The test abstractions to easily describe and execute your own tests.
  *
- * For examples please take a look at the main documentation page.
+ * The main idea is to perform tests by stepping over an iterator. Just
+ * call the `execute` function that returns you an iterator that sends a
+ * packet on each iteration.
 */
 
 use std::io;
@@ -29,8 +31,8 @@ use std::net::UdpSocket;
 use super::summary::TestSummary;
 
 /**
- * Returns the `TestIterator` instance constructed from the specified
- * arguments. This function can be used as a main entry for your tests.
+ * Returns `TestIterator` constructed from the specified arguments. This
+ * function can be used as a main entry for your tests.
  */
 pub fn execute<'a, 'b, 'c>(
     socket: &'a UdpSocket,
@@ -45,8 +47,8 @@ pub fn execute<'a, 'b, 'c>(
 }
 
 /**
- * The iterator that infinitly sends a packet using the specified
- * `UdpSocket`, simultaneously updating the `TestSummary` instance.
+ * The iterator that infinitly sends a packet using the specified `UdpSocket`,
+ * simultaneously updating the `TestSummary` instance.
  */
 #[derive(Debug)]
 pub struct TestIterator<'a, 'b, 'c> {
@@ -59,9 +61,8 @@ impl<'a, 'b, 'c> Iterator for TestIterator<'a, 'b, 'c> {
     type Item = io::Result<usize>;
 
     /**
-     * Does the main work (see the `TestIterator` documentation). Note
-     * that this method will never return `None`, but might return an I/O
-     * error if the packet sending operation has failed.
+     * Returns a bytes sent if an I/O operation succeeds, otherwise, returns
+     * an error, but `None` will never be returned.
      */
     fn next(&mut self) -> Option<Self::Item> {
         match self.socket.send(self.packet) {

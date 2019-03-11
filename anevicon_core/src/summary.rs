@@ -32,7 +32,12 @@
  * // totally
  * summary.update(59, 52364);
  *
- * println!("The total result is: {:?}", summary);
+ * println!("{} packets were sent in {} seconds with the average speed \
+ *           of {} packets/sec.",
+ *          summary.packets_sent(),
+ *          summary.time_passed().as_secs(),
+ *          summary.packets_per_sec()
+ * );
  * ```
  */
 

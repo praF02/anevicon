@@ -18,7 +18,7 @@
  */
 
 /*!
- * This crate can be used as a bot to build a botnet for simulating
+ * This crate can be used as a bot to build a [botnet] for simulating
  * [UDP-based DDoS attacks] (but only for educational and pentesting purposes,
  * see [the GPLv3 license], under which the library is distributed).
  *
@@ -28,8 +28,8 @@
  * a look at [this one].
  *
  * # Examples
- * This example demonstrates sending of one hundred thousands packets  to the
- * example.com domain (just for an example, you should enter here your server):
+ * This example demonstrates sending of one thousand packets to the example.com
+ * domain (just for an example, you should enter here your server):
  *
  * ```rust,no_run
  * use anevicon_core::summary::TestSummary;
@@ -63,6 +63,7 @@
  * [UDP-based DDoS attacks]: https://en.wikipedia.org/wiki/UDP_flood_attack
  * [the GPLv3 license]: https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE
  * [this one]: https://crates.io/crates/anevicon
+ * [botnet]: https://en.wikipedia.org/wiki/Botnet
  * [here]: https://github.com/Gymmasssorla/anevicon/blob/master/src/main.rs
  */
 
