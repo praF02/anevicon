@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
   </a>
   <a href="https://crates.io/crates/anevicon_core">
-    <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v0.2.0-orange.svg">
   </a>
   <a href="https://docs.rs/anevicon_core">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
@@ -36,34 +36,28 @@ anevicon_core = "*"
 
 And this one to your `src/main.rs` source:
 ```rust
-use std::net::UdpSocket;
-use std::num::NonZeroUsize;
-
 use anevicon_core::summary::TestSummary;
-use anevicon_core::testing::{execute, HandleErrorResult};
+use anevicon_core::testing::execute;
 
-fn main() {
-    // Setup the socket connected to the example.com domain
-    let socket = UdpSocket::bind("0.0.0.0:0").expect("Cannot setup the socket");
-    socket
-        .connect("93.184.216.34:80")
-        .expect("Cannot connect the socket to example.com");
+// Setup the socket connected to the example.com domain
+let socket = std::net::UdpSocket::bind("0.0.0.0:0").unwrap();
+socket
+    .connect("93.184.216.34:80")
+    .expect("Cannot connect the socket to example.com");
 
-    let mut summary = TestSummary::default();
+let mut summary = TestSummary::default();
 
-    // Finally, execute a test that will send 100000 packets
-    // each containing 32768 bytes.
-    execute(
-        &socket,
-        &vec![0; 32768],
-        NonZeroUsize::new(100000).unwrap(),
-        &mut summary,
-        |error| panic!("{}", error),
-    );
+// Execute a test that will send one thousand packets
+// each containing 32768 bytes.
+execute(&socket, &vec![0; 32768], &mut summary)
+    .take(1000)
+    .for_each(|result| {
+        if let Err(error) = result {
+            panic!("{}", error);
+        }
+    });
 
-    println!(
-        "The total minutes passed: {}",
-        summary.time_passed().as_secs() / 60
-    );
-}
+println!(
+    "The total seconds passed: {}", summary.time_passed().as_secs()
+);
 ```
