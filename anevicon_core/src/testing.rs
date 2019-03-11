@@ -47,7 +47,7 @@ pub fn execute<'a, 'b, 'c>(
 }
 
 /**
- * The iterator that infinitly sends a packet using the specified `UdpSocket`,
+ * The iterator that infinitely sends a packet using the specified `UdpSocket`,
  * simultaneously updating the `TestSummary` instance.
  */
 #[derive(Debug)]
