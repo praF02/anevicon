@@ -28,13 +28,11 @@ the standard library). If you are just interested in one single program, please 
 
 ## Usage
 
-Enter this text to your `Cargo.toml` file:
 ```toml
 [dependencies]
 anevicon_core = "*"
 ```
 
-And this one to your `src/main.rs` source:
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
@@ -61,3 +59,5 @@ println!(
     "The total seconds passed: {}", summary.time_passed().as_secs()
 );
 ```
+
+For more details please look through [the official documentation](https://docs.rs/anevicon_core).
