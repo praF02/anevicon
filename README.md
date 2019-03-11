@@ -177,7 +177,7 @@ println!(
 );
 ```
 
-For more details see [the documentation](https://docs.rs/anevicon_core).
+For more details please look through [the official documentation](https://docs.rs/anevicon_core).
 
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
