@@ -145,13 +145,11 @@ $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --sen
 
 ## Using as a library
 
-(`Cargo.toml`):
 ```toml
 [dependencies]
 anevicon_core = "*"
 ```
 
-(`src/main.rs`):
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
