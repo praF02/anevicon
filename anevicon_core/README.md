@@ -28,13 +28,13 @@ the standard library). If you are just interested in one single program, please 
 
 ## Usage
 
-(`Cargo.toml`):
+(`Cargo.toml`)
 ```toml
 [dependencies]
 anevicon_core = "*"
 ```
 
-(`src/main.rs`):
+(`src/main.rs`)
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
