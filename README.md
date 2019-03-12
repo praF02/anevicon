@@ -150,7 +150,7 @@ First, you need to link the library with your executable (or another library) by
 anevicon_core = "*"
 ```
 
-Next, just copy this code into your `main` function and launch the compiled program, which simply sends one thousand empty packets to the http://example.com site:
+Next, just copy this code into your `main` function and launch the compiled program, which simply sends one thousand empty packets to the `example.com` site:
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
