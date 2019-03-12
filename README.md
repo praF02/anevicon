@@ -144,7 +144,13 @@ $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --sen
 ```
 
 ## Using as a library
+First, you need to link the library with your executable (or another library) by putting `anevicon_core` to the `dependencies` section in your `Cargo.toml` like this:
+```toml
+[dependencies]
+anevicon_core = "*"
+```
 
+Next, just copy this code into your `main` function and launch the compiled program, which simply sends one thousand empty packets to the http://example.com site:
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::execute;
