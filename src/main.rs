@@ -65,7 +65,8 @@ fn main() {
 }
 
 fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
-    let test_name = args_config.test_name.magenta().italic();
+    let test_name = format!("\"{}\"", args_config.test_name);
+    let test_name = test_name.magenta().italic();
 
     info!(
         "The test {test_name} is initializing the socket to the remote server \
