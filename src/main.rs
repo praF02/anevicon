@@ -40,6 +40,7 @@ use termion::color;
 
 fn main() {
     let args_config = ArgsConfig::setup();
+    title();
 
     if let Err(error) = setup_logging(&args_config.logging_config) {
         logging::raw_fatal(format_args!(
@@ -62,6 +63,35 @@ fn main() {
         error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
+}
+
+fn title() {
+    println!(
+        "         {}",
+        r"                        _                 ".cyan()
+    );
+    println!(
+        "         {}",
+        r"  __ _ _ __   _____   _(_) ___ ___  _ __  ".cyan()
+    );
+    println!(
+        "         {}",
+        r" / _` | '_ \ / _ \ \ / / |/ __/ _ \| '_ \ ".cyan()
+    );
+    println!(
+        "         {}",
+        r"| (_| | | | |  __/\ V /| | (_| (_) | | | |".cyan()
+    );
+    println!(
+        "         {}",
+        r" \__,_|_| |_|\___| \_/ |_|\___\___/|_| |_|".cyan()
+    );
+    println!(
+        "{}\n",
+        "A high-performance UDP-based load generator, written in Rust"
+            .green()
+            .underline()
+    );
 }
 
 fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
