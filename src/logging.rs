@@ -20,8 +20,7 @@
 // Print all traces and debugging information to stderr
 // Print all notifications, warnings and errors to stdout
 
-use std::fmt::Arguments;
-use std::io::{self, stderr, stdout};
+use std::io::{stderr, stdout};
 
 use super::config::LoggingConfig;
 
@@ -31,19 +30,7 @@ use fern::Dispatch;
 use log::Level;
 use time::{self, strftime};
 
-pub fn raw_fatal(message: Arguments) -> ! {
-    // Print a colored error message to stdout and exit with the code 1,
-    // even without a correctly configured logging system
-    println!(
-        "[{level}] [{time}]: {message}",
-        level = "ERROR".red().underline(),
-        time = strftime("%X", &time::now()).unwrap().cyan(),
-        message = message
-    );
-    std::process::exit(1);
-}
-
-pub fn setup_logging(logging_config: &LoggingConfig) -> io::Result<()> {
+pub fn setup_logging(logging_config: &LoggingConfig) {
     let colors = ColoredLevelConfig::new()
         .info(Color::Green)
         .warn(Color::Yellow)
@@ -86,5 +73,4 @@ pub fn setup_logging(logging_config: &LoggingConfig) -> io::Result<()> {
     }
 
     dispatch.apply().expect("Applying the dispatch has failed");
-    Ok(())
 }

@@ -42,13 +42,7 @@ fn main() {
     let args_config = ArgsConfig::setup();
     title();
 
-    if let Err(error) = setup_logging(&args_config.logging_config) {
-        logging::raw_fatal(format_args!(
-            "Opening the output file failed >>> {}!",
-            error
-        ));
-    }
-
+    setup_logging(&args_config.logging_config);
     trace!("{:?}", args_config);
 
     let packet = match construct_packet(&args_config.packet_config) {
