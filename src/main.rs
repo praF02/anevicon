@@ -92,9 +92,8 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     let test_name = test_name.magenta().italic();
 
     info!(
-        "The test {test_name} is initializing the socket to the remote \
-         server {server_address} using the {sender_address} sender \
-         address...",
+        "The test {test_name} is initializing the socket to the remote server {server_address} \
+         using the {sender_address} sender address...",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         sender_address = args_config.sender.to_string().cyan(),
@@ -105,9 +104,8 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     socket.set_write_timeout(Some(args_config.send_timeout))?;
 
     warn!(
-        "The test {test_name} has initialized the socket to the remote \
-         server successfully. Now sleeping {sleeping_time} and then \
-         starting to test...",
+        "The test {test_name} has initialized the socket to the remote server successfully. Now \
+         sleeping {sleeping_time} and then starting to test...",
         test_name = test_name,
         sleeping_time = format_duration(args_config.wait).to_string().cyan(),
     );
@@ -115,9 +113,8 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     thread::sleep(args_config.wait);
 
     info!(
-        "The test {test_name} has started to test the {server_address} \
-         server until either {packets_count} packets will be sent or \
-         {test_duration} will be passed.",
+        "The test {test_name} has started to test the {server_address} server until either \
+         {packets_count} packets will be sent or {test_duration} will be passed.",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         packets_count = args_config.exit_config.packets_count.to_string().cyan(),
@@ -144,7 +141,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
                 );
 
                 return Ok(());
-            } else if summary.packets_sent() == args_config.exit_config.packets_count.get() {
+            }
+
+            if summary.packets_sent() == args_config.exit_config.packets_count.get() {
                 info!(
                     "The test {test_name} has sent all the required packets >>> {summary}.",
                     test_name = test_name,
@@ -167,9 +166,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
 
 fn format_summary(summary: &TestSummary) -> String {
     format!(
-        "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, \
-         the average speed: {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, \
-         time passed: {style}{time_passed}{reset_style}",
+        "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
+         {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
+         {style}{time_passed}{reset_style}",
         packets = summary.packets_sent(),
         megabytes = summary.megabytes_sent(),
         mbps = summary.megabites_per_sec(),
