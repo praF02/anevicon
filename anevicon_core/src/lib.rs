@@ -33,28 +33,26 @@
  *
  * ```rust,no_run
  * use anevicon_core::summary::TestSummary;
- * use anevicon_core::testing::execute;
+ * use anevicon_core::testing::send;
  *
  * // Setup the socket connected to the example.com domain
  * let socket = std::net::UdpSocket::bind("0.0.0.0:0").unwrap();
- * socket
- *     .connect("93.184.216.34:80")
- *     .expect("Cannot connect the socket to example.com");
+ * socket.connect("93.184.216.34:80").unwrap();
  *
+ * let packet = vec![0; 32768];
  * let mut summary = TestSummary::default();
  *
  * // Execute a test that will send one thousand packets
  * // each containing 32768 bytes.
- * execute(&socket, &vec![0; 32768], &mut summary)
- *     .take(1000)
- *     .for_each(|result| {
- *         if let Err(error) = result {
- *             panic!("{}", error);
- *         }
- *     });
+ * for _ in 0..1000 {
+ *     if let Err(error) = send(&socket, &packet, &mut summary) {
+ *         panic!("{}", error);
+ *     }
+ * }
  *
  * println!(
- *     "The total seconds passed: {}", summary.time_passed().as_secs()
+ *     "The total seconds passed: {}",
+ *     summary.time_passed().as_secs()
  * );
  * ```
  *

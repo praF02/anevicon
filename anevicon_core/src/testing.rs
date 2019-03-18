@@ -19,10 +19,6 @@
 
 /*!
  * The test abstractions to easily describe and execute your own tests.
- *
- * The main idea is to perform tests by stepping over an iterator. Just
- * call the `execute` function that returns you an iterator that sends a
- * packet on each iteration.
 */
 
 use std::io;
@@ -31,46 +27,16 @@ use std::net::UdpSocket;
 use super::summary::TestSummary;
 
 /**
- * Returns `TestIterator` constructed from the specified arguments. This
- * function can be used as a main entry for your tests.
+ * Sends a packet using the specified `UdpSocket`, simultaneously updating
+ * the `TestSummary`. It returns a bytes sent if an operation succeeds,
+ * otherwise, returns an I/O error.
  */
-pub fn execute<'a, 'b, 'c>(
-    socket: &'a UdpSocket,
-    packet: &'b [u8],
-    summary: &'c mut TestSummary,
-) -> TestIterator<'a, 'b, 'c> {
-    TestIterator {
-        socket,
-        packet,
-        summary,
-    }
-}
-
-/**
- * The iterator that infinitely sends a packet using the specified `UdpSocket`,
- * simultaneously updating the `TestSummary` instance.
- */
-#[derive(Debug)]
-pub struct TestIterator<'a, 'b, 'c> {
-    socket: &'a UdpSocket,
-    packet: &'b [u8],
-    summary: &'c mut TestSummary,
-}
-
-impl<'a, 'b, 'c> Iterator for TestIterator<'a, 'b, 'c> {
-    type Item = io::Result<usize>;
-
-    /**
-     * Returns a bytes sent if an I/O operation succeeds, otherwise, returns
-     * an error, but `None` will never be returned.
-     */
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.socket.send(self.packet) {
-            Err(error) => Some(Err(error)),
-            Ok(bytes) => {
-                self.summary.update(bytes, 1);
-                Some(Ok(bytes))
-            }
+pub fn send(socket: &UdpSocket, packet: &[u8], summary: &mut TestSummary) -> io::Result<usize> {
+    match socket.send(packet) {
+        Err(error) => Err(error),
+        Ok(bytes) => {
+            summary.update(bytes, 1);
+            Ok(bytes)
         }
     }
 }
@@ -81,22 +47,22 @@ mod tests {
 
     #[test]
     fn sends_all_packets() {
-        let server = UdpSocket::bind("0.0.0.0:0").expect("Cannot setup the server");
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("Cannot setup the socket");
+        let server = UdpSocket::bind("0.0.0.0:0").expect("A server error");
+        let socket = UdpSocket::bind("0.0.0.0:0").expect("A client error");
         socket
             .connect(server.local_addr().unwrap())
             .expect("Cannot connect the socket to the local server");
 
+        let packet = vec![0; 1024];
         let packets_required = 25;
+
         let mut summary = TestSummary::default();
 
-        execute(&socket, &vec![0; 16384], &mut summary)
-            .take(packets_required)
-            .for_each(|result| {
-                if let Err(error) = result {
-                    panic!("{}", error)
-                }
-            });
+        for _ in 0..packets_required {
+            if let Err(error) = send(&socket, &packet, &mut summary) {
+                panic!("{}", error)
+            }
+        }
 
         assert_eq!(summary.packets_sent(), packets_required);
     }

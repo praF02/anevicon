@@ -26,7 +26,6 @@ use logging::setup_logging;
 
 use std::io;
 use std::net::UdpSocket;
-use std::num::NonZeroUsize;
 use std::thread;
 
 mod config;
@@ -93,8 +92,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     let test_name = test_name.magenta().italic();
 
     info!(
-        "The test {test_name} is initializing the socket to the remote server \
-         {server_address} using the {sender_address} sender address...",
+        "The test {test_name} is initializing the socket to the remote \
+         server {server_address} using the {sender_address} sender \
+         address...",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         sender_address = args_config.sender.to_string().cyan(),
@@ -105,8 +105,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     socket.set_write_timeout(Some(args_config.send_timeout))?;
 
     warn!(
-        "The test {test_name} has initialized the socket to the remote server \
-         successfully. Now sleeping {sleeping_time} and then starting to test...",
+        "The test {test_name} has initialized the socket to the remote \
+         server successfully. Now sleeping {sleeping_time} and then \
+         starting to test...",
         test_name = test_name,
         sleeping_time = format_duration(args_config.wait).to_string().cyan(),
     );
@@ -114,9 +115,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     thread::sleep(args_config.wait);
 
     info!(
-        "The test {test_name} has started to test the {server_address} server \
-         until either {packets_count} packets will be sent or {test_duration} \
-         will be passed.",
+        "The test {test_name} has started to test the {server_address} \
+         server until either {packets_count} packets will be sent or \
+         {test_duration} will be passed.",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
         packets_count = args_config
@@ -135,16 +136,9 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     // time will pass. Return the test summary for future analysis.
     loop {
         for _ in 0..args_config.display_periodicity.get() {
-            testing::execute(
-                &socket,
-                packet,
-                unsafe { NonZeroUsize::new_unchecked(1) },
-                &mut summary,
-                |error| {
-                    error!("An error occurred while sending a packet >>> {}!", error);
-                    testing::HandleErrorResult::Continue
-                },
-            );
+            if let Err(error) = testing::send(&socket, packet, &mut summary) {
+                error!("An error occurred while sending a packet >>> {}!", error);
+            }
 
             if summary.time_passed() >= args_config.stop_conditions_config.test_duration {
                 info!(
