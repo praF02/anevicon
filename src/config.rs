@@ -119,7 +119,7 @@ pub struct ArgsConfig {
     pub logging_config: LoggingConfig,
 
     #[structopt(flatten)]
-    pub stop_conditions_config: StopConditionsConfig,
+    pub exit_config: ExitConfig,
 
     #[structopt(flatten)]
     pub packet_config: PacketConfig,
@@ -133,7 +133,7 @@ pub struct LoggingConfig {
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct StopConditionsConfig {
+pub struct ExitConfig {
     /// A count of packets for sending. When this limit is reached, then
     /// the program will exit. See also the `--test-duration` option.
     #[structopt(

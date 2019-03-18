@@ -120,12 +120,8 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
          {test_duration} will be passed.",
         test_name = test_name,
         server_address = args_config.receiver.to_string().cyan(),
-        packets_count = args_config
-            .stop_conditions_config
-            .packets_count
-            .to_string()
-            .cyan(),
-        test_duration = format_duration(args_config.stop_conditions_config.test_duration)
+        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
+        test_duration = format_duration(args_config.exit_config.test_duration)
             .to_string()
             .cyan(),
     );
@@ -140,7 +136,7 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
                 error!("An error occurred while sending a packet >>> {}!", error);
             }
 
-            if summary.time_passed() >= args_config.stop_conditions_config.test_duration {
+            if summary.time_passed() >= args_config.exit_config.test_duration {
                 info!(
                     "The allotted time of the test {test_name} has passed >>> {summary}.",
                     test_name = test_name,
@@ -148,9 +144,7 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
                 );
 
                 return Ok(());
-            } else if summary.packets_sent()
-                == args_config.stop_conditions_config.packets_count.get()
-            {
+            } else if summary.packets_sent() == args_config.exit_config.packets_count.get() {
                 info!(
                     "The test {test_name} has sent all the required packets >>> {summary}.",
                     test_name = test_name,
