@@ -29,13 +29,17 @@ use super::config::PacketConfig;
 use rand::{thread_rng, RngCore};
 
 pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If an user has specified a file, then use file content as a packet.
-    // Otherwise, generate a random set of bytes
+    // If an user has specified a file, then use its content as a packet
     if let Some(ref filename) = packet_config.send_file {
         read_packet(filename)
+
+    // If an user has specified a message, then use it as a packet
+    } else if let Some(ref message) = packet_config.send_message {
+        Ok(message.bytes().collect())
+
+    // If both file and message were not specified, then at least
+    // packet length must be already specified
     } else {
-        // If a file wasn't specified, then at least packet length must
-        // be explicitly or implicitly specified
         Ok(random_packet(packet_config.packet_length.unwrap()))
     }
 }
@@ -136,7 +140,8 @@ mod tests {
         assert_eq!(
             construct_packet(&PacketConfig {
                 send_file: None,
-                packet_length: Some(packet_length)
+                packet_length: Some(packet_length),
+                send_message: None
             })
             .expect("Cannot construct a packet")
             .len(),
@@ -151,15 +156,32 @@ mod tests {
         let content = vec![165; 4096];
         temp_file.write_all(&content).unwrap();
 
-        // Now we have a file specified, and the function must read it
-        // even with the existing '--length' option (just ignore it)
+        // The function must return a valid file content that we have
+        // already written
         assert_eq!(
             construct_packet(&PacketConfig {
                 send_file: Some(PathBuf::from(temp_file.path().to_str().unwrap())),
-                packet_length: None
+                packet_length: None,
+                send_message: None,
             })
             .expect("Cannot construct a packet"),
             content
+        );
+    }
+
+    #[test]
+    fn test_choose_text_message() {
+        let message = String::from("Generals gathered in their masses");
+
+        // The function must return the message that we specified above
+        assert_eq!(
+            construct_packet(&PacketConfig {
+                send_file: None,
+                packet_length: None,
+                send_message: Some(message.clone()),
+            })
+            .expect("Cannot construct a packet"),
+            message.into_bytes(),
         );
     }
 }

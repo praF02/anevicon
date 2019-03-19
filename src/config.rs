@@ -36,8 +36,8 @@ use structopt::StructOpt;
     set_term_width = 80
 )]
 pub struct ArgsConfig {
-    /// A receiver of generated traffic, specified as an IP-address and a
-    /// port number, separated by a colon.
+    /// A receiver of generated traffic, specified as an IP-address
+    /// and a port number, separated by a colon.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -47,8 +47,8 @@ pub struct ArgsConfig {
     )]
     pub receiver: SocketAddr,
 
-    /// A sender of generated traffic, specified as an IP-address and a
-    /// port number, separated by a colon.
+    /// A sender of generated traffic, specified as an IP-address and
+    /// a port number, separated by a colon.
     #[structopt(
         short = "s",
         long = "sender",
@@ -70,9 +70,8 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A periodicity of sending packets. By default, all packets will be
-    /// sent momentarily (without any periodicity). This option can be used
-    /// to decrease test intensity.
+    /// A periodicity of sending packets. This option can be used to
+    /// decrease test intensity.
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -82,8 +81,7 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets per displaying test summaries. It is highly
-    /// recommended to not set a too small value (say, 6).
+    /// A count of packets per displaying test summaries.
     #[structopt(
         long = "display-periodicity",
         takes_value = true,
@@ -104,8 +102,7 @@ pub struct ArgsConfig {
     )]
     pub send_timeout: Duration,
 
-    /// A name of a future test. This option lets produce the program
-    /// beautiful output and doesn't make any sense on test performing.
+    /// A name of a future test.
     #[structopt(
         short = "n",
         long = "test-name",
@@ -134,8 +131,8 @@ pub struct LoggingConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct ExitConfig {
-    /// A count of packets for sending. When this limit is reached, then
-    /// the program will exit. See also the `--test-duration` option.
+    /// A count of packets for sending. When this limit is reached,
+    /// then the program will exit.
     #[structopt(
         short = "p",
         long = "packets-count",
@@ -146,8 +143,8 @@ pub struct ExitConfig {
     )]
     pub packets_count: NonZeroUsize,
 
-    /// A whole test duration. When this limit is reached, then the program
-    /// will exit. See also the `--packets-count` option.
+    /// A whole test duration. When this limit is reached, then the
+    /// program will exit.
     #[structopt(
         long = "test-duration",
         takes_value = true,
@@ -160,9 +157,8 @@ pub struct ExitConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
-    /// A count of bytes included in a random-generated packet. You cannot
-    /// use this option and the `--send-file` together. The default is
-    /// 32768.
+    /// Repeatedly send a random-generated packet with a specified
+    /// bytes length. The default is 32768.
     #[structopt(
         short = "l",
         long = "packet-length",
@@ -172,8 +168,7 @@ pub struct PacketConfig {
     )]
     pub packet_length: Option<NonZeroUsize>,
 
-    /// A file for sending instead of random-generated packets. You cannot
-    /// use this option and the `--packet-length` together.
+    /// Repeatedly send a specified file content.
     #[structopt(
         short = "f",
         long = "send-file",
@@ -181,19 +176,32 @@ pub struct PacketConfig {
         value_name = "FILENAME"
     )]
     pub send_file: Option<PathBuf>,
+
+    /// Repeatedly send a specified text message.
+    #[structopt(
+        short = "m",
+        long = "send-message",
+        takes_value = true,
+        value_name = "STRING"
+    )]
+    pub send_message: Option<String>,
 }
 
 impl ArgsConfig {
     pub fn setup() -> ArgsConfig {
         let matches = ArgsConfig::clap()
-            .group(ArgGroup::with_name("message").args(&["send_file", "packet_length"]))
+            .group(ArgGroup::with_name("message").args(&[
+                "send_file",
+                "packet_length",
+                "send_message",
+            ]))
             .get_matches();
 
         let mut args_config = ArgsConfig::from_clap(&matches);
 
-        // If an user hasn't specified a file, then set the default packet
-        // length
-        if !matches.is_present("send_file") {
+        // If an user hasn't specified a file and/or a text message, then set
+        // the default packet length
+        if !matches.is_present("send_file") || !matches.is_present("send_message") {
             args_config.packet_config.packet_length =
                 Some(unsafe { NonZeroUsize::new_unchecked(32768) });
         }
