@@ -160,8 +160,8 @@ pub struct ExitConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
-    /// A count of bytes included in a random-generated packet. The default
-    /// value is 32768.
+    /// A count of bytes included in a random-generated packet. You cannot
+    /// use this option and the `--send-file` together. [default: 32768]
     #[structopt(
         short = "l",
         long = "packet-length",
