@@ -24,7 +24,7 @@ rand = "0.6.5"
 lazy_static = "1.2.0"
 tempfile = "3.0.7"
 termion = "1.5.1"
-anevicon_core = { path = "anevicon_core" }
+anevicon_core = "0.3.0"
 
 [workspace]
 members = ["anevicon_core"]
