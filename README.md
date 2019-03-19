@@ -31,7 +31,7 @@ $ cargo install anevicon
 
 ## Usage
 ```
-anevicon 1.1.0
+anevicon 2.0.1
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
@@ -48,8 +48,9 @@ OPTIONS:
             A count of packets per displaying test summaries. It is highly
             recommended to not set a too small value (say, 6). [default: 300]
     -l, --packet-length <POSITIVE-INTEGER>
-            A count of bytes included in a random-generated packet. The default
-            value is 32768.
+            A count of bytes included in a random-generated packet. You cannot
+            use this option and the `--send-file` together. The default is
+            32768.
     -p, --packets-count <POSITIVE-INTEGER>
             A count of packets for sending. When this limit is reached, then the
             program will exit. See also the `--test-duration` option. [default:
