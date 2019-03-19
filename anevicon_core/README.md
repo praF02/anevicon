@@ -59,4 +59,4 @@ println!(
 );
 ```
 
-For more details please look through [the official documentation](https://docs.rs/anevicon_core).
+All the abstractions are well-documented at this moment, see the [docs.rs main page](https://docs.rs/anevicon_core).
