@@ -144,7 +144,7 @@ Wait 7 seconds, and then start to test using the `Axl Rose` name, displaying sum
 $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms --test-name "Axl Rose"
 ```
 
-## Using as a library
+## Using as a library [[docs](https://docs.rs/anevicon_core)]
 First, you need to link the library with your executable (or another library) by putting `anevicon_core` to the `dependencies` section in your `Cargo.toml` like this:
 ```toml
 [dependencies]
@@ -176,8 +176,6 @@ println!(
     summary.time_passed().as_secs()
 );
 ```
-
-For more details please look through [the official documentation](https://docs.rs/anevicon_core).
 
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
