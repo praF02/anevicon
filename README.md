@@ -45,26 +45,26 @@ FLAGS:
 
 OPTIONS:
         --display-periodicity <PACKETS>
-            A count of packets per displaying test summaries. It is highly
-            recommended to not set a too small value (say, 6). [default: 300]
+            A count of packets per displaying test summaries. [default: 300]
+
     -l, --packet-length <POSITIVE-INTEGER>
-            A count of bytes included in a random-generated packet. You cannot
-            use this option and the `--send-file` together. The default is
-            32768.
+            Repeatedly send a random-generated packet with a specified bytes
+            length. The default is 32768.
     -p, --packets-count <POSITIVE-INTEGER>
             A count of packets for sending. When this limit is reached, then the
-            program will exit. See also the `--test-duration` option. [default:
-            18446744073709551615]
+            program will exit. [default: 18446744073709551615]
     -r, --receiver <SOCKET-ADDRESS>
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
     -f, --send-file <FILENAME>
-            A file for sending instead of random-generated packets. You cannot
-            use this option and the `--packet-length` together.
+            Repeatedly send a specified file content.
+
+    -m, --send-message <STRING>
+            Repeatedly send a specified UTF-8 encoded text message.
+
         --send-periodicity <TIME-SPAN>
-            A periodicity of sending packets. By default, all packets will be
-            sent momentarily (without any periodicity). This option can be used
-            to decrease test intensity. [default: 0secs]
+            A periodicity of sending packets. This option can be used to
+            decrease test intensity. [default: 0secs]
         --send-timeout <TIME-SPAN>
             A timeout of sending every single packet. If a timeout is reached,
             an error will be printed. [default: 10secs]
@@ -73,12 +73,10 @@ OPTIONS:
             number, separated by a colon. [default: 0.0.0.0:0]
         --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
-            will exit. See also the `--packets-count` option. [default: 64years
-            64hours 64secs]
+            will exit. [default: 64years 64hours 64secs]
     -n, --test-name <STRING>
-            A name of a future test. This option lets produce the program
-            beautiful output and doesn't make any sense on test performing.
-            [default: Unnamed]
+            A name of a future test. [default: Unnamed]
+
     -w, --wait <TIME-SPAN>
             A waiting time span before a test execution used to prevent a launch
             of an erroneous (unwanted) test. [default: 5secs]
