@@ -103,7 +103,7 @@ $ anevicon --receiver 93.184.216.34:80 --sender 93.184.216.34:80
 ```
 
 ### End conditions
-Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--duration` and `--packets` (a test duration and a packets count, respectively):
+Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
 # Test the 80 port of the example.com site with the two limit options
@@ -119,19 +119,14 @@ $ anevicon --receiver 93.184.216.34:80 --packet-length 4092
 ```
 
 ### Custom message
-By default, Anevicon will generate a random set of bytes which will be used as a sending packet. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--file` option:
+By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
 # Test the 80 port of example.com with the custom file 'message.txt'
 $ anevicon --receiver 93.184.216.34:80 --send-file message.txt
-```
 
-### Custom output file
-To specify a custom output file for all notifications, warnings, and errors, there is one more option called `--output`. Note that all debugging information will still be written to a terminal.
-
-```bash
-# Test the 80 port of example.com with the custom output file 'out.txt'
-$ anevicon --receiver 93.184.216.34:80 --output out.txt
+# Test the 80 port of example.com with the custom text message
+$ anevicon --receiver 93.184.216.34:80 --send-message "How do you do?"
 ```
 
 ### Specific options
