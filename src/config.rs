@@ -177,7 +177,7 @@ pub struct PacketConfig {
     )]
     pub send_file: Option<PathBuf>,
 
-    /// Repeatedly send a specified text message.
+    /// Repeatedly send a specified UTF-8 encoded text message.
     #[structopt(
         short = "m",
         long = "send-message",
