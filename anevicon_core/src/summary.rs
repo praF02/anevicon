@@ -1,45 +1,42 @@
-/* anevicon: The most powerful UDP-based load generator, written in Rust.
- * Copyright (C) 2019  Temirkhan Myrzamadi <gymmasssorla@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * For more information see <https://github.com/Gymmasssorla/anevicon>.
- */
+// anevicon: The most powerful UDP-based load generator, written in Rust.
+// Copyright (C) 2019  Temirkhan Myrzamadi <gymmasssorla@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+// For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-/*!
- * The module containing abstractions to analyse test execution results.
- *
- * # Examples
- *
- * ```rust
- * use anevicon_core::summary::TestSummary;
- *
- * // Create the default TestSummary object with zero generated traffic
- * let mut summary = TestSummary::default();
- *
- * // Update our TestSummary with 59 packets sent containing 52364 bytes
- * // totally
- * summary.update(59, 52364);
- *
- * println!("{} packets were sent in {} seconds with the average speed \
- *           of {} packets/sec.",
- *          summary.packets_sent(),
- *          summary.time_passed().as_secs(),
- *          summary.packets_per_sec()
- * );
- * ```
- */
+//! The module containing abstractions to analyse test execution results.
+//!
+//! # Examples
+//!
+//! ```rust
+//! use anevicon_core::summary::TestSummary;
+//!
+//! // Create the default TestSummary object with zero generated traffic
+//! let mut summary = TestSummary::default();
+//!
+//! // Update our TestSummary with 59 packets sent containing 52364 bytes
+//! // totally
+//! summary.update(59, 52364);
+//!
+//! println!(
+//!     "{} packets were sent in {} seconds with the average speed of {} packets/sec.",
+//!     summary.packets_sent(),
+//!     summary.time_passed().as_secs(),
+//!     summary.packets_per_sec()
+//! );
+//! ```
 
 use std::time::{Duration, Instant};
 
