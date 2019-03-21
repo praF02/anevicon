@@ -35,28 +35,6 @@ use structopt::StructOpt;
     set_term_width = 80
 )]
 pub struct ArgsConfig {
-    /// A receiver of generated traffic, specified as an IP-address
-    /// and a port number, separated by a colon.
-    #[structopt(
-        short = "r",
-        long = "receiver",
-        takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        required = true
-    )]
-    pub receiver: SocketAddr,
-
-    /// A sender of generated traffic, specified as an IP-address and
-    /// a port number, separated by a colon.
-    #[structopt(
-        short = "s",
-        long = "sender",
-        takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        default_value = "0.0.0.0:0"
-    )]
-    pub sender: SocketAddr,
-
     /// A waiting time span before a test execution used to prevent a
     /// launch of an erroneous (unwanted) test.
     #[structopt(
@@ -69,6 +47,16 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
+    /// A count of packets per displaying test summaries.
+    #[structopt(
+        long = "display-periodicity",
+        takes_value = true,
+        value_name = "PACKETS",
+        default_value = "300",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub display_periodicity: NonZeroUsize,
+
     /// A periodicity of sending packets. This option can be used to
     /// decrease test intensity.
     #[structopt(
@@ -80,15 +68,46 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets per displaying test summaries.
+    #[structopt(flatten)]
+    pub logging_config: LoggingConfig,
+
+    #[structopt(flatten)]
+    pub exit_config: ExitConfig,
+
+    #[structopt(flatten)]
+    pub packet_config: PacketConfig,
+
+    #[structopt(flatten)]
+    pub network_config: NetworkConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct NetworkConfig {
+    /// A receiver of generated traffic, specified as an IP-address
+    /// and a port number, separated by a colon.
+    ///
+    /// You can specify as many receivers as you want by specifying
+    /// this option multiple times. In this case, the program will run
+    /// in parallel.
     #[structopt(
-        long = "display-periodicity",
+        short = "r",
+        long = "receiver",
         takes_value = true,
-        value_name = "PACKETS",
-        default_value = "300",
-        parse(try_from_str = "parse_non_zero_usize")
+        value_name = "SOCKET-ADDRESS",
+        required = true
     )]
-    pub display_periodicity: NonZeroUsize,
+    pub receivers: Vec<SocketAddr>,
+
+    /// A sender of generated traffic, specified as an IP-address and
+    /// a port number, separated by a colon.
+    #[structopt(
+        short = "s",
+        long = "sender",
+        takes_value = true,
+        value_name = "SOCKET-ADDRESS",
+        default_value = "0.0.0.0:0"
+    )]
+    pub sender: SocketAddr,
 
     /// A timeout of sending every single packet. If a timeout is reached,
     /// an error will be printed.
@@ -100,25 +119,6 @@ pub struct ArgsConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Duration,
-
-    /// A name of a future test.
-    #[structopt(
-        short = "n",
-        long = "test-name",
-        takes_value = true,
-        value_name = "STRING",
-        default_value = "Unnamed"
-    )]
-    pub test_name: String,
-
-    #[structopt(flatten)]
-    pub logging_config: LoggingConfig,
-
-    #[structopt(flatten)]
-    pub exit_config: ExitConfig,
-
-    #[structopt(flatten)]
-    pub packet_config: PacketConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]

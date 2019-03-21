@@ -19,22 +19,24 @@
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing;
 
-use config::{ArgsConfig, ExitConfig};
+use config::{ArgsConfig, ExitConfig, NetworkConfig};
 use helpers::construct_packet;
 use logging::setup_logging;
 
 use std::io;
 use std::net::UdpSocket;
+use std::sync::{Arc, RwLock};
 use std::thread;
 
 mod config;
 mod helpers;
 mod logging;
 
-use colored::{ColoredString, Colorize as _};
+use colored::Colorize as _;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 use termion::color;
+use threadpool::ThreadPool;
 
 fn main() {
     let args_config = ArgsConfig::setup();
@@ -51,7 +53,7 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    if let Err(error) = execute(&args_config, &packet) {
+    if let Err(error) = execute(args_config, packet) {
         error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
@@ -86,72 +88,113 @@ fn title() {
     );
 }
 
-fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
-    let test_name = format!("\"{}\"", args_config.test_name).magenta().italic();
-    let socket = init_socket(args_config, &test_name)?;
+fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
+    let mut sockets = Vec::with_capacity(args_config.network_config.receivers.len());
+    for i in 0..args_config.network_config.receivers.len() {
+        sockets.push(init_socket(&args_config.network_config, i)?);
+    }
 
     warn!(
-        "The test {test_name} has initialized the socket to the remote server successfully. Now \
-         sleeping {sleeping_time} and then starting to test...",
-        test_name = test_name,
+        "All the sockets were initialized successfully. Now sleeping {sleeping_time} and then \
+         starting to test all the specified receivers...",
         sleeping_time = format_duration(args_config.wait).to_string().cyan(),
     );
-
     thread::sleep(args_config.wait);
 
+    // Spawn the workers in parallel mode and block the current thread until they
+    // all finished their work
+    spawn_workers(
+        Arc::new(RwLock::new(args_config)),
+        Arc::new(RwLock::new(packet)),
+        sockets,
+    )
+    .join();
+    Ok(())
+}
+
+// Initialize a `UdpSocket` connected to the `network_config.receivers[index]`
+fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSocket> {
     info!(
-        "The test {test_name} has started to test the {server_address} server until either \
-         {packets_count} packets will be sent or {test_duration} will be passed.",
-        test_name = test_name,
-        server_address = args_config.receiver.to_string().cyan(),
-        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
-        test_duration = format_duration(args_config.exit_config.test_duration)
-            .to_string()
-            .cyan(),
+        "Initializing the socket to the {receiver} receiver using the {sender} sender address...",
+        receiver = network_config.receivers[index].to_string().cyan(),
+        sender = network_config.sender.to_string().cyan(),
     );
 
-    let mut summary = TestSummary::default();
+    let socket = UdpSocket::bind(network_config.sender)?;
+    socket.connect(network_config.receivers[index])?;
+    socket.set_write_timeout(Some(network_config.send_timeout))?;
 
-    loop {
-        for _ in 0..args_config.display_periodicity.get() {
-            if let Err(error) = testing::send(&socket, packet, &mut summary) {
-                error!("An error occurred while sending a packet >>> {}!", error);
+    info!(
+        "The socket was initialized to the {receiver} receiver using the {sender} sender address \
+         successfully.",
+        receiver = network_config.receivers[index].to_string().cyan(),
+        sender = network_config.sender.to_string().cyan(),
+    );
+
+    Ok(socket)
+}
+
+fn spawn_workers(
+    args_config: Arc<RwLock<ArgsConfig>>,
+    packet: Arc<RwLock<Vec<u8>>>,
+    sockets: Vec<UdpSocket>,
+) -> ThreadPool {
+    let workers = ThreadPool::new(sockets.len());
+    let local_config = args_config.read().unwrap();
+
+    for (socket, &receiver) in sockets
+        .into_iter()
+        .zip(local_config.network_config.receivers.iter())
+    {
+        let local_config = args_config.clone();
+        let local_packet = packet.clone();
+
+        workers.execute(move || {
+            let local_config = local_config.read().unwrap();
+            let local_packet = local_packet.read().unwrap();
+
+            let mut summary = TestSummary::default();
+
+            // Run the loop for the current worker until one of the specified exit
+            // conditions will become true
+            loop {
+                for _ in 0..local_config.display_periodicity.get() {
+                    if let Err(error) = testing::send(&socket, &local_packet, &mut summary) {
+                        error!("An error occurred while sending a packet >>> {}!", error);
+                    }
+
+                    if is_limit_reached(&local_config.exit_config, &summary) {
+                        return;
+                    }
+
+                    thread::sleep(local_config.send_periodicity);
+                }
+
+                info!(
+                    "Stats for the {receiver} receiver >>> {summary}.",
+                    receiver = receiver.to_string().cyan(),
+                    summary = format_summary(&summary),
+                );
             }
-
-            if is_limit_reached(&args_config.exit_config, &summary, &test_name) {
-                return Ok(());
-            }
-
-            thread::sleep(args_config.send_periodicity);
-        }
-
-        info!(
-            "The test {test_name} is running >>> {summary}.",
-            test_name = test_name,
-            summary = format_summary(&summary),
-        );
+        });
     }
+
+    workers
 }
 
 // Suggest to inline this function because it is used in a continious cycle
 #[inline]
-fn is_limit_reached(
-    exit_config: &ExitConfig,
-    summary: &TestSummary,
-    test_name: &ColoredString,
-) -> bool {
+fn is_limit_reached(exit_config: &ExitConfig, summary: &TestSummary) -> bool {
     if summary.time_passed() >= exit_config.test_duration {
         info!(
-            "The allotted time of the test {test_name} has passed >>> {summary}.",
-            test_name = test_name,
+            "All the allotted time has passed >>> {summary}.",
             summary = format_summary(&summary)
         );
 
         true
     } else if summary.packets_sent() == exit_config.packets_count.get() {
         info!(
-            "The test {test_name} has sent all the required packets >>> {summary}.",
-            test_name = test_name,
+            "All the required packets were sent >>> {summary}.",
             summary = format_summary(&summary)
         );
 
@@ -161,22 +204,7 @@ fn is_limit_reached(
     }
 }
 
-fn init_socket(args_config: &ArgsConfig, test_name: &ColoredString) -> io::Result<UdpSocket> {
-    info!(
-        "The test {test_name} is initializing the socket to the remote server {server_address} \
-         using the {sender_address} sender address...",
-        test_name = test_name,
-        server_address = args_config.receiver.to_string().cyan(),
-        sender_address = args_config.sender.to_string().cyan(),
-    );
-
-    let socket = UdpSocket::bind(args_config.sender)?;
-    socket.connect(args_config.receiver)?;
-    socket.set_write_timeout(Some(args_config.send_timeout))?;
-
-    Ok(socket)
-}
-
+// Format a `TestSummary` in a fancy style with colors, styles and other stuff
 fn format_summary(summary: &TestSummary) -> String {
     format!(
         "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
