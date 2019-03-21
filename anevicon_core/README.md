@@ -59,4 +59,4 @@ println!(
 );
 ```
 
-All the abstractions are well-documented at this moment, see the [docs.rs main page](https://docs.rs/anevicon_core).
+This is how you are able to build your own stress-testing bot. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
