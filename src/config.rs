@@ -83,12 +83,11 @@ pub struct ArgsConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct NetworkConfig {
-    /// A receiver of generated traffic, specified as an IP-address
-    /// and a port number, separated by a colon.
+    /// A receiver of generated traffic, specified as an IP-address and a port
+    /// number, separated by a colon.
     ///
-    /// You can specify as many receivers as you want by specifying
-    /// this option multiple times. In this case, the program will run
-    /// in parallel.
+    /// You can specify as many receivers as you want by specifying this option
+    /// multiple times. In this case, your tests will run in parallel.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -98,8 +97,8 @@ pub struct NetworkConfig {
     )]
     pub receivers: Vec<SocketAddr>,
 
-    /// A sender of generated traffic, specified as an IP-address and
-    /// a port number, separated by a colon.
+    /// A sender of generated traffic, specified as an IP-address and a port
+    /// number, separated by a colon.
     #[structopt(
         short = "s",
         long = "sender",
@@ -109,8 +108,8 @@ pub struct NetworkConfig {
     )]
     pub sender: SocketAddr,
 
-    /// A timeout of sending every single packet. If a timeout is reached,
-    /// an error will be printed.
+    /// A timeout of sending every single packet. If a timeout is reached, an
+    /// error will be printed.
     #[structopt(
         long = "send-timeout",
         takes_value = true,
@@ -130,8 +129,8 @@ pub struct LoggingConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct ExitConfig {
-    /// A count of packets for sending. When this limit is reached,
-    /// then the program will exit.
+    /// A count of packets for sending. When this limit is reached, then the
+    /// program will exit.
     #[structopt(
         short = "p",
         long = "packets-count",
@@ -142,8 +141,8 @@ pub struct ExitConfig {
     )]
     pub packets_count: NonZeroUsize,
 
-    /// A whole test duration. When this limit is reached, then the
-    /// program will exit.
+    /// A whole test duration. When this limit is reached, then the program will
+    /// exit.
     #[structopt(
         long = "test-duration",
         takes_value = true,
@@ -156,8 +155,8 @@ pub struct ExitConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
-    /// Repeatedly send a random-generated packet with a specified
-    /// bytes length. The default is 32768.
+    /// Repeatedly send a random-generated packet with a specified bytes length.
+    /// The default is 32768.
     #[structopt(
         short = "l",
         long = "packet-length",
