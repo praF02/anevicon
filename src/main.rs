@@ -20,7 +20,7 @@
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing;
 
-use config::ArgsConfig;
+use config::{ArgsConfig, ExitConfig};
 use helpers::construct_packet;
 use logging::setup_logging;
 
@@ -32,7 +32,7 @@ mod config;
 mod helpers;
 mod logging;
 
-use colored::Colorize as _;
+use colored::{ColoredString, Colorize as _};
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 use termion::color;
@@ -88,9 +88,61 @@ fn title() {
 }
 
 fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
-    let test_name = format!("\"{}\"", args_config.test_name);
-    let test_name = test_name.magenta().italic();
+    let test_name = format!("\"{}\"", args_config.test_name).magenta().italic();
 
+    let socket = init_socket(args_config, &test_name)?;
+    let mut summary = TestSummary::default();
+
+    loop {
+        for _ in 0..args_config.display_periodicity.get() {
+            if let Err(error) = testing::send(&socket, packet, &mut summary) {
+                error!("An error occurred while sending a packet >>> {}!", error);
+            }
+
+            if is_limit_reached(&args_config.exit_config, &summary, &test_name) {
+                return Ok(());
+            }
+
+            thread::sleep(args_config.send_periodicity);
+        }
+
+        info!(
+            "The test {test_name} is running >>> {summary}.",
+            test_name = test_name,
+            summary = format_summary(&summary),
+        );
+    }
+}
+
+// Suggest to inline this function because it is used in a continious cycle
+#[inline]
+fn is_limit_reached(
+    exit_config: &ExitConfig,
+    summary: &TestSummary,
+    test_name: &ColoredString,
+) -> bool {
+    if summary.time_passed() >= exit_config.test_duration {
+        info!(
+            "The allotted time of the test {test_name} has passed >>> {summary}.",
+            test_name = test_name,
+            summary = format_summary(&summary)
+        );
+
+        true
+    } else if summary.packets_sent() == exit_config.packets_count.get() {
+        info!(
+            "The test {test_name} has sent all the required packets >>> {summary}.",
+            test_name = test_name,
+            summary = format_summary(&summary)
+        );
+
+        true
+    } else {
+        false
+    }
+}
+
+fn init_socket(args_config: &ArgsConfig, test_name: &ColoredString) -> io::Result<UdpSocket> {
     info!(
         "The test {test_name} is initializing the socket to the remote server {server_address} \
          using the {sender_address} sender address...",
@@ -123,45 +175,7 @@ fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
             .cyan(),
     );
 
-    let mut summary = TestSummary::default();
-
-    // Run a test until either all packets will be sent or alloted
-    // time will pass. Return the test summary for future analysis.
-    loop {
-        for _ in 0..args_config.display_periodicity.get() {
-            if let Err(error) = testing::send(&socket, packet, &mut summary) {
-                error!("An error occurred while sending a packet >>> {}!", error);
-            }
-
-            if summary.time_passed() >= args_config.exit_config.test_duration {
-                info!(
-                    "The allotted time of the test {test_name} has passed >>> {summary}.",
-                    test_name = test_name,
-                    summary = format_summary(&summary)
-                );
-
-                return Ok(());
-            }
-
-            if summary.packets_sent() == args_config.exit_config.packets_count.get() {
-                info!(
-                    "The test {test_name} has sent all the required packets >>> {summary}.",
-                    test_name = test_name,
-                    summary = format_summary(&summary)
-                );
-
-                return Ok(());
-            }
-
-            thread::sleep(args_config.send_periodicity);
-        }
-
-        info!(
-            "The test {test_name} is running >>> {summary}.",
-            test_name = test_name,
-            summary = format_summary(&summary),
-        );
-    }
+    Ok(socket)
 }
 
 fn format_summary(summary: &TestSummary) -> String {
