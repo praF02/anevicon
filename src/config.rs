@@ -89,9 +89,9 @@ pub struct NetworkConfig {
     /// You can specify as many receivers as you want by specifying this option
     /// multiple times. In this case, your tests will run in parallel.
     ///
-    /// All receivers will be tested identically. If you want to describe
-    /// specific characteristics for each receiver, you should run multiple
-    /// instances of this program.
+    /// All receivers will be tested identically. To describe specific
+    /// characteristics for each receiver, run multiple instances of this
+    /// program.
     #[structopt(
         short = "r",
         long = "receiver",
