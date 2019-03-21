@@ -73,7 +73,7 @@ OPTIONS:
         --send-periodicity <TIME-SPAN>
             A periodicity of sending packets. This option can be used to
             decrease test intensity. [default: 0secs]
-        --send-timeout <TIME-SPAN>
+    -t, --send-timeout <TIME-SPAN>
             A timeout of sending every single packet. If a timeout is reached,
             an error will be printed. [default: 10secs]
     -s, --sender <SOCKET-ADDRESS>

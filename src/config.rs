@@ -115,6 +115,7 @@ pub struct NetworkConfig {
     /// A timeout of sending every single packet. If a timeout is reached, an
     /// error will be printed.
     #[structopt(
+        short = "t",
         long = "send-timeout",
         takes_value = true,
         value_name = "TIME-SPAN",
