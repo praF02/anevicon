@@ -88,8 +88,28 @@ fn title() {
 
 fn execute(args_config: &ArgsConfig, packet: &[u8]) -> io::Result<()> {
     let test_name = format!("\"{}\"", args_config.test_name).magenta().italic();
-
     let socket = init_socket(args_config, &test_name)?;
+
+    warn!(
+        "The test {test_name} has initialized the socket to the remote server successfully. Now \
+         sleeping {sleeping_time} and then starting to test...",
+        test_name = test_name,
+        sleeping_time = format_duration(args_config.wait).to_string().cyan(),
+    );
+
+    thread::sleep(args_config.wait);
+
+    info!(
+        "The test {test_name} has started to test the {server_address} server until either \
+         {packets_count} packets will be sent or {test_duration} will be passed.",
+        test_name = test_name,
+        server_address = args_config.receiver.to_string().cyan(),
+        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
+        test_duration = format_duration(args_config.exit_config.test_duration)
+            .to_string()
+            .cyan(),
+    );
+
     let mut summary = TestSummary::default();
 
     loop {
@@ -153,26 +173,6 @@ fn init_socket(args_config: &ArgsConfig, test_name: &ColoredString) -> io::Resul
     let socket = UdpSocket::bind(args_config.sender)?;
     socket.connect(args_config.receiver)?;
     socket.set_write_timeout(Some(args_config.send_timeout))?;
-
-    warn!(
-        "The test {test_name} has initialized the socket to the remote server successfully. Now \
-         sleeping {sleeping_time} and then starting to test...",
-        test_name = test_name,
-        sleeping_time = format_duration(args_config.wait).to_string().cyan(),
-    );
-
-    thread::sleep(args_config.wait);
-
-    info!(
-        "The test {test_name} has started to test the {server_address} server until either \
-         {packets_count} packets will be sent or {test_duration} will be passed.",
-        test_name = test_name,
-        server_address = args_config.receiver.to_string().cyan(),
-        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
-        test_duration = format_duration(args_config.exit_config.test_duration)
-            .to_string()
-            .cyan(),
-    );
 
     Ok(socket)
 }
