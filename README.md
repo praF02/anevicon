@@ -36,7 +36,7 @@ Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
 USAGE:
-    anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>
+    anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>...
 
 FLAGS:
     -d, --debug      Enable the debugging mode
@@ -53,15 +53,23 @@ OPTIONS:
     -p, --packets-count <POSITIVE-INTEGER>
             A count of packets for sending. When this limit is reached, then the
             program will exit. [default: 18446744073709551615]
-    -r, --receiver <SOCKET-ADDRESS>
+    -r, --receiver <SOCKET-ADDRESS>...
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
+            
+            You can specify as many receivers as you want by specifying this
+            option multiple times. In this case, your tests will run in
+            parallel.
+            
+            All receivers will be tested identically. If you want to describe
+            specific characteristics for each receiver, you should run multiple
+            instances of this program.
     -f, --send-file <FILENAME>
-            Repeatedly send a specified file content.
-
+            Interpret the specified file content as a single packet and
+            repeatedly send it to each receiver.
     -m, --send-message <STRING>
-            Repeatedly send a specified UTF-8 encoded text message.
-
+            Interpret the specified UTF-8 encoded text message as a single
+            packet and repeatedly send it to each receiver.
         --send-periodicity <TIME-SPAN>
             A periodicity of sending packets. This option can be used to
             decrease test intensity. [default: 0secs]
@@ -74,9 +82,6 @@ OPTIONS:
         --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
             will exit. [default: 64years 64hours 64secs]
-    -n, --test-name <STRING>
-            A name of a future test. [default: Unnamed]
-
     -w, --wait <TIME-SPAN>
             A waiting time span before a test execution used to prevent a launch
             of an erroneous (unwanted) test. [default: 5secs]
@@ -130,11 +135,11 @@ $ anevicon --receiver 93.184.216.34:80 --send-message "How do you do?"
 ```
 
 ### Specific options
-Wait 7 seconds, and then start to test using the `Axl Rose` name, displaying summaries after every 400 packets, wait 270 macroseconds between sending two packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
+Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, wait 270 macroseconds between sending two packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
 ```bash
 # Test the 80 port of the example.com site using the specific options
-$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms --test-name "Axl Rose"
+$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms
 ```
 
 ## Using as a library
