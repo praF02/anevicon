@@ -175,7 +175,7 @@ println!(
 );
 ```
 
-All the abstractions are well-documented at this moment, see the [docs.rs main page](https://docs.rs/anevicon_core).
+This is how you are able to build your own stress-testing bot. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
 
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
