@@ -88,6 +88,10 @@ pub struct NetworkConfig {
     ///
     /// You can specify as many receivers as you want by specifying this option
     /// multiple times. In this case, your tests will run in parallel.
+    ///
+    /// All receivers will be tested identically. If you want to describe
+    /// specific characteristics for each receiver, you should run multiple
+    /// instances of this program.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -166,7 +170,8 @@ pub struct PacketConfig {
     )]
     pub packet_length: Option<NonZeroUsize>,
 
-    /// Repeatedly send a specified file content.
+    /// Interpret the specified file content as a single packet and repeatedly
+    /// send it to each receiver.
     #[structopt(
         short = "f",
         long = "send-file",
@@ -175,7 +180,8 @@ pub struct PacketConfig {
     )]
     pub send_file: Option<PathBuf>,
 
-    /// Repeatedly send a specified UTF-8 encoded text message.
+    /// Interpret the specified UTF-8 encoded text message as a single packet
+    /// and repeatedly send it to each receiver.
     #[structopt(
         short = "m",
         long = "send-message",
