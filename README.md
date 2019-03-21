@@ -180,9 +180,9 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for the attacking system) load on the specified target address. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
  
-- Anevicon was developed as a means of testing stress resistance of web servers, and not for hacking, that is, the author of the project [IS NOT RESPONSIBLE](https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE#L600) for any damage caused by your use of my program.
+- Anevicon was developed as a means of testing stress resistance of web servers, and not for hacking, that is, the author of the project **IS NOT RESPONSIBLE** for any damage caused by your use of my program.
  
- - Despite the fact that Anevicon is heavily tested both automatically and manually, does not mean that the author is responsible for any bug in his work because program comes with [ABSOLUTELY NO WARRANTY](https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE#L589).
+ - Despite the fact that Anevicon is heavily tested both automatically and manually, does not mean that the author is responsible for any bug in his work because the program comes with **ABSOLUTELY NO WARRANTY**.
 
 ## Contacts
 [Temirkhan Myrzamadi](https://github.com/Gymmasssorla) <[gymmasssorla@gmail.com](mailto:gymmasssorla@gmail.com)> (the author)
