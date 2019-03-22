@@ -157,11 +157,11 @@ $ anevicon --receiver 93.184.216.34:80 --send-periodicity 270us
 ```
 
 ### Specific options
-Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
+Wait 7 seconds, and then start to test, displaying summaries after every 4 seconds, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
 ```bash
 # Test the 80 port of the example.com site using the specific options
-$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-timeout 200ms
+$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 4secs --send-timeout 200ms
 ```
 
 ## Using as a library
