@@ -97,6 +97,14 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver 93.184.216.34:80
 ```
 
+### Multiple receivers
+Anevicon also has functionaliy to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
+
+```bash
+# Test the 80 port of example.com and the 13 port of google.com in parallel:
+$ anevicon --receiver 93.184.216.34:80 --receiver 216.58.207.78:13
+```
+
 ### IP spoofing
 Using the IP spoofing technique, hackers can protect their bandwidth from server response messages and hide their real IP address. You can imitate it via the `--sender` command-line option, as described below:
 
