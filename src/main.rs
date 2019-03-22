@@ -20,8 +20,6 @@ use anevicon_core::summary::TestSummary;
 use anevicon_core::testing;
 
 use config::{ArgsConfig, ExitConfig, NetworkConfig};
-use helpers::construct_packet;
-use logging::setup_logging;
 
 use std::io;
 use std::net::UdpSocket;
@@ -43,10 +41,10 @@ fn main() {
     let args_config = ArgsConfig::setup();
     title();
 
-    setup_logging(&args_config.logging_config);
+    logging::setup_logging(&args_config.logging_config);
     trace!("{:?}", args_config);
 
-    let packet = match construct_packet(&args_config.packet_config) {
+    let packet = match helpers::construct_packet(&args_config.packet_config) {
         Err(error) => {
             error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);
@@ -149,12 +147,11 @@ fn spawn_workers(
         .into_iter()
         .zip(local_config.network_config.receivers.iter())
     {
-        let local_config = args_config.clone();
-        let local_packet = packet.clone();
+        let (local_config, local_packet) = (args_config.clone(), packet.clone());
 
         workers.execute(move || {
-            let local_config = local_config.read().unwrap();
-            let local_packet = local_packet.read().unwrap();
+            let (local_config, local_packet) =
+                (local_config.read().unwrap(), local_packet.read().unwrap());
 
             let mut summary = TestSummary::default();
 

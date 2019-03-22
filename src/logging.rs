@@ -19,15 +19,15 @@
 // Print all traces and debugging information to stderr
 // Print all notifications, warnings and errors to stdout
 
-use std::io::{stderr, stdout};
+use std::io;
 
 use super::config::LoggingConfig;
 
-use colored::Colorize;
+use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::Level;
-use time::{self, strftime};
+use time;
 
 pub fn setup_logging(logging_config: &LoggingConfig) {
     let colors = ColoredLevelConfig::new()
@@ -44,7 +44,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
             out.finish(format_args!(
                 "[{level}] [{time}]: {message}",
                 level = colors.color(record.level()).to_string().underline(),
-                time = strftime("%X", &time::now()).unwrap().magenta(),
+                time = time::strftime("%X", &time::now()).unwrap().magenta(),
                 message = message,
             ));
         })
@@ -56,7 +56,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                     Level::Info | Level::Warn | Level::Error => true,
                     Level::Debug | Level::Trace => false,
                 })
-                .chain(stdout()),
+                .chain(io::stdout()),
         );
 
     // If the debug mode is on, then allow printing all debugging messages
@@ -67,7 +67,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                     Level::Info | Level::Warn | Level::Error => false,
                     Level::Debug | Level::Trace => true,
                 })
-                .chain(stderr()),
+                .chain(io::stderr()),
         )
     }
 
