@@ -135,6 +135,8 @@ fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSo
     Ok(socket)
 }
 
+// Return a `ThreadPool` instance with working testers each testing an
+// appropriate receiver
 fn spawn_workers(
     args_config: Arc<RwLock<ArgsConfig>>,
     packet: Arc<RwLock<Vec<u8>>>,
