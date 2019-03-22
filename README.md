@@ -101,7 +101,7 @@ $ anevicon --receiver 93.184.216.34:80
 Anevicon also has functionaliy to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
 
 ```bash
-# Test the 80 port of example.com and the 13 port of google.com in parallel:
+# Test the 80 port of example.com and the 13 port of google.com in parallel
 $ anevicon --receiver 93.184.216.34:80 --receiver 216.58.207.78:13
 ```
 
