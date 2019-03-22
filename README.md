@@ -57,13 +57,11 @@ OPTIONS:
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
             
-            You can specify as many receivers as you want by specifying this
-            option multiple times. In this case, your tests will run in
-            parallel.
+            This option can be specified several times to test multiple
+            receivers in parallel mode.
             
-            All receivers will be tested identically. To describe specific
-            characteristics for each receiver, run multiple instances of this
-            program.
+            All receivers will be tested identically. Run multiple instances of
+            this program to describe specific characteristics for each receiver.
     -f, --send-file <FILENAME>
             Interpret the specified file content as a single packet and
             repeatedly send it to each receiver.
