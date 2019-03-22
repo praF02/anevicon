@@ -19,6 +19,13 @@
   
   <img src="DEMO.png"><br>
   
+  <h4>
+    <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/stargazers">Stargazers</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/releases">Releases</a> &middot;
+    <a href="https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md">Contributing</a>
+  </h4>
+  
   Anevicon is a high-performance traffic generator, designed to be as convenient and reliable as it is possible. It sends
 numerous UDP-packets to a server, thereby simulating an activity that can be produced by your end users or a
 group of hackers.
