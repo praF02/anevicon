@@ -140,12 +140,20 @@ $ anevicon --receiver 93.184.216.34:80 --send-file message.txt
 $ anevicon --receiver 93.184.216.34:80 --send-message "How do you do?"
 ```
 
+### Test intensity
+In some situations, you don't need to generate the maximum amount of packets per second, you might want to decrease intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+
+```bash
+# Test the 80 port of example.com waiting 270 microseconds after each send
+$ anevicon --receiver 93.184.216.34:80 --send-periodicity 270us
+```
+
 ### Specific options
-Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, wait 270 macroseconds between sending two packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
+Wait 7 seconds, and then start to test, displaying summaries after every 400 packets, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
 ```bash
 # Test the 80 port of the example.com site using the specific options
-$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-periodicity 270us --send-timeout 200ms
+$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 400 --send-timeout 200ms
 ```
 
 ## Using as a library
