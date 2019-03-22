@@ -207,7 +207,9 @@ fn is_limit_reached(exit_config: &ExitConfig, summary: &TestSummary) -> bool {
     }
 }
 
-// Format a `TestSummary` in a fancy style with colors, styles and other stuff
+// Format a `TestSummary` in a fancy style. Suggest to inline this function
+// because it is used in a continious cycle
+#[inline]
 fn format_summary(summary: &TestSummary) -> String {
     format!(
         "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
