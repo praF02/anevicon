@@ -38,7 +38,7 @@ $ cargo install anevicon
 
 ## Options
 ```
-anevicon 2.1.0
+anevicon 3.0.0
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
@@ -51,9 +51,10 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-        --display-periodicity <PACKETS>
-            A count of packets per displaying test summaries. [default: 300]
-
+        --display-periodicity <TIME-SPAN>
+            A time span per displaying test summaries. It isn't recommended to
+            set a low value (say, 10ms) for performance reasons. [default:
+            3secs]
     -l, --packet-length <POSITIVE-INTEGER>
             Repeatedly send a random-generated packet with a specified bytes
             length. The default is 32768.
