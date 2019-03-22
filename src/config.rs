@@ -47,15 +47,16 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A count of packets per displaying test summaries.
+    /// A time span per displaying test summaries. It isn't recommended to set a
+    /// low value (say, 10ms) for performance reasons.
     #[structopt(
         long = "display-periodicity",
         takes_value = true,
-        value_name = "PACKETS",
-        default_value = "300",
-        parse(try_from_str = "parse_non_zero_usize")
+        value_name = "TIME-SPAN",
+        default_value = "3secs",
+        parse(try_from_str = "parse_duration")
     )]
-    pub display_periodicity: NonZeroUsize,
+    pub display_periodicity: Duration,
 
     /// A periodicity of sending packets. This option can be used to
     /// decrease test intensity.

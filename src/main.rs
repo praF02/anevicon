@@ -27,6 +27,7 @@ use std::io;
 use std::net::UdpSocket;
 use std::sync::{Arc, RwLock};
 use std::thread;
+use std::time::Instant;
 
 mod config;
 mod helpers;
@@ -158,7 +159,9 @@ fn spawn_workers(
             // Run the loop for the current worker until one of the specified exit
             // conditions will become true
             loop {
-                for _ in 0..local_config.display_periodicity.get() {
+                let instant = Instant::now();
+
+                while instant.elapsed() < local_config.display_periodicity {
                     if let Err(error) = testing::send(&socket, &local_packet, &mut summary) {
                         error!("An error occurred while sending a packet >>> {}!", error);
                     }
