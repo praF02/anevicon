@@ -126,6 +126,7 @@ fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSo
     socket.set_broadcast(network_config.broadcast)?;
     socket.set_write_timeout(Some(network_config.send_timeout))?;
 
+    trace!("A new initialized socket: {:?}", &socket);
     info!(
         "The socket was initialized to the {receiver} receiver using the {sender} sender address \
          successfully.",
