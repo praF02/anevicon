@@ -123,6 +123,10 @@ pub struct NetworkConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Duration,
+
+    /// Allow sockets to send packets to a broadcast address
+    #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
+    pub broadcast: bool,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]

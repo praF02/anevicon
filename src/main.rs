@@ -123,6 +123,7 @@ fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSo
 
     let socket = UdpSocket::bind(network_config.sender)?;
     socket.connect(network_config.receivers[index])?;
+    socket.set_broadcast(network_config.broadcast)?;
     socket.set_write_timeout(Some(network_config.send_timeout))?;
 
     info!(
