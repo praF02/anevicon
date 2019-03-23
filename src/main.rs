@@ -31,7 +31,7 @@ mod config;
 mod helpers;
 mod logging;
 
-use colored::Colorize as _;
+use colored::{ColoredString, Colorize as _};
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 use termion::color;
@@ -97,11 +97,9 @@ fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
         "All the sockets were initialized successfully. Now sleeping {sleeping_time} and then \
          starting to test until either {packets_count} packets will be sent or {test_duration} \
          will be passed...",
-        sleeping_time = format_duration(args_config.wait).to_string().cyan(),
-        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
-        test_duration = format_duration(args_config.exit_config.test_duration)
-            .to_string()
-            .cyan(),
+        sleeping_time = cyan(format_duration(args_config.wait)),
+        packets_count = cyan(args_config.exit_config.packets_count),
+        test_duration = cyan(format_duration(args_config.exit_config.test_duration))
     );
     thread::sleep(args_config.wait);
 
@@ -120,8 +118,8 @@ fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
 fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSocket> {
     info!(
         "Initializing the socket to the {receiver} receiver using the {sender} sender address...",
-        receiver = network_config.receivers[index].to_string().cyan(),
-        sender = network_config.sender.to_string().cyan(),
+        receiver = cyan(network_config.receivers[index]),
+        sender = cyan(network_config.sender),
     );
 
     let socket = UdpSocket::bind(network_config.sender)?;
@@ -131,8 +129,8 @@ fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSo
     info!(
         "The socket was initialized to the {receiver} receiver using the {sender} sender address \
          successfully.",
-        receiver = network_config.receivers[index].to_string().cyan(),
-        sender = network_config.sender.to_string().cyan(),
+        receiver = cyan(network_config.receivers[index]),
+        sender = cyan(network_config.sender),
     );
 
     Ok(socket)
@@ -179,7 +177,7 @@ fn spawn_workers(
 
                 info!(
                     "Stats for the {receiver} receiver >>> {summary}.",
-                    receiver = receiver.to_string().cyan(),
+                    receiver = cyan(receiver),
                     summary = format_summary(&summary),
                 );
             }
@@ -227,4 +225,11 @@ fn format_summary(summary: &TestSummary) -> String {
         style = format_args!("{}", color::Fg(color::Cyan)),
         reset_style = format_args!("{}", color::Fg(color::Reset)),
     )
+}
+
+// Formats the given value as cyan-colored string. This function is often used
+// to display values (1000 packets, 5s 264ms 125us, etc)
+#[inline]
+fn cyan<S: ToString>(value: S) -> ColoredString {
+    value.to_string().cyan()
 }
