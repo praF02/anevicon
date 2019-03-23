@@ -131,9 +131,21 @@ pub struct NetworkConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct LoggingConfig {
-    /// Enable the debugging mode
-    #[structopt(short = "d", long = "debug", takes_value = false)]
-    pub debug: bool,
+    /// Enable one of the possible verbosity levels. The zero level doesn't
+    /// print anything, and the last level prints everything
+    #[structopt(
+        short = "v",
+        long = "verbosity",
+        takes_value = true,
+        default_value = "3",
+        possible_value = "0",
+        possible_value = "1",
+        possible_value = "2",
+        possible_value = "3",
+        possible_value = "4",
+        possible_value = "5"
+    )]
+    pub verbosity: i32,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]

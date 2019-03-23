@@ -26,7 +26,7 @@ use super::config::LoggingConfig;
 use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
-use log::Level;
+use log::{Level, LevelFilter};
 use time;
 
 pub fn setup_logging(logging_config: &LoggingConfig) {
@@ -57,10 +57,11 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                     Level::Debug | Level::Trace => false,
                 })
                 .chain(io::stdout()),
-        );
+        )
+        .level(assosiated_level(logging_config.verbosity));
 
     // If the debug mode is on, then allow printing all debugging messages
-    if logging_config.debug {
+    if logging_config.verbosity >= 4 {
         dispatch = dispatch.chain(
             Dispatch::new()
                 .filter(move |metadata| match metadata.level() {
@@ -72,4 +73,16 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
     }
 
     dispatch.apply().expect("Applying the dispatch has failed");
+}
+
+fn assosiated_level(verbosity: i32) -> LevelFilter {
+    match verbosity {
+        0 => LevelFilter::Off,
+        1 => LevelFilter::Error,
+        2 => LevelFilter::Warn,
+        3 => LevelFilter::Info,
+        4 => LevelFilter::Debug,
+        5 => LevelFilter::Trace,
+        _ => panic!("No such verbosity level in existence"),
+    }
 }
