@@ -35,7 +35,7 @@ anevicon_core = "*"
 
 Next, just copy this code into your `main` function and launch the compiled program, which simply sends one thousand empty packets to the `example.com` site:
 
-[`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs)
+[(`examples/minimal.rs`)](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs)
 ```rust
 use anevicon_core::summary::TestSummary;
 use anevicon_core::testing::send;
