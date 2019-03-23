@@ -36,7 +36,7 @@ use structopt::StructOpt;
 )]
 pub struct ArgsConfig {
     /// A waiting time span before a test execution used to prevent a
-    /// launch of an erroneous (unwanted) test.
+    /// launch of an erroneous (unwanted) test
     #[structopt(
         short = "w",
         long = "wait",
@@ -48,7 +48,7 @@ pub struct ArgsConfig {
     pub wait: Duration,
 
     /// A time span per displaying test summaries. It isn't recommended to set a
-    /// low value (say, 10ms) for performance reasons.
+    /// low value (say, 10ms) for performance reasons
     #[structopt(
         long = "display-periodicity",
         takes_value = true,
@@ -59,7 +59,7 @@ pub struct ArgsConfig {
     pub display_periodicity: Duration,
 
     /// A periodicity of sending packets. This option can be used to
-    /// decrease test intensity.
+    /// decrease test intensity
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -102,7 +102,7 @@ pub struct NetworkConfig {
     pub receivers: Vec<SocketAddr>,
 
     /// A sender of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon.
+    /// number, separated by a colon
     #[structopt(
         short = "s",
         long = "sender",
@@ -113,7 +113,7 @@ pub struct NetworkConfig {
     pub sender: SocketAddr,
 
     /// A timeout of sending every single packet. If a timeout is reached, an
-    /// error will be printed.
+    /// error will be printed
     #[structopt(
         short = "t",
         long = "send-timeout",
@@ -139,7 +139,7 @@ pub struct LoggingConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct ExitConfig {
     /// A count of packets for sending. When this limit is reached, then the
-    /// program will exit.
+    /// program will exit
     #[structopt(
         short = "p",
         long = "packets-count",
@@ -151,7 +151,7 @@ pub struct ExitConfig {
     pub packets_count: NonZeroUsize,
 
     /// A whole test duration. When this limit is reached, then the program will
-    /// exit.
+    /// exit
     #[structopt(
         long = "test-duration",
         takes_value = true,
@@ -165,7 +165,7 @@ pub struct ExitConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketConfig {
     /// Repeatedly send a random-generated packet with a specified bytes length.
-    /// The default is 32768.
+    /// The default is 32768
     #[structopt(
         short = "l",
         long = "packet-length",
@@ -176,7 +176,7 @@ pub struct PacketConfig {
     pub packet_length: Option<NonZeroUsize>,
 
     /// Interpret the specified file content as a single packet and repeatedly
-    /// send it to each receiver.
+    /// send it to each receiver
     #[structopt(
         short = "f",
         long = "send-file",
@@ -186,7 +186,7 @@ pub struct PacketConfig {
     pub send_file: Option<PathBuf>,
 
     /// Interpret the specified UTF-8 encoded text message as a single packet
-    /// and repeatedly send it to each receiver.
+    /// and repeatedly send it to each receiver
     #[structopt(
         short = "m",
         long = "send-message",
