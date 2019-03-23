@@ -31,10 +31,9 @@ mod config;
 mod helpers;
 mod logging;
 
-use colored::{ColoredString, Colorize as _};
+use colored::Colorize as _;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
-use termion::color;
 use threadpool::ThreadPool;
 
 fn main() {
@@ -97,9 +96,9 @@ fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
         "All the sockets were initialized successfully. Now sleeping {sleeping_time} and then \
          starting to test until either {packets_count} packets will be sent or {test_duration} \
          will be passed...",
-        sleeping_time = cyan(format_duration(args_config.wait)),
-        packets_count = cyan(args_config.exit_config.packets_count),
-        test_duration = cyan(format_duration(args_config.exit_config.test_duration))
+        sleeping_time = helpers::cyan(format_duration(args_config.wait)),
+        packets_count = helpers::cyan(args_config.exit_config.packets_count),
+        test_duration = helpers::cyan(format_duration(args_config.exit_config.test_duration))
     );
     thread::sleep(args_config.wait);
 
@@ -118,8 +117,8 @@ fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
 fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSocket> {
     info!(
         "Initializing the socket to the {receiver} receiver using the {sender} sender address...",
-        receiver = cyan(network_config.receivers[index]),
-        sender = cyan(network_config.sender),
+        receiver = helpers::cyan(network_config.receivers[index]),
+        sender = helpers::cyan(network_config.sender),
     );
 
     let socket = UdpSocket::bind(network_config.sender)?;
@@ -129,8 +128,8 @@ fn init_socket(network_config: &NetworkConfig, index: usize) -> io::Result<UdpSo
     info!(
         "The socket was initialized to the {receiver} receiver using the {sender} sender address \
          successfully.",
-        receiver = cyan(network_config.receivers[index]),
-        sender = cyan(network_config.sender),
+        receiver = helpers::cyan(network_config.receivers[index]),
+        sender = helpers::cyan(network_config.sender),
     );
 
     Ok(socket)
@@ -177,8 +176,8 @@ fn spawn_workers(
 
                 info!(
                     "Stats for the {receiver} receiver >>> {summary}.",
-                    receiver = cyan(receiver),
-                    summary = format_summary(&summary),
+                    receiver = helpers::cyan(receiver),
+                    summary = helpers::format_summary(&summary),
                 );
             }
         });
@@ -193,43 +192,18 @@ fn is_limit_reached(exit_config: &ExitConfig, summary: &TestSummary) -> bool {
     if summary.time_passed() >= exit_config.test_duration {
         info!(
             "All the allotted time has passed >>> {summary}.",
-            summary = format_summary(&summary)
+            summary = helpers::format_summary(&summary)
         );
 
         true
     } else if summary.packets_sent() == exit_config.packets_count.get() {
         info!(
             "All the required packets were sent >>> {summary}.",
-            summary = format_summary(&summary)
+            summary = helpers::format_summary(&summary)
         );
 
         true
     } else {
         false
     }
-}
-
-// Format a `TestSummary` in a fancy style. Suggest to inline this function
-// because it is used in a continious cycle
-#[inline]
-fn format_summary(summary: &TestSummary) -> String {
-    format!(
-        "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
-         {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
-         {style}{time_passed}{reset_style}",
-        packets = summary.packets_sent(),
-        megabytes = summary.megabytes_sent(),
-        mbps = summary.megabites_per_sec(),
-        packets_per_sec = summary.packets_per_sec(),
-        time_passed = format_duration(summary.time_passed()),
-        style = format_args!("{}", color::Fg(color::Cyan)),
-        reset_style = format_args!("{}", color::Fg(color::Reset)),
-    )
-}
-
-// Formats the given value as cyan-colored string. This function is often used
-// to display values (1000 packets, 5s 264ms 125us, etc)
-#[inline]
-fn cyan<S: ToString>(value: S) -> ColoredString {
-    value.to_string().cyan()
 }
