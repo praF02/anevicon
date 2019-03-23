@@ -29,6 +29,7 @@
 //! This example demonstrates sending of one thousand packets to the example.com
 //! domain (just for an example, you should enter here your server):
 //!
+//! ([`examples/minimal.rs`])
 //! ```rust,no_run
 //! use anevicon_core::summary::TestSummary;
 //! use anevicon_core::testing::send;
@@ -61,6 +62,7 @@
 //! [this one]: https://crates.io/crates/anevicon
 //! [botnet]: https://en.wikipedia.org/wiki/Botnet
 //! [here]: https://github.com/Gymmasssorla/anevicon/blob/master/src/main.rs
+//! [`examples/minimal.rs`]: https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs
 
 pub mod summary;
 pub mod testing;
