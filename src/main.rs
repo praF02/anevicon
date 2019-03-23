@@ -95,8 +95,13 @@ fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
 
     warn!(
         "All the sockets were initialized successfully. Now sleeping {sleeping_time} and then \
-         starting to test all the specified receivers...",
+         starting to test until either {packets_count} packets will be sent or {test_duration} \
+         will be passed...",
         sleeping_time = format_duration(args_config.wait).to_string().cyan(),
+        packets_count = args_config.exit_config.packets_count.to_string().cyan(),
+        test_duration = format_duration(args_config.exit_config.test_duration)
+            .to_string()
+            .cyan(),
     );
     thread::sleep(args_config.wait);
 
