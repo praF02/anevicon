@@ -32,11 +32,11 @@ use termion::color;
 use rand::{thread_rng, RngCore};
 
 pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If an user has specified a file, then use its content as a packet
+    // If a user has specified a file, then use its content as a packet
     if let Some(ref filename) = packet_config.send_file {
         read_packet(filename)
 
-    // If an user has specified a message, then use it as a packet
+    // If a user has specified a message, then use it as a packet
     } else if let Some(ref message) = packet_config.send_message {
         Ok(message.bytes().collect())
 
