@@ -46,21 +46,21 @@ USAGE:
     anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>...
 
 FLAGS:
-    -d, --debug      Enable the debugging mode
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+    -b, --allow-broadcast    Allow sockets to send packets to a broadcast
+                             address
+    -h, --help               Prints help information
+    -V, --version            Prints version information
 
 OPTIONS:
         --display-periodicity <TIME-SPAN>
             A time span per displaying test summaries. It isn't recommended to
-            set a low value (say, 10ms) for performance reasons. [default:
-            3secs]
+            set a low value (say, 10ms) for performance reasons [default: 3secs]
     -l, --packet-length <POSITIVE-INTEGER>
             Repeatedly send a random-generated packet with a specified bytes
-            length. The default is 32768.
+            length. The default is 32768
     -p, --packets-count <POSITIVE-INTEGER>
             A count of packets for sending. When this limit is reached, then the
-            program will exit. [default: 18446744073709551615]
+            program will exit [default: 18446744073709551615]
     -r, --receiver <SOCKET-ADDRESS>...
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
@@ -72,25 +72,29 @@ OPTIONS:
             this program to describe specific characteristics for each receiver.
     -f, --send-file <FILENAME>
             Interpret the specified file content as a single packet and
-            repeatedly send it to each receiver.
+            repeatedly send it to each receiver
     -m, --send-message <STRING>
             Interpret the specified UTF-8 encoded text message as a single
-            packet and repeatedly send it to each receiver.
+            packet and repeatedly send it to each receiver
         --send-periodicity <TIME-SPAN>
             A periodicity of sending packets. This option can be used to
-            decrease test intensity. [default: 0secs]
+            decrease test intensity [default: 0secs]
     -t, --send-timeout <TIME-SPAN>
             A timeout of sending every single packet. If a timeout is reached,
-            an error will be printed. [default: 10secs]
+            an error will be printed [default: 10secs]
     -s, --sender <SOCKET-ADDRESS>
             A sender of generated traffic, specified as an IP-address and a port
-            number, separated by a colon. [default: 0.0.0.0:0]
+            number, separated by a colon [default: 0.0.0.0:0]
         --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
-            will exit. [default: 64years 64hours 64secs]
+            will exit [default: 64years 64hours 64secs]
+    -v, --verbosity <verbosity>
+            Enable one of the possible verbosity levels. The zero level doesn't
+            print anything, and the last level prints everything [default: 3]
+            [possible values: 0, 1, 2, 3, 4, 5]
     -w, --wait <TIME-SPAN>
             A waiting time span before a test execution used to prevent a launch
-            of an erroneous (unwanted) test. [default: 5secs]
+            of an erroneous (unwanted) test [default: 5secs]
 
 For more information see <https://github.com/Gymmasssorla/anevicon>.
 ```
@@ -154,6 +158,14 @@ In some situations, you don't need to generate the maximum amount of packets per
 ```bash
 # Test the 80 port of example.com waiting 270 microseconds after each send
 $ anevicon --receiver 93.184.216.34:80 --send-periodicity 270us
+```
+
+### Verbosity levels
+Anevicon supports a few verbosity levels from zero to five inclusively. Zero level prints nothing, first level prints only errors, second level adds warnings, third adds notifications, fourth adds debugs, and fifth - traces.
+
+```bash
+# Test the 80 port of example.com using the fourth verbosity level
+$ anevicon --receiver 93.184.216.34:80 --verbosity 4
 ```
 
 ### Specific options
