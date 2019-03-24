@@ -58,7 +58,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                 })
                 .chain(io::stdout()),
         )
-        .level(assosiated_level(logging_config.verbosity));
+        .level(associated_level(logging_config.verbosity));
 
     // If the debug mode is on, then allow printing all debugging messages
     if logging_config.verbosity >= 4 {
@@ -75,7 +75,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
     dispatch.apply().expect("Applying the dispatch has failed");
 }
 
-fn assosiated_level(verbosity: i32) -> LevelFilter {
+fn associated_level(verbosity: i32) -> LevelFilter {
     match verbosity {
         0 => LevelFilter::Off,
         1 => LevelFilter::Error,
