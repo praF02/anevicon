@@ -31,6 +31,16 @@ group of hackers.
   </h4>
 </div>
 
+## Features
+
+ - **Minimal runtime.** Since Anevicon is fully written in the [Rust programming language](https://www.rust-lang.org/), it doesn't use any external runtime and, therefore, works as fast as it is possible.
+ 
+ - **Reliable.** With the Rust's zero-cost abstractions, Anevicon works completely deterministic. Segmentation faults, data races, and other bugs are simply impossible.
+ 
+ - **Core library.** Anevicon works on its own stress-testing library called [Anevicon Core](https://github.com/Gymmasssorla/anevicon/tree/master/anevicon_core). You can use it in your own purposes too.
+ 
+ - **Heavily tested.** The program is tested both automatically (using unit testing) and manually since this kind of software must be the most proven one.
+
 ## Installation
 ```bash
 $ cargo install anevicon
