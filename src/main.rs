@@ -185,6 +185,7 @@ fn spawn_workers(
         });
     }
 
+    trace!("Spawned workers: {:?}", &workers);
     workers
 }
 
