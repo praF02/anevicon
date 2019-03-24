@@ -110,7 +110,7 @@ $ anevicon --receiver 93.184.216.34:80
 ```
 
 ### Multiple receivers
-Anevicon also has functionaliy to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
+Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
 
 ```bash
 # Test the 80 port of example.com and the 13 port of google.com in parallel
@@ -153,10 +153,10 @@ $ anevicon --receiver 93.184.216.34:80 --send-message "How do you do?"
 ```
 
 ### Test intensity
-In some situations, you don't need to generate the maximum amount of packets per second, you might want to decrease intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+In some situations, you don't need to generate the maximum amount of packets per second, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
-# Test the 80 port of example.com waiting 270 microseconds after each send
+# Test the 80 port of example.com waiting for 270 microseconds after each send
 $ anevicon --receiver 93.184.216.34:80 --send-periodicity 270us
 ```
 
