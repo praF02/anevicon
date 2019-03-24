@@ -38,8 +38,6 @@ group of hackers.
  - **Reliable.** With the Rust's type system, Anevicon works completely deterministic. Data races, segmentation faults, and other kind of bugs are simply impossible.
  
  - **Core library.** Anevicon works on its own portable stress-testing engine called [Anevicon Core](https://github.com/Gymmasssorla/anevicon/tree/master/anevicon_core). You can integrate it with your programs and use in your own legal purposes too.
- 
- - **Heavily tested.** The program is tested both automatically (using unit testing and [Travis CI](https://travis-ci.com/Gymmasssorla/anevicon)) and manually since this kind of software must be the most proven one.
 
 ## Installation
 ```bash
