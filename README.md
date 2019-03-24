@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
   </a>
   <a href="https://crates.io/crates/anevicon">
-    <img src="https://img.shields.io/badge/crates.io-v3.0.0-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v4.0.0-orange.svg">
   </a>
   <a href="https://semver.org">
     <img src="https://img.shields.io/badge/semver-follows-green.svg">
@@ -46,7 +46,7 @@ $ cargo install anevicon
 
 ## Options
 ```
-anevicon 3.0.0
+anevicon 4.0.0
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
