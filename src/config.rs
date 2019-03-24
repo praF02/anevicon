@@ -220,9 +220,12 @@ impl ArgsConfig {
 
         let mut args_config = ArgsConfig::from_clap(&matches);
 
-        // If an user hasn't specified a file and/or a text message, then set
-        // the default packet length
-        if !matches.is_present("send_file") || !matches.is_present("send_message") {
+        // If an user hasn't specified both a file, a text message, and a packet length,
+        // then set the default packet length
+        if !matches.is_present("send_file")
+            && !matches.is_present("send_message")
+            && !matches.is_present("packet_length")
+        {
             args_config.packet_config.packet_length =
                 Some(unsafe { NonZeroUsize::new_unchecked(32768) });
         }
