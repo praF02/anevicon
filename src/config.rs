@@ -165,6 +165,7 @@ pub struct ExitConfig {
     /// A whole test duration. When this limit is reached, then the program will
     /// exit
     #[structopt(
+        short = "d",
         long = "test-duration",
         takes_value = true,
         value_name = "TIME-SPAN",
