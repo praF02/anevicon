@@ -85,7 +85,7 @@ OPTIONS:
     -s, --sender <SOCKET-ADDRESS>
             A sender of generated traffic, specified as an IP-address and a port
             number, separated by a colon [default: 0.0.0.0:0]
-        --test-duration <TIME-SPAN>
+    -d, --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
             will exit [default: 64years 64hours 64secs]
     -v, --verbosity <verbosity>
