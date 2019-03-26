@@ -16,9 +16,6 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-// Print all traces and debugging information to stderr
-// Print all notifications, warnings and errors to stdout
-
 use std::io;
 
 use super::config::LoggingConfig;
