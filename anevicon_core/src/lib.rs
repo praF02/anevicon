@@ -21,9 +21,9 @@
 //! see [the GPLv3 license], under which the library is distributed).
 //!
 //! This library was designed to be as convenient and reliable as it is
-//! possible, and without any external dependencies (except of the standard
-//! library). If you are just interested in one single program, please take
-//! a look at [this one].
+//! possible, and without any external dependencies (except the standard
+//! library). If you are just interested in one single program, please take a
+//! look at [this one].
 //!
 //! # Examples
 //! This example demonstrates sending of one thousand packets to the example.com
