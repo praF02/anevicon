@@ -21,6 +21,7 @@ use anevicon_core::testing;
 
 use config::{ArgsConfig, ExitConfig, NetworkConfig};
 
+use std::fmt::{self, Display, Formatter};
 use std::io;
 use std::net::UdpSocket;
 use std::sync::{Arc, RwLock};
@@ -34,6 +35,7 @@ mod logging;
 use colored::Colorize as _;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
+use termion::color;
 use threadpool::ThreadPool;
 
 fn main() {
@@ -157,7 +159,7 @@ fn spawn_workers(
             let (local_config, local_packet) =
                 (local_config.read().unwrap(), local_packet.read().unwrap());
 
-            let mut summary = TestSummary::default();
+            let mut summary = SummaryWrapper(TestSummary::default());
 
             // Run the loop for the current worker until one of the specified exit
             // conditions will become true
@@ -165,7 +167,7 @@ fn spawn_workers(
                 let instant = Instant::now();
 
                 while instant.elapsed() < local_config.display_periodicity {
-                    if let Err(error) = testing::send(&socket, &local_packet, &mut summary) {
+                    if let Err(error) = testing::send(&socket, &local_packet, &mut summary.0) {
                         error!("An error occurred while sending a packet >>> {}!", error);
                     }
 
@@ -179,7 +181,7 @@ fn spawn_workers(
                 info!(
                     "Stats for the {receiver} receiver >>> {summary}.",
                     receiver = helpers::cyan(receiver),
-                    summary = helpers::format_summary(&summary),
+                    summary = summary,
                 );
             }
         });
@@ -191,22 +193,49 @@ fn spawn_workers(
 
 // Suggest to inline this function because it is used in a continious cycle
 #[inline]
-fn is_limit_reached(exit_config: &ExitConfig, summary: &TestSummary) -> bool {
-    if summary.time_passed() >= exit_config.test_duration {
+fn is_limit_reached(exit_config: &ExitConfig, summary: &SummaryWrapper) -> bool {
+    if summary.0.time_passed() >= exit_config.test_duration {
         info!(
             "All the allotted time has passed >>> {summary}.",
-            summary = helpers::format_summary(&summary)
+            summary = summary
         );
 
         true
-    } else if summary.packets_sent() == exit_config.packets_count.get() {
+    } else if summary.0.packets_sent() == exit_config.packets_count.get() {
         info!(
             "All the required packets were sent >>> {summary}.",
-            summary = helpers::format_summary(&summary)
+            summary = summary
         );
 
         true
     } else {
         false
+    }
+}
+
+// Just a simple wrapper to implement Display for TestSummary (because they are
+// both external trates)
+struct SummaryWrapper(TestSummary);
+
+impl Display for SummaryWrapper {
+    // Format a `TestSummary` in a fancy style. This function is used in the
+    // continious loop, so suggest to inline it
+    #[inline]
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        let summary = &self.0;
+
+        write!(
+            fmt,
+            "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
+             {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
+             {style}{time_passed}{reset_style}",
+            packets = summary.packets_sent(),
+            megabytes = summary.megabytes_sent(),
+            mbps = summary.megabites_per_sec(),
+            packets_per_sec = summary.packets_per_sec(),
+            time_passed = format_duration(summary.time_passed()),
+            style = color::Fg(color::Cyan),
+            reset_style = color::Fg(color::Reset),
+        )
     }
 }

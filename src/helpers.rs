@@ -24,10 +24,7 @@ use std::num::NonZeroUsize;
 use std::path::Path;
 
 use super::config::PacketConfig;
-use anevicon_core::summary::TestSummary;
 use colored::{ColoredString, Colorize as _};
-use humantime::format_duration;
-use termion::color;
 
 use rand::{thread_rng, RngCore};
 
@@ -40,16 +37,16 @@ pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPac
     } else if let Some(ref message) = packet_config.send_message {
         Ok(message.bytes().collect())
 
-    // If both file and message were not specified, then at least
-    // packet length must be already specified
+    // If both file and message were not specified, then at least packet length must
+    // be already specified
     } else {
         Ok(random_packet(packet_config.packet_length.unwrap()))
     }
 }
 
 pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
-    // Create a packet without an unnecessary initialization because
-    // we'll fill this buffer with random values next
+    // Create a packet without an unnecessary initialization because we'll fill this
+    // buffer with random values next
     let mut buffer = Vec::with_capacity(length.get());
     unsafe {
         buffer.set_len(length.get());
@@ -87,24 +84,6 @@ impl Display for ReadPacketError {
 }
 
 impl Error for ReadPacketError {}
-
-// Format a `TestSummary` in a fancy style. This function is used in the
-// continious loop, so suggest to inline it
-#[inline]
-pub fn format_summary(summary: &TestSummary) -> String {
-    format!(
-        "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
-         {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
-         {style}{time_passed}{reset_style}",
-        packets = summary.packets_sent(),
-        megabytes = summary.megabytes_sent(),
-        mbps = summary.megabites_per_sec(),
-        packets_per_sec = summary.packets_per_sec(),
-        time_passed = format_duration(summary.time_passed()),
-        style = format_args!("{}", color::Fg(color::Cyan)),
-        reset_style = format_args!("{}", color::Fg(color::Reset)),
-    )
-}
 
 // Formats the given value as cyan-colored string. This function is often used
 // to display values (1000 packets, 5s 264ms 125us, etc)
