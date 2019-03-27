@@ -51,22 +51,26 @@ pub struct TestSummary {
 impl TestSummary {
     /// Updates the test summary by an adding additional bytes and an
     /// additional packets sent count.
+    #[inline]
     pub fn update(&mut self, additional_bytes: usize, additional_packets: usize) {
         self.bytes_sent += additional_bytes;
         self.packets_sent += additional_packets;
     }
 
     /// Returns a count of megabytes sent totally.
+    #[inline]
     pub fn megabytes_sent(&self) -> usize {
         self.bytes_sent / 1024 / 1024
     }
 
     /// Returns a count of packets sent totally.
+    #[inline]
     pub fn packets_sent(&self) -> usize {
         self.packets_sent
     }
 
     /// Returns an average speeed, specified in Mbps (Megabites Per Second).
+    #[inline]
     pub fn megabites_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
 
@@ -78,6 +82,7 @@ impl TestSummary {
     }
 
     /// Returns an average speeed, specified in packets sent per second.
+    #[inline]
     pub fn packets_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
 
@@ -93,6 +98,7 @@ impl TestSummary {
     /// structure [`Instant`].
     ///
     /// [`Instant`]: https://doc.rust-lang.org/std/time/struct.Instant.html
+    #[inline]
     pub fn time_passed(&self) -> Duration {
         self.initial_time.elapsed()
     }

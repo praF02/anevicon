@@ -26,6 +26,7 @@ use super::summary::TestSummary;
 /// Sends a packet using the specified `UdpSocket`, simultaneously updating
 /// the `TestSummary`. It returns a bytes sent if an operation succeeds,
 /// otherwise, returns an I/O error.
+#[inline]
 pub fn send(socket: &UdpSocket, packet: &[u8], summary: &mut TestSummary) -> io::Result<usize> {
     match socket.send(packet) {
         Err(error) => Err(error),
