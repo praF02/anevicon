@@ -42,11 +42,10 @@ mod tests {
 
     #[test]
     fn sends_all_packets() {
-        let server = UdpSocket::bind("0.0.0.0:0").expect("A server error");
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("A client error");
+        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
         socket
-            .connect(server.local_addr().unwrap())
-            .expect("Cannot connect the socket to the local server");
+            .connect(socket.local_addr().unwrap())
+            .expect("Cannot connect the socket to itself");
 
         let packet = vec![0; 1024];
         let packets_required = 25;
