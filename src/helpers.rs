@@ -60,9 +60,9 @@ pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
 }
 
 pub fn read_packet<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
-    let content = fs::read(path).map_err(|error| ReadPacketError::ReadFailed(error))?;
+    let content = fs::read(path).map_err(ReadPacketError::ReadFailed)?;
 
-    if content.len() == 0 {
+    if content.is_empty() {
         return Err(ReadPacketError::ZeroSize);
     }
 

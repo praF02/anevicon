@@ -236,9 +236,7 @@ impl ArgsConfig {
 }
 
 pub fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
-    let number: usize = number
-        .parse()
-        .map_err(|error| NonZeroUsizeError::InvalidFormat(error))?;
+    let number: usize = number.parse().map_err(NonZeroUsizeError::InvalidFormat)?;
 
     NonZeroUsize::new(number).ok_or(NonZeroUsizeError::ZeroValue)
 }
