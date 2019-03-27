@@ -24,7 +24,10 @@ use std::num::NonZeroUsize;
 use std::path::Path;
 
 use super::config::PacketConfig;
+use anevicon_core::summary::TestSummary;
 use colored::{ColoredString, Colorize as _};
+use humantime::format_duration;
+use termion::color;
 
 use rand::{thread_rng, RngCore};
 
@@ -90,6 +93,29 @@ impl Error for ReadPacketError {}
 #[inline]
 pub fn cyan<S: ToString>(value: S) -> ColoredString {
     value.to_string().cyan()
+}
+
+// Just a simple wrapper to implement Display for TestSummary (because they are
+// both external trates)
+pub struct SummaryWrapper(pub TestSummary);
+
+impl Display for SummaryWrapper {
+    #[inline]
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        write!(
+            fmt,
+            "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
+             {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
+             {style}{time_passed}{reset_style}",
+            packets = self.0.packets_sent(),
+            megabytes = self.0.megabytes_sent(),
+            mbps = self.0.megabites_per_sec(),
+            packets_per_sec = self.0.packets_per_sec(),
+            time_passed = format_duration(self.0.time_passed()),
+            style = color::Fg(color::Cyan),
+            reset_style = color::Fg(color::Reset),
+        )
+    }
 }
 
 #[cfg(test)]

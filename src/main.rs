@@ -20,8 +20,8 @@ use anevicon_core::summary::TestSummary;
 use anevicon_core::testing;
 
 use config::{ArgsConfig, ExitConfig, NetworkConfig};
+use helpers::SummaryWrapper;
 
-use std::fmt::{self, Display, Formatter};
 use std::io;
 use std::net::UdpSocket;
 use std::sync::{Arc, RwLock};
@@ -35,7 +35,6 @@ mod logging;
 use colored::Colorize as _;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
-use termion::color;
 use threadpool::ThreadPool;
 
 fn main() {
@@ -210,30 +209,5 @@ fn is_limit_reached(exit_config: &ExitConfig, summary: &SummaryWrapper) -> bool 
         true
     } else {
         false
-    }
-}
-
-// Just a simple wrapper to implement Display for TestSummary (because they are
-// both external trates)
-struct SummaryWrapper(TestSummary);
-
-impl Display for SummaryWrapper {
-    #[inline]
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        let summary = &self.0;
-
-        write!(
-            fmt,
-            "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
-             {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
-             {style}{time_passed}{reset_style}",
-            packets = summary.packets_sent(),
-            megabytes = summary.megabytes_sent(),
-            mbps = summary.megabites_per_sec(),
-            packets_per_sec = summary.packets_per_sec(),
-            time_passed = format_duration(summary.time_passed()),
-            style = color::Fg(color::Cyan),
-            reset_style = color::Fg(color::Reset),
-        )
     }
 }
