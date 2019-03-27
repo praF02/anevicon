@@ -218,8 +218,6 @@ fn is_limit_reached(exit_config: &ExitConfig, summary: &SummaryWrapper) -> bool 
 struct SummaryWrapper(TestSummary);
 
 impl Display for SummaryWrapper {
-    // Format a `TestSummary` in a fancy style. This function is used in the
-    // continious loop, so suggest to inline it
     #[inline]
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         let summary = &self.0;
