@@ -41,7 +41,7 @@
 use std::time::{Duration, Instant};
 
 /// The test summary abstraction to analyse test execution results.
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct TestSummary {
     bytes_sent: usize,
     packets_sent: usize,
