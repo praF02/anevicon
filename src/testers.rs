@@ -51,13 +51,13 @@ pub fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
     thread::sleep(unlocked_config.wait);
 
     let pool = ThreadPool::new(testers.len());
-
     testers
         .into_iter()
         .for_each(|tester| pool.execute(move || tester.run()));
 
     trace!("Spawned testers: {:?}", pool);
     pool.join();
+
     Ok(())
 }
 
