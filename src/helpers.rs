@@ -96,7 +96,8 @@ pub fn cyan<S: ToString>(value: S) -> ColoredString {
 }
 
 // Just a simple wrapper to implement Display for TestSummary (because they are
-// both external trates)
+// both external traits)
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SummaryWrapper(pub TestSummary);
 
 impl Display for SummaryWrapper {
