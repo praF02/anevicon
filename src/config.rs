@@ -137,6 +137,7 @@ pub struct LoggingConfig {
         short = "v",
         long = "verbosity",
         takes_value = true,
+        value_name = "LEVEL",
         default_value = "3",
         possible_value = "0",
         possible_value = "1",
