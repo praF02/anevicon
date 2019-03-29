@@ -158,13 +158,6 @@ impl Tester {
         socket.set_write_timeout(Some(network_config.send_timeout))?;
 
         trace!("A new initialized socket: {:?}", &socket);
-        info!(
-            "The socket was initialized to the {receiver} receiver using the {sender} sender \
-             address successfully.",
-            receiver = helpers::cyan(network_config.receivers[receiver]),
-            sender = helpers::cyan(network_config.sender),
-        );
-
         Ok(socket)
     }
 }
