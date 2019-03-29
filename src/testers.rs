@@ -31,11 +31,9 @@ use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::Instant;
 
-pub fn execute(unlocked_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
-    let (arc_config, arc_packet) = (
-        Arc::new(RwLock::new(unlocked_config)),
-        Arc::new(RwLock::new(packet)),
-    );
+pub fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
+    let arc_config = Arc::new(RwLock::new(args_config));
+    let arc_packet = Arc::new(RwLock::new(packet));
     let unlocked_config = arc_config.read().unwrap();
 
     let mut testers = Vec::with_capacity(unlocked_config.network_config.receivers.len());
