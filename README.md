@@ -88,7 +88,7 @@ OPTIONS:
     -d, --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
             will exit [default: 64years 64hours 64secs]
-    -v, --verbosity <verbosity>
+    -v, --verbosity <LEVEL>
             Enable one of the possible verbosity levels. The zero level doesn't
             print anything, and the last level prints everything [default: 3]
             [possible values: 0, 1, 2, 3, 4, 5]
