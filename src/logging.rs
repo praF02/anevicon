@@ -70,7 +70,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         )
         .level(associated_level(logging_config.verbosity))
         .apply()
-        .expect("Applying the dispatch has failed");
+        .expect("Applying the fern::Dispatch has failed");
 }
 
 fn associated_level(verbosity: i32) -> LevelFilter {
