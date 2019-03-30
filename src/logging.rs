@@ -33,6 +33,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         .error(Color::Red)
         .debug(Color::Magenta)
         .trace(Color::Cyan);
+    let date_time_format = logging_config.date_time_format.clone();
 
     let mut dispatch = Dispatch::new()
         // Print fancy colored output to a terminal without a record date
@@ -41,7 +42,9 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
             out.finish(format_args!(
                 "[{level}] [{time}]: {message}",
                 level = colors.color(record.level()).to_string().underline(),
-                time = time::strftime("%X", &time::now()).unwrap().magenta(),
+                time = time::strftime(&date_time_format, &time::now())
+                    .unwrap()
+                    .magenta(),
                 message = message,
             ));
         })

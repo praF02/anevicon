@@ -147,6 +147,19 @@ pub struct LoggingConfig {
         possible_value = "5"
     )]
     pub verbosity: i32,
+
+    /// A format for displaying date and time in log messages. Type `man
+    /// strftime` to see the format specification.
+    ///
+    /// Specifying a different format with days of weeks might be helpful when
+    /// you want to test a server more than one day.
+    #[structopt(
+        long = "date-time-format",
+        takes_value = true,
+        value_name = "STRING",
+        default_value = "%X"
+    )]
+    pub date_time_format: String,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
