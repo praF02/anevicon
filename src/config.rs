@@ -148,7 +148,7 @@ pub struct LoggingConfig {
     )]
     pub verbosity: i32,
 
-    /// A format for displaying date and time in log messages. Type `man
+    /// A format for displaying local date and time in log messages. Type `man
     /// strftime` to see the format specification.
     ///
     /// Specifying a different format with days of weeks might be helpful when

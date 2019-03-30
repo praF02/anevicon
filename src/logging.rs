@@ -16,6 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+use std::error::Error;
+use std::fmt::{self, Display, Formatter};
 use std::io;
 
 use super::config::LoggingConfig;
@@ -24,15 +26,18 @@ use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
-use time;
+use time::{self, ParseError};
 
-pub fn setup_logging(logging_config: &LoggingConfig) {
+pub fn setup_logging(logging_config: &LoggingConfig) -> Result<(), SetupLoggingError> {
+    check_time_format(&logging_config.date_time_format).map_err(SetupLoggingError::InvalidFormatError)?;
+
     let colors = ColoredLevelConfig::new()
         .info(Color::Green)
         .warn(Color::Yellow)
         .error(Color::Red)
         .debug(Color::Magenta)
         .trace(Color::Cyan);
+
     let date_time_format = logging_config.date_time_format.clone();
 
     let mut dispatch = Dispatch::new()
@@ -43,6 +48,8 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                 "[{level}] [{time}]: {message}",
                 level = colors.color(record.level()).to_string().underline(),
                 time = time::strftime(&date_time_format, &time::now())
+                    // Now we can unwrap the result because we know that the specified time format
+                    // is correct
                     .unwrap()
                     .magenta(),
                 message = message,
@@ -60,7 +67,8 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         )
         .level(associated_level(logging_config.verbosity));
 
-    // If the debug mode is on, then allow printing all debugging messages
+    // If the debug mode is on, then allow printing all debugging messages and
+    // traces
     if logging_config.verbosity >= 4 {
         dispatch = dispatch.chain(
             Dispatch::new()
@@ -73,7 +81,31 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
     }
 
     dispatch.apply().expect("Applying the dispatch has failed");
+    Ok(())
 }
+
+fn check_time_format(format: &str) -> Result<(), ParseError> {
+    time::strftime(format, &time::now()).map(|_| ())
+}
+
+#[derive(Debug)]
+pub enum SetupLoggingError {
+    InvalidFormatError(ParseError),
+}
+
+impl Display for SetupLoggingError {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        match self {
+            SetupLoggingError::InvalidFormatError(error) => write!(
+                fmt,
+                "An invalid date-time format was specified >>> {}",
+                error
+            ),
+        }
+    }
+}
+
+impl Error for SetupLoggingError {}
 
 fn associated_level(verbosity: i32) -> LevelFilter {
     match verbosity {
