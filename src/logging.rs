@@ -16,8 +16,6 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-
-
 use std::io;
 
 use super::config::LoggingConfig;
@@ -26,7 +24,7 @@ use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
-use time::{self};
+use time;
 
 pub fn setup_logging(logging_config: &LoggingConfig) {
     let colors = ColoredLevelConfig::new()
@@ -37,7 +35,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         .trace(Color::Cyan);
     let date_time_format = logging_config.date_time_format.clone();
 
-    let mut dispatch = Dispatch::new()
+    Dispatch::new()
         // Print fancy colored output to a terminal without a record date
         // and the program name
         .format(move |out, message, record| {
@@ -45,13 +43,21 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                 "[{level}] [{time}]: {message}",
                 level = colors.color(record.level()).to_string().underline(),
                 time = time::strftime(&date_time_format, &time::now())
-                    // Now we can unwrap the result because we know that the specified time format
-                    // is correct
                     .unwrap()
                     .magenta(),
                 message = message,
             ));
         })
+        // If the debug mode is on, then allow printing all debugging messages and
+        // traces
+        .chain(
+            Dispatch::new()
+                .filter(move |metadata| match metadata.level() {
+                    Level::Info | Level::Warn | Level::Error => false,
+                    Level::Debug | Level::Trace => true,
+                })
+                .chain(io::stderr()),
+        )
         // Anyway, print all user-oriented information (notifications, warnings,
         // and errors) to stdout
         .chain(
@@ -62,22 +68,9 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                 })
                 .chain(io::stdout()),
         )
-        .level(associated_level(logging_config.verbosity));
-
-    // If the debug mode is on, then allow printing all debugging messages and
-    // traces
-    if logging_config.verbosity >= 4 {
-        dispatch = dispatch.chain(
-            Dispatch::new()
-                .filter(move |metadata| match metadata.level() {
-                    Level::Info | Level::Warn | Level::Error => false,
-                    Level::Debug | Level::Trace => true,
-                })
-                .chain(io::stderr()),
-        )
-    }
-
-    dispatch.apply().expect("Applying the dispatch has failed");
+        .level(associated_level(logging_config.verbosity))
+        .apply()
+        .expect("Applying the dispatch has failed");
 }
 
 fn associated_level(verbosity: i32) -> LevelFilter {
