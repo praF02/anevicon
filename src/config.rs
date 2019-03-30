@@ -288,6 +288,36 @@ mod tests {
     use super::*;
 
     #[test]
+    fn parses_valid_time_format() {
+        // Check that ordinary formats are passed correctly
+        assert_eq!(parse_time_format("%x %X %e"), Ok(String::from("%x %X %e")));
+        assert_eq!(parse_time_format("%H %a %G"), Ok(String::from("%H %a %G")));
+
+        assert_eq!(
+            parse_time_format("something"),
+            Ok(String::from("something"))
+        );
+        assert_eq!(
+            parse_time_format("flower %d"),
+            Ok(String::from("flower %d"))
+        );
+    }
+
+    #[test]
+    fn parses_invalid_time_format() {
+        let panic_if_invalid = |format| {
+            if let Ok(_) = parse_time_format(format) {
+                panic!("Parses invalid date-time format correctly");
+            }
+        };
+
+        // Invalid formats must produce the invalid format error
+        panic_if_invalid("%_=-%vbg=");
+        panic_if_invalid("yufb%44htv");
+        panic_if_invalid("sf%jhei9%990");
+    }
+
+    #[test]
     fn parses_valid_non_zero_usize() {
         unsafe {
             // Check that ordinary values are parsed correctly
