@@ -174,6 +174,14 @@ Anevicon supports a few verbosity levels from zero to five inclusively. Zero lev
 $ anevicon --receiver 93.184.216.34:80 --verbosity 4
 ```
 
+### Date-time format
+You can explicitly specify your custom date-time format that is used for displaying every log message. Setting a format with days and weeks might be helpful if you want to test something more than one day:
+
+```bash
+# Test with the format displaying months, days, years, hours, minutes, and seconds
+$ anevicon --receiver 93.184.216.34:80 --date-time-format "%D %X"
+```
+
 ### Specific options
 Wait 7 seconds, and then start to test, displaying summaries after every 4 seconds, and exit with an error if time to send a packet is longer than 200 milliseconds:
 
