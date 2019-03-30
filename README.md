@@ -52,6 +52,12 @@ FLAGS:
     -V, --version            Prints version information
 
 OPTIONS:
+        --date-time-format <STRING>
+            A format for displaying local date and time in log messages. Type
+            `man strftime` to see the format specification.
+            
+            Specifying a different format with days of weeks might be helpful
+            when you want to test a server more than one day. [default: %X]
         --display-periodicity <TIME-SPAN>
             A time span per displaying test summaries. It isn't recommended to
             set a low value (say, 10ms) for performance reasons [default: 3secs]
