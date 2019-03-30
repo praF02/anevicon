@@ -16,8 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
+
+
 use std::io;
 
 use super::config::LoggingConfig;
@@ -26,18 +26,15 @@ use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
-use time::{self, ParseError};
+use time::{self};
 
-pub fn setup_logging(logging_config: &LoggingConfig) -> Result<(), SetupLoggingError> {
-    check_time_format(&logging_config.date_time_format).map_err(SetupLoggingError::InvalidFormatError)?;
-
+pub fn setup_logging(logging_config: &LoggingConfig) {
     let colors = ColoredLevelConfig::new()
         .info(Color::Green)
         .warn(Color::Yellow)
         .error(Color::Red)
         .debug(Color::Magenta)
         .trace(Color::Cyan);
-
     let date_time_format = logging_config.date_time_format.clone();
 
     let mut dispatch = Dispatch::new()
@@ -81,31 +78,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) -> Result<(), SetupLoggingE
     }
 
     dispatch.apply().expect("Applying the dispatch has failed");
-    Ok(())
 }
-
-fn check_time_format(format: &str) -> Result<(), ParseError> {
-    time::strftime(format, &time::now()).map(|_| ())
-}
-
-#[derive(Debug)]
-pub enum SetupLoggingError {
-    InvalidFormatError(ParseError),
-}
-
-impl Display for SetupLoggingError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            SetupLoggingError::InvalidFormatError(error) => write!(
-                fmt,
-                "An invalid date-time format was specified >>> {}",
-                error
-            ),
-        }
-    }
-}
-
-impl Error for SetupLoggingError {}
 
 fn associated_level(verbosity: i32) -> LevelFilter {
     match verbosity {

@@ -26,6 +26,7 @@ use std::time::Duration;
 use humantime::parse_duration;
 use structopt::clap::ArgGroup;
 use structopt::StructOpt;
+use time::ParseError;
 
 #[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
 #[structopt(
@@ -157,7 +158,8 @@ pub struct LoggingConfig {
         long = "date-time-format",
         takes_value = true,
         value_name = "STRING",
-        default_value = "%X"
+        default_value = "%X",
+        parse(try_from_str = "parse_time_format")
     )]
     pub date_time_format: String,
 }
@@ -247,6 +249,15 @@ impl ArgsConfig {
 
         args_config
     }
+}
+
+pub fn parse_time_format(format: &str) -> Result<String, ParseError> {
+    // If the strftime function consumes the specified date-time format correctly,
+    // then the format is also correctly
+    time::strftime(format, &time::now())?;
+
+    // Return the same date-time format, but as an owned String instance
+    Ok(String::from(format))
 }
 
 pub fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {

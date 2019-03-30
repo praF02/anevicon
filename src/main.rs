@@ -30,9 +30,7 @@ fn main() {
     let args_config = ArgsConfig::setup();
     title();
 
-    if let Err(error) = logging::setup_logging(&args_config.logging_config) {
-        println!("Unable to setup the logging system >>> {}", error);
-    }
+    logging::setup_logging(&args_config.logging_config);
     trace!("{:?}", args_config);
 
     let packet = match helpers::construct_packet(&args_config.packet_config) {
