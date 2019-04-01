@@ -16,6 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+#![feature(ip)]
+
 use config::ArgsConfig;
 
 mod config;

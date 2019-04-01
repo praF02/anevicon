@@ -51,9 +51,11 @@ pub fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
     thread::sleep(unlocked_config.wait);
 
     let pool = ThreadPool::new(testers.len());
-    testers
-        .into_iter()
-        .for_each(|tester| pool.execute(move || tester.run()));
+    testers.into_iter().for_each(|tester| {
+        pool.execute(move || {
+            tester.run();
+        })
+    });
 
     trace!("Spawned testers: {:?}", pool);
     pool.join();
@@ -91,7 +93,7 @@ impl Tester {
         })
     }
 
-    fn run(&self) {
+    fn run(&self) -> SummaryWrapper {
         let (packet, config) = (self.packet.read().unwrap(), self.config.read().unwrap());
 
         let mut summary = SummaryWrapper(TestSummary::default());
@@ -107,7 +109,7 @@ impl Tester {
                 }
 
                 if Tester::is_limit_reached(&summary, &config.exit_config) {
-                    return;
+                    return summary;
                 }
 
                 thread::sleep(config.send_periodicity);
@@ -159,5 +161,111 @@ impl Tester {
 
         trace!("A new initialized socket: {:?}", &socket);
         Ok(socket)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::num::NonZeroUsize;
+    use std::thread;
+    use std::time::Duration;
+
+    use structopt::StructOpt;
+
+    #[test]
+    fn tester_runs_correctly() {
+        let server = UdpSocket::bind("0.0.0.0:0").expect("Unable to setup the server");
+
+        let config = ArgsConfig::from_iter(&[
+            "anevicon",
+            "--receiver",
+            &server.local_addr().unwrap().to_string(),
+            "--packets-count",
+            "14",
+            "--send-message",
+            "Are you gonna take me home tonight?",
+        ]);
+        let packet = helpers::construct_packet(&config.packet_config)
+            .expect("helpers::construct_packet() has failed");
+        let packets_count = config.exit_config.packets_count.get();
+
+        assert_eq!(
+            Tester::new(
+                Arc::new(RwLock::new(config)),
+                Arc::new(RwLock::new(packet)),
+                0,
+            )
+            .expect("Tester::new() has failed")
+            .run()
+            .0
+            .packets_sent(),
+            packets_count
+        );
+    }
+
+    #[test]
+    fn test_init_socket() {
+        let config = NetworkConfig {
+            receivers: vec![
+                "45.89.52.36:5236".parse().unwrap(),
+                "89.52.36.41:256".parse().unwrap(),
+                "85.53.23.57:45687".parse().unwrap(),
+            ],
+            sender: "0.0.0.0:0".parse().unwrap(),
+            send_timeout: Duration::from_secs(25),
+            broadcast: true,
+        };
+
+        let socket = Tester::init_socket(&config, 1).expect("Tester::init_socket() has failed");
+
+        // Test that the specified IP address isn't a global one
+        assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
+        assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
+        assert_eq!(socket.broadcast().unwrap(), config.broadcast);
+
+        let config = NetworkConfig {
+            receivers: vec![
+                "45.89.52.36:5236".parse().unwrap(),
+                "89.52.36.41:256".parse().unwrap(),
+                "135.225.66.89:45288".parse().unwrap(),
+            ],
+            sender: "0.0.0.0:0".parse().unwrap(),
+            send_timeout: Duration::from_millis(984),
+            broadcast: false,
+        };
+
+        let socket = Tester::init_socket(&config, 0).expect("Tester::init_socket() has failed");
+
+        // Test that the specified IP address isn't a global one
+        assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
+        assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
+        assert_eq!(socket.broadcast().unwrap(), config.broadcast);
+    }
+
+    #[test]
+    fn exits_correctly() {
+        let config = ExitConfig {
+            test_duration: Duration::from_secs(2156),
+            packets_count: unsafe { NonZeroUsize::new_unchecked(15) },
+        };
+        let mut summary = SummaryWrapper(TestSummary::default());
+        assert!(!Tester::is_limit_reached(&summary, &config));
+
+        // Update the TestSummary so that the limit will be reached
+        summary.0.update(5648, 15);
+        assert!(Tester::is_limit_reached(&summary, &config));
+
+        let config = ExitConfig {
+            test_duration: Duration::from_secs(2),
+            packets_count: unsafe { NonZeroUsize::new_unchecked(15) },
+        };
+        let summary = SummaryWrapper(TestSummary::default());
+        assert!(!Tester::is_limit_reached(&summary, &config));
+
+        // Wait two seconds so that the allotted time will be exactly passed
+        thread::sleep(config.test_duration);
+        assert!(Tester::is_limit_reached(&summary, &config));
     }
 }
