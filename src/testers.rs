@@ -43,7 +43,7 @@ pub fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
 
     warn!(
         "Sleeping {sleeping_time} and then starting to test until either {packets} packets will \
-         be sent or {duration} will be passed...",
+         be sent or {duration} will be passed for each receiver...",
         sleeping_time = helpers::cyan(format_duration(unlocked_config.wait)),
         packets = helpers::cyan(unlocked_config.exit_config.packets_count),
         duration = helpers::cyan(format_duration(unlocked_config.exit_config.test_duration))
