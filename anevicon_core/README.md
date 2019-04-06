@@ -26,6 +26,8 @@ This library was designed to be as convenient and reliable as it is possible, an
 the standard library). If you are just interested in one single program, please take a look at [this one](https://docs.rs/anevicon_core/0.1.0/anevicon_core/).
 </div>
 
+----------
+
 ## Usage
 First, you need to link the library with your executable (or another library) by putting `anevicon_core` to the `dependencies` section in your `Cargo.toml` like this:
 ```toml
