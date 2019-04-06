@@ -1,5 +1,3 @@
-----------
-
 <div align="center">
   <h1>Anevicon</h1>
   
@@ -250,5 +248,3 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 
 ## Contacts
 [Temirkhan Myrzamadi](https://github.com/Gymmasssorla) <[gymmasssorla@gmail.com](mailto:gymmasssorla@gmail.com)> (the author)
-
-----------
