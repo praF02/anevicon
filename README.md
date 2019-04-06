@@ -1,3 +1,5 @@
+----------
+
 <div align="center">
   <h1>Anevicon</h1>
   
@@ -31,10 +33,14 @@ group of hackers.
   </h4>
 </div>
 
+----------
+
 ## Installation
 ```bash
 $ cargo install anevicon
 ```
+
+----------
 
 ## Options
 ```
@@ -104,6 +110,8 @@ OPTIONS:
 
 For more information see <https://github.com/Gymmasssorla/anevicon>.
 ```
+
+----------
 
 ## Using as a program
 
@@ -190,6 +198,8 @@ Wait 7 seconds, and then start to test, displaying summaries after every 4 secon
 $ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 4secs --send-timeout 200ms
 ```
 
+----------
+
 ## Using as a library
 First, you need to link the library with your executable (or another library) by putting `anevicon_core` to the `dependencies` section in your `Cargo.toml` like this:
 ```toml
@@ -227,6 +237,8 @@ println!(
 
 This is how you are able to build your own stress-testing bot. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
 
+----------
+
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for your computer) load on the specified receiver. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
  
@@ -234,5 +246,9 @@ This is how you are able to build your own stress-testing bot. Now you can follo
  
  - Despite the fact that Anevicon is heavily tested both automatically and manually, does not mean that the author is responsible for any bug in his work because the program comes with **ABSOLUTELY NO WARRANTY**.
 
+----------
+
 ## Contacts
 [Temirkhan Myrzamadi](https://github.com/Gymmasssorla) <[gymmasssorla@gmail.com](mailto:gymmasssorla@gmail.com)> (the author)
+
+----------
