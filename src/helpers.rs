@@ -27,7 +27,6 @@ use super::config::PacketConfig;
 use anevicon_core::summary::TestSummary;
 use colored::{ColoredString, Colorize as _};
 use humantime::format_duration;
-use termion::color;
 
 use rand::{thread_rng, RngCore};
 
@@ -105,16 +104,19 @@ impl Display for SummaryWrapper {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(
             fmt,
-            "Packets sent: {style}{packets} ({megabytes} MB){reset_style}, the average speed: \
-             {style}{mbps} Mbps ({packets_per_sec} packets/sec){reset_style}, time passed: \
-             {style}{time_passed}{reset_style}",
-            packets = self.0.packets_sent(),
-            megabytes = self.0.megabytes_sent(),
-            mbps = self.0.megabites_per_sec(),
-            packets_per_sec = self.0.packets_per_sec(),
-            time_passed = format_duration(self.0.time_passed()),
-            style = color::Fg(color::Cyan),
-            reset_style = color::Fg(color::Reset),
+            "Packets sent: {data_sent}, the average speed: {average_speed}, time passed: \
+             {time_passed}",
+            data_sent = cyan(format_args!(
+                "{packets} ({megabytes} MB)",
+                packets = self.0.packets_sent(),
+                megabytes = self.0.megabytes_sent(),
+            )),
+            average_speed = cyan(format_args!(
+                "{mbps} Mbps ({packets_per_sec} packets/sec)",
+                mbps = self.0.megabytes_sent(),
+                packets_per_sec = self.0.packets_per_sec()
+            )),
+            time_passed = cyan(format_duration(self.0.time_passed())),
         )
     }
 }
