@@ -35,15 +35,15 @@ group of hackers.
 
 ## Installation
 
-### From package registry
-```bash
-$ cargo install anevicon
-```
-
 ### As a repository
 ```bash
 $ git clone https://github.com/Gymmasssorla/anevicon
 $ cd anevicon && cargo run --release
+```
+
+### From package registry
+```bash
+$ cargo install anevicon
 ```
 
 ### Pre-compiled binaries
