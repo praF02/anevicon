@@ -36,22 +36,18 @@ group of hackers.
 ## Installation
 
 ### From package registry
-You can just install this program from https://crates.io/. It will download the sources and compile it on your computer, that is, you need [Cargo](https://github.com/rust-lang/cargo) installed:
-
 ```bash
 $ cargo install anevicon
 ```
 
 ### As a repository
-You might want to manually clone this repository and compile the sources. This will require Cargo too, and might take some time to make it done.
-
 ```bash
 $ git clone https://github.com/Gymmasssorla/anevicon
 $ cd anevicon && cargo run --release
 ```
 
 ### Pre-compiled binaries
-What is more, you can simply download the already compiled program from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software. This is the simplest way to run Anevicon.
+You can simply download the already compiled program from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches). This is the simplest way to run Anevicon.
 
 ----------
 
