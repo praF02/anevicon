@@ -35,14 +35,14 @@ group of hackers.
 
 ## Installation
 
-### From crates.io
+### From package registry
 You can just install this program from https://crates.io/. It will download the sources and compile it on your computer, that is, you need [Cargo](https://github.com/rust-lang/cargo) installed:
 
 ```bash
 $ cargo install anevicon
 ```
 
-### From github.com
+### As a repository
 You might want to manually clone this repository and compile the sources. This will require Cargo too, and might take some time to make it done.
 
 ```bash
