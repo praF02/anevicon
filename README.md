@@ -36,7 +36,7 @@ group of hackers.
 ## Installation
 
 ### From package registry
-This command will download the sources from the https://crates.io package registry and compile Anevicon right on your system, using [Cargo Package Manager](https://github.com/rust-lang/cargo/):
+This command will download the sources from the https://crates.io package registry and compile Anevicon right on your system, using our lovely [Cargo](https://github.com/rust-lang/cargo/):
 
 ```bash
 $ cargo install anevicon
