@@ -35,19 +35,19 @@ group of hackers.
 
 ## Installation
 
+### From package registry
+```bash
+$ cargo install anevicon
+```
+
 ### As a repository
 ```bash
 $ git clone https://github.com/Gymmasssorla/anevicon
 $ cd anevicon && cargo run --release
 ```
 
-### From package registry
-```bash
-$ cargo install anevicon
-```
-
 ### Pre-compiled binaries
-You can simply download the already compiled program from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches). This is the simplest way to run Anevicon.
+You can simply download the already compiled program from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches).
 
 ----------
 
