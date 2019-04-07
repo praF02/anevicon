@@ -43,7 +43,8 @@ $ cargo install anevicon
 ### As a repository
 ```bash
 $ git clone https://github.com/Gymmasssorla/anevicon
-$ cd anevicon && cargo run --release
+$ cd anevicon
+$ cargo run --release
 ```
 
 ### Pre-compiled binaries
