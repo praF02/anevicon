@@ -47,7 +47,11 @@ $ cd anevicon && cargo run --release
 ```
 
 ### Pre-compiled binaries
-You can simply download the already compiled program from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches).
+```bash
+$ wget https://github.com/Gymmasssorla/anevicon/releases/download/v4.1.2/anevicon.AppImage
+$ chmod a+x anevicon.AppImage
+$ ./anevicon.AppImage
+```
 
 ----------
 
