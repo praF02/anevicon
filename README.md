@@ -48,7 +48,7 @@ If you want to become a contributor, then you need to manually clone this reposi
 ```bash
 $ git clone https://github.com/Gymmasssorla/anevicon
 $ cd anevicon
-$ cargo run --release
+$ cargo build --release
 ```
 
 ### Pre-compiled binaries
