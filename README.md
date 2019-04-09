@@ -46,7 +46,7 @@ $ cargo install anevicon
 If you want to become a contributor, then you need to manually clone this repository and compile the whole project using Cargo, for future development.
 
 ```bash
-$ git clone https://github.com/Gymmasssorla/anevicon
+$ git clone https://github.com/Gymmasssorla/anevicon.git
 $ cd anevicon
 $ cargo build --release
 ```
