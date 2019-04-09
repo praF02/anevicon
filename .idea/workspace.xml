@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -60,11 +58,6 @@
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
               <item name="anevicon" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
-              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -90,7 +83,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Cargo Command.Cargo Fmt">
+  <component name="RunManager" selected="Cargo Command.Cargo Fix">
     <configuration name="Cargo Build Release" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
@@ -124,6 +117,16 @@
     <configuration name="Cargo Clippy" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="clippy" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Cargo Fix" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="fix" />
       <option name="allFeatures" value="false" />
       <option name="nocapture" value="false" />
       <option name="backtrace" value="SHORT" />
@@ -203,6 +206,7 @@
     </configuration>
     <list>
       <item itemvalue="Cargo Command.Cargo Build Release" />
+      <item itemvalue="Cargo Command.Cargo Fix" />
       <item itemvalue="Cargo Command.Cargo Build" />
       <item itemvalue="Cargo Command.Cargo Check" />
       <item itemvalue="Cargo Command.Cargo Clippy" />
@@ -270,7 +274,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.112059765" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11419424" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -284,7 +288,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49926144" weight="0.90502185" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49926144" weight="0.33733624" />
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50073856" side_tool="true" weight="0.3299363" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -429,17 +433,17 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="-714">
+          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
+        </state>
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="561">
             <caret line="33" column="10" lean-forward="true" selection-start-line="33" selection-start-column="10" selection-end-line="33" selection-end-column="10" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="-714">
-          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
         </state>
       </provider>
     </entry>
