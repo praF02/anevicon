@@ -262,5 +262,10 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 
 ----------
 
+## Contributing
+You are always welcome for any contribution to this project! But before you start, you should read [the appropriate document](https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md) to know about the preferred development process and the basic communication rules.
+
+----------
+
 ## Contacts
 [Temirkhan Myrzamadi](https://github.com/Gymmasssorla) <[gymmasssorla@gmail.com](mailto:gymmasssorla@gmail.com)> (the author)
