@@ -31,7 +31,9 @@ use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::Instant;
 
-pub fn execute(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
+// Executes all the tests specified by a user. If an I/O error has occurred, it
+// will be returned.
+pub fn execute_all(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
     let arc_config = Arc::new(RwLock::new(args_config));
     let arc_packet = Arc::new(RwLock::new(packet));
     let unlocked_config = arc_config.read().unwrap();

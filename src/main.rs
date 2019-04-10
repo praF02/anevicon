@@ -43,7 +43,7 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    if let Err(error) = testers::execute(args_config, packet) {
+    if let Err(error) = testers::execute_all(args_config, packet) {
         error!("Testing the server failed >>> {}!", error);
         std::process::exit(1);
     }
