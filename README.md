@@ -225,28 +225,37 @@ Next, just copy this code into your `main` function and launch the compiled prog
 
 ([`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs))
 ```rust
+#![feature(iovec)]
+
+use std::io::IoVec;
+use std::net::UdpSocket;
+
 use anevicon_core::summary::TestSummary;
-use anevicon_core::testing::send;
+use anevicon_core::tester::Tester;
 
-// Setup the socket connected to the example.com domain
-let socket = std::net::UdpSocket::bind("0.0.0.0:0").unwrap();
-socket.connect("93.184.216.34:80").unwrap();
+fn main() {
+    // Setup the socket connected to the example.com domain
+    let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
+    socket.connect("93.184.216.34:80").unwrap();
 
-let packet = vec![0; 32768];
-let mut summary = TestSummary::default();
+    // Setup all the I/O vectors (messages) we want to send
+    let paylod = &mut [
+        (0, IoVec::new(b"Generals gathered in their masses")),
+        (0, IoVec::new(b"Just like witches at black masses")),
+        (0, IoVec::new(b"Evil minds that plot destruction")),
+        (0, IoVec::new(b"Sorcerers of death's construction")),
+    ];
 
-// Execute a test that will send one thousand packets
-// each containing 32768 bytes.
-for _ in 0..1000 {
-    if let Err(error) = send(&socket, &packet, &mut summary) {
-        panic!("{}", error);
-    }
+    // Send all the created messages using only one system call
+    let mut summary = TestSummary::default();
+    let mut tester = Tester::new(&socket, &mut summary);
+
+    println!(
+        "The total packets sent: {}, the total seconds passed: {}",
+        tester.send_multiple(paylod).unwrap(),
+        summary.time_passed().as_secs()
+    );
 }
-
-println!(
-    "The total seconds passed: {}",
-    summary.time_passed().as_secs()
-);
 ```
 
 This is how you are able to build your own stress-testing bot. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
