@@ -92,13 +92,20 @@ impl<'a, 'b> Tester<'a, 'b> {
 mod tests {
     use super::*;
 
+    use lazy_static::lazy_static;
+
+    lazy_static! {
+        static ref UDP_SOCKET: UdpSocket = {
+            let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
+            socket
+                .connect(socket.local_addr().unwrap())
+                .expect("Cannot connect the socket to itself");
+            socket
+        };
+    }
+
     #[test]
     fn test_send_multiple() {
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
-        socket
-            .connect(socket.local_addr().unwrap())
-            .expect("Cannot connect the socket to itself");
-
         let messages = &mut [
             (0, IoVec::new(b"Generals gathered in their masses")),
             (0, IoVec::new(b"Just like witches at black masses")),
@@ -107,7 +114,7 @@ mod tests {
         ];
 
         assert_eq!(
-            Tester::new(&socket, &mut TestSummary::default())
+            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
                 .send_multiple(messages)
                 .expect("tester.send_multiple() has failed"),
             messages.len()
@@ -116,15 +123,10 @@ mod tests {
 
     #[test]
     fn test_send_once() {
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
-        socket
-            .connect(socket.local_addr().unwrap())
-            .expect("Cannot connect the socket to itself");
-
         let message = b"Generals gathered in their masses";
 
         assert_eq!(
-            Tester::new(&socket, &mut TestSummary::default())
+            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
                 .send_once(IoVec::new(message))
                 .expect("tester.send_once() has failed"),
             message.len()
