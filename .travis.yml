@@ -5,7 +5,3 @@ script:
   - rustup override set nightly
   - cargo build --verbose --all
   - cargo test --verbose --all
-
-os:
-  - linux
-  - osx
