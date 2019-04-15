@@ -1,3 +1,6 @@
+// This example demonstrates sending a couple of messages to the example.com
+// domain (just for an example, you should enter here your server):
+
 #![feature(iovec)]
 
 use std::io::IoVec;

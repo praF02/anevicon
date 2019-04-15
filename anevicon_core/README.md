@@ -29,13 +29,7 @@ the standard library). If you are just interested in one single program, please 
 ----------
 
 ## Usage
-First, you need to link the library with your executable (or another library) by putting `anevicon_core` to the `dependencies` section in your `Cargo.toml` like this:
-```toml
-[dependencies]
-anevicon_core = "*"
-```
-
-Next, just copy this code into your `main` function and launch the compiled program, which simply sends one thousand empty packets to the `example.com` site:
+This example demonstrates sending a couple of messages to the `example.com` domain (just for an example, you should enter here your server):
 
 ([`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs))
 ```rust

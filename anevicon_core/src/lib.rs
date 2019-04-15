@@ -25,7 +25,7 @@
 //! one single program, please take a look at [this one].
 //!
 //! # Examples
-//! This example demonstrates sending of one thousand packets to the example.com
+//! This example demonstrates sending a couple of messages to the `example.com`
 //! domain (just for an example, you should enter here your server):
 //!
 //! ([`examples/minimal.rs`])
