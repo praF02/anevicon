@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anevicon_core/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anevicon_core/src/tester.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/tester.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anevicon_core/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/lib.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -40,11 +38,11 @@
         <option value="$PROJECT_DIR$/src/testers.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/src/testing.rs" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/anevicon_core/src/lib.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/README.md" />
         <option value="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/Cargo.toml" />
         <option value="$PROJECT_DIR$/anevicon_core/src/tester.rs" />
+        <option value="$PROJECT_DIR$/anevicon_core/src/lib.rs" />
       </list>
     </option>
   </component>
@@ -71,6 +69,12 @@
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
               <item name="anevicon" type="462c0819:PsiDirectoryNode" />
               <item name="anevicon_core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
+              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
+              <item name="anevicon_core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
@@ -258,9 +262,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_testers__tests__exits_correctly - 2019.04.01 at 22h 25m 27s.xml">
-      <configuration name="Test testers::tests::exits_correctly" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Test_testers__tests__exits_correctly - 2019.04.01 at 22h 25m 44s.xml">
       <configuration name="Test testers::tests::exits_correctly" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -288,6 +289,9 @@
     <history-entry file="Cargo_Test - 2019.04.15 at 10h 27m 17s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.15 at 14h 06m 21s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
@@ -301,7 +305,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49926144" visible="true" weight="0.03275109" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49926144" visible="true" weight="0.4978166" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -443,23 +447,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/src/lib.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="27" column="4" selection-start-line="27" selection-start-column="4" selection-end-line="28" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="357">
-            <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/anevicon_core/examples/minimal.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="202">
@@ -478,6 +465,23 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="2" lean-forward="true" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="405">
+            <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="64" column="3" lean-forward="true" selection-start-line="64" selection-start-column="3" selection-end-line="64" selection-end-column="3" />
         </state>
       </provider>
     </entry>
