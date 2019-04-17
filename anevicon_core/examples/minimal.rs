@@ -6,8 +6,7 @@
 use std::io::IoVec;
 use std::net::UdpSocket;
 
-use anevicon_core::summary::TestSummary;
-use anevicon_core::tester::Tester;
+use anevicon_core::{TestSummary, Tester};
 
 fn main() {
     // Setup the socket connected to the example.com domain
@@ -15,7 +14,7 @@ fn main() {
     socket.connect("93.184.216.34:80").unwrap();
 
     // Setup all the I/O vectors (messages) we want to send
-    let paylod = &mut [
+    let payload = &mut [
         (0, IoVec::new(b"Generals gathered in their masses")),
         (0, IoVec::new(b"Just like witches at black masses")),
         (0, IoVec::new(b"Evil minds that plot destruction")),
@@ -28,7 +27,7 @@ fn main() {
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",
-        tester.send_multiple(paylod).unwrap().packets_sent(),
+        tester.send_multiple(payload).unwrap().packets_sent(),
         summary.time_passed().as_secs()
     );
 }
