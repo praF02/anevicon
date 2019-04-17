@@ -20,7 +20,7 @@ use super::config::{ArgsConfig, ExitConfig, NetworkConfig};
 use super::helpers::{self, SummaryWrapper};
 
 use anevicon_core::summary::TestSummary;
-use anevicon_core::testing;
+use anevicon_core::tester;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 use threadpool::ThreadPool;
@@ -33,16 +33,16 @@ use std::time::Instant;
 
 #[derive(Debug)]
 struct Tester {
-    config: Arc<RwLock<ArgsConfig>>,
-    packet: Arc<RwLock<Vec<u8>>>,
+    config: &'static ArgsConfig,
+    packet: &'static [u8],
     receiver: usize,
     socket: UdpSocket,
 }
 
 impl Tester {
     fn new(
-        config: Arc<RwLock<ArgsConfig>>,
-        packet: Arc<RwLock<Vec<u8>>>,
+        config: &'static ArgsConfig,
+        packet: &'static [u8],
         receiver: usize,
     ) -> io::Result<Tester> {
         let socket = Tester::init_socket(
@@ -62,38 +62,40 @@ impl Tester {
     }
 
     fn run(&self) -> SummaryWrapper {
-        let (packet, config) = (self.packet.read().unwrap(), self.config.read().unwrap());
-
         let mut summary = SummaryWrapper(TestSummary::default());
 
-        // Run the loop for the current worker until one of the specified exit
-        // conditions will become true
-        loop {
-            let instant = Instant::now();
+        // Divide the whole required packets count into sections to send multiple
+        // packets per one syscall
+        let remaining_packets =
+            self.config.exit_config.packets_count % self.config.network_config.packets_per_syscall;
+        let sendings_count = (self.config.exit_config.packets_count - remaining_packets)
+            / self.config.network_config.packets_per_syscall;
 
-            while instant.elapsed() < config.display_periodicity {
-                if let Err(error) = testing::send(&self.socket, &packet, &mut summary.0) {
-                    error!("An error occurred while sending a packet >>> {}!", error);
-                }
-
-                if Tester::is_limit_reached(&summary, &config.exit_config) {
-                    return summary;
-                }
-
-                thread::sleep(config.send_periodicity);
+        // Run the loop for the current worker until the allotted time expires
+        for _ in 0..sendings_count {
+            if let Err(error) = tester::send(&self.socket, self.packet, &mut summary.0) {
+                error!("An error occurred while sending a packet >>> {}!", error);
             }
 
             info!(
                 "Stats for the {receiver} receiver >>> {summary}.",
-                receiver = helpers::cyan(config.network_config.receivers[self.receiver]),
+                receiver = helpers::cyan(self.config.network_config.receivers[self.receiver]),
                 summary = summary,
             );
+
+            if Tester::is_limit_reached(&summary, &self.config.exit_config) {
+                return summary;
+            }
+
+            thread::sleep(self.config.send_periodicity);
         }
+
+        summary
     }
 
     // Suggest to inline this function because it is used in a continuous cycle
     #[inline]
-    fn is_limit_reached(summary: &SummaryWrapper, exit_config: &ExitConfig) -> bool {
+    fn is_time_reached(summary: &SummaryWrapper, exit_config: &ExitConfig) -> bool {
         if summary.0.time_passed() >= exit_config.test_duration {
             info!(
                 "All the allotted time has passed >>> {summary}.",

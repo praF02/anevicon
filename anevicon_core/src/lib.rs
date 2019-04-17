@@ -35,8 +35,7 @@
 //! use std::io::IoVec;
 //! use std::net::UdpSocket;
 //!
-//! use anevicon_core::summary::TestSummary;
-//! use anevicon_core::tester::Tester;
+//! use anevicon_core::{TestSummary, Tester};
 //!
 //! fn main() {
 //!    // Setup the socket connected to the example.com domain
@@ -74,3 +73,6 @@
 
 pub mod summary;
 pub mod tester;
+
+pub use summary::{SummaryPortion, TestSummary};
+pub use tester::Tester;

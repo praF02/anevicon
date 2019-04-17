@@ -38,6 +38,7 @@
 //! );
 //! ```
 
+use std::ops::{Add, AddAssign};
 use std::time::{Duration, Instant};
 
 /// The test summary abstraction to analyse test execution results.
@@ -50,7 +51,8 @@ pub struct TestSummary {
 
 impl TestSummary {
     /// Updates the test summary by an performing an addition of the specified
-    /// `SummaryPortion` to itself.
+    /// `SummaryPortion` to itself. You can also consider the addition operators
+    /// defined as `summary += portion` and `summary + portion`.
     #[inline]
     pub fn update(&mut self, portion: SummaryPortion) {
         self.bytes_sent += portion.bytes_sent;
@@ -101,6 +103,23 @@ impl TestSummary {
     #[inline]
     pub fn time_passed(&self) -> Duration {
         self.initial_time.elapsed()
+    }
+}
+
+impl Add<SummaryPortion> for TestSummary {
+    type Output = TestSummary;
+
+    #[inline]
+    fn add(mut self, portion: SummaryPortion) -> TestSummary {
+        self.update(portion);
+        self
+    }
+}
+
+impl AddAssign<SummaryPortion> for TestSummary {
+    #[inline]
+    fn add_assign(&mut self, portion: SummaryPortion) {
+        self.update(portion);
     }
 }
 

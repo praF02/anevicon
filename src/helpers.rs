@@ -24,7 +24,7 @@ use std::num::NonZeroUsize;
 use std::path::Path;
 
 use super::config::PacketConfig;
-use anevicon_core::summary::TestSummary;
+use anevicon_core::summary::{SummaryPortion, TestSummary};
 use colored::{ColoredString, Colorize as _};
 use humantime::format_duration;
 
@@ -117,6 +117,31 @@ impl Display for SummaryWrapper {
                 packets_per_sec = self.0.packets_per_sec()
             )),
             time_passed = cyan(format_duration(self.0.time_passed())),
+        )
+    }
+}
+
+// Just a simple wrapper to implement Display for SummaryPortion (because they
+// are both external traits)
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct SummaryPortionWrapper(pub SummaryPortion);
+
+impl Display for SummaryPortionWrapper {
+    #[inline]
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        write!(
+            fmt,
+            "Packets sent: {packets}, bytes sent: {bytes}",
+            packets = cyan(format_args!(
+                "{packets_sent}/{packets_expected}",
+                packets_sent = self.0.packets_sent(),
+                packets_expected = self.0.packets_expected(),
+            )),
+            bytes = cyan(format_args!(
+                "{bytes_sent}/{bytes_expected}",
+                bytes_sent = self.0.bytes_sent(),
+                bytes_expected = self.0.bytes_expected(),
+            )),
         )
     }
 }

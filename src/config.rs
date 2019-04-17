@@ -48,17 +48,6 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A time span per displaying test summaries. It isn't recommended to set a
-    /// low value (say, 10ms) for performance reasons
-    #[structopt(
-        long = "display-periodicity",
-        takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "3secs",
-        parse(try_from_str = "parse_duration")
-    )]
-    pub display_periodicity: Duration,
-
     /// A periodicity of sending packets. This option can be used to
     /// decrease test intensity
     #[structopt(
@@ -124,6 +113,21 @@ pub struct NetworkConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Duration,
+
+    /// A count of packets which the program will send using only one system
+    /// call. After the operation completed, a test summary will have been
+    /// printed.
+    ///
+    /// It is not recommended to set this option to a low value for some
+    /// performance reasons.
+    #[structopt(
+        long = "packets-per-syscall",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "512",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packets_per_syscall: NonZeroUsize,
 
     /// Allow sockets to send packets to a broadcast address
     #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
