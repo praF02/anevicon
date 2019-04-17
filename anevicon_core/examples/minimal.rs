@@ -28,7 +28,7 @@ fn main() {
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",
-        tester.send_multiple(paylod).unwrap(),
+        tester.send_multiple(paylod).unwrap().packets_sent(),
         summary.time_passed().as_secs()
     );
 }

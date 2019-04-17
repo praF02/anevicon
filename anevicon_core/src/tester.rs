@@ -42,16 +42,16 @@ impl<'a, 'b> Tester<'a, 'b> {
     }
 
     /// Sends the specified packet once, simultaneously updating the inner
-    /// `TestSummary`. It returns a bytes sent if an operation succeeds,
-    /// otherwise, returns an I/O error.
+    /// `TestSummary`. It returns an associated `SummaryPortion` if an operation
+    /// succeeds, otherwise, returns an I/O error.
     #[inline]
-    pub fn send_once(&mut self, packet: IoVec) -> io::Result<usize> {
+    pub fn send_once(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
             Ok(bytes) => {
-                self.summary
-                    .update(SummaryPortion::new(packet.len(), bytes, 1, 1));
-                Ok(bytes)
+                let portion = SummaryPortion::new(packet.len(), bytes, 1, 1);
+                self.summary.update(portion);
+                Ok(portion)
             }
         }
     }
@@ -62,19 +62,31 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// `portions` is a slice consisting of a number of bytes sent of each
     /// packet (the function automatically assigns there values after a call)
     /// and `IoVec` to send.
+    ///
+    /// This method return an associated `SummaryPortion` instance consisting of
+    /// the concatenated results from [`sendmmsg`].
+    ///
+    /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]
-    pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)]) -> io::Result<usize> {
+    pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)]) -> io::Result<SummaryPortion> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {
+                let (mut bytes_expected_total, mut bytes_sent_total) = (0, 0);
+
                 for (bytes_sent, vec) in portions.iter_mut() {
-                    self.summary
-                        .update(SummaryPortion::new(vec.len(), *bytes_sent, 0, 0));
+                    bytes_expected_total += vec.len();
+                    bytes_sent_total += *bytes_sent;
                 }
 
-                self.summary
-                    .update(SummaryPortion::new(0, 0, portions.len(), packets));
-                Ok(packets)
+                let portion = SummaryPortion::new(
+                    bytes_expected_total,
+                    bytes_sent_total,
+                    portions.len(),
+                    packets,
+                );
+                self.summary.update(portion);
+                Ok(portion)
             }
         }
     }
@@ -126,7 +138,8 @@ mod tests {
         assert_eq!(
             Tester::new(&UDP_SOCKET, &mut TestSummary::default())
                 .send_multiple(messages)
-                .expect("tester.send_multiple() has failed"),
+                .expect("tester.send_multiple() has failed")
+                .packets_sent(),
             messages.len()
         );
     }
@@ -135,11 +148,11 @@ mod tests {
     fn test_send_once() {
         let message = b"Generals gathered in their masses";
 
-        assert_eq!(
-            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-                .send_once(IoVec::new(message))
-                .expect("tester.send_once() has failed"),
-            message.len()
-        );
+        let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
+            .send_once(IoVec::new(message))
+            .expect("tester.send_once() has failed");
+
+        assert_eq!(result.packets_sent(), 1);
+        assert_eq!(result.bytes_sent(), message.len());
     }
 }
