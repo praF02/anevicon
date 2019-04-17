@@ -106,6 +106,7 @@ impl TestSummary {
 
 impl Default for TestSummary {
     /// Returns the default test summary with current time specified.
+    #[inline]
     fn default() -> TestSummary {
         TestSummary {
             bytes_sent: 0,
@@ -137,6 +138,7 @@ impl SummaryPortion {
     /// # Panics
     /// This function panics if one of two conditions (`bytes_sent >
     /// bytes_expected` or `packets_sent > packets_expected`) becomes true.
+    #[inline]
     pub fn new(
         bytes_expected: usize,
         bytes_sent: usize,
@@ -160,24 +162,28 @@ impl SummaryPortion {
 
     /// Returns a number of bytes you were trying to send (see the
     /// `SummaryPortion::new()` associated function).
+    #[inline]
     pub fn bytes_expected(&self) -> usize {
         self.bytes_expected
     }
 
     /// Returns a number of bytes you actually sent (see the
     /// `SummaryPortion::new()` associated function).
+    #[inline]
     pub fn bytes_sent(&self) -> usize {
         self.bytes_sent
     }
 
     /// Returns a number of packets you were trying to send (see the
     /// `SummaryPortion::new()` associated function).
+    #[inline]
     pub fn packets_expected(&self) -> usize {
         self.packets_expected
     }
 
     /// Returns a number of packets you actually sent (see the
     /// `SummaryPortion::new()` associated function).
+    #[inline]
     pub fn packets_sent(&self) -> usize {
         self.packets_sent
     }
