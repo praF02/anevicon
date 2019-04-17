@@ -31,40 +31,6 @@ use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::Instant;
 
-// Executes all the tests specified by a user. If an I/O error has occurred, it
-// will be returned.
-pub fn execute_all(args_config: ArgsConfig, packet: Vec<u8>) -> io::Result<()> {
-    let arc_config = Arc::new(RwLock::new(args_config));
-    let arc_packet = Arc::new(RwLock::new(packet));
-    let unlocked_config = arc_config.read().unwrap();
-
-    let mut testers = Vec::with_capacity(unlocked_config.network_config.receivers.len());
-    for i in 0..unlocked_config.network_config.receivers.len() {
-        testers.push(Tester::new(arc_config.clone(), arc_packet.clone(), i)?);
-    }
-
-    warn!(
-        "Sleeping {sleeping_time} and then starting to test until either {packets} packets will \
-         be sent or {duration} will be passed for each receiver...",
-        sleeping_time = helpers::cyan(format_duration(unlocked_config.wait)),
-        packets = helpers::cyan(unlocked_config.exit_config.packets_count),
-        duration = helpers::cyan(format_duration(unlocked_config.exit_config.test_duration))
-    );
-    thread::sleep(unlocked_config.wait);
-
-    let pool = ThreadPool::new(testers.len());
-    testers.into_iter().for_each(|tester| {
-        pool.execute(move || {
-            tester.run();
-        })
-    });
-
-    trace!("Spawned testers: {:?}", pool);
-    pool.join();
-
-    Ok(())
-}
-
 #[derive(Debug)]
 struct Tester {
     config: Arc<RwLock<ArgsConfig>>,

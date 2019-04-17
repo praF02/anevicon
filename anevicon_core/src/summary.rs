@@ -21,14 +21,14 @@
 //! # Examples
 //!
 //! ```rust
-//! use anevicon_core::summary::TestSummary;
+//! use anevicon_core::summary::{SummaryPortion, TestSummary};
 //!
 //! // Create the default TestSummary object with zero generated traffic
 //! let mut summary = TestSummary::default();
 //!
 //! // Update our TestSummary with 59 packets sent containing 52364 bytes
 //! // totally
-//! summary.update(59, 52364);
+//! summary.update(SummaryPortion::new(72678, 52364, 79, 59));
 //!
 //! println!(
 //!     "{} packets were sent in {} seconds with the average speed of {} packets/sec.",
@@ -49,12 +49,12 @@ pub struct TestSummary {
 }
 
 impl TestSummary {
-    /// Updates the test summary by an adding additional bytes and an
-    /// additional packets sent count.
+    /// Updates the test summary by an performing an addition of the specified
+    /// `SummaryPortion` to itself.
     #[inline]
-    pub fn update(&mut self, additional_bytes: usize, additional_packets: usize) {
-        self.bytes_sent += additional_bytes;
-        self.packets_sent += additional_packets;
+    pub fn update(&mut self, portion: SummaryPortion) {
+        self.bytes_sent += portion.bytes_sent;
+        self.packets_sent += portion.packets_sent;
     }
 
     /// Returns a count of megabytes sent totally.
@@ -115,6 +115,74 @@ impl Default for TestSummary {
     }
 }
 
+/// The abstraction which encapsulates a result of sending a data (one or
+/// multiple packets) to a target server.
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct SummaryPortion {
+    bytes_expected: usize,
+    bytes_sent: usize,
+    packets_expected: usize,
+    packets_sent: usize,
+}
+
+impl SummaryPortion {
+    /// Constructs an instance of `SummaryPortion` from the specified parts.
+    ///
+    /// The `bytes_expected` and `packets_expected` variables represent a number
+    /// of bytes/packets you were trying to send respectively.
+    ///
+    /// The `bytes_sent` and `packets_sent` variables represent a number
+    /// of bytes/packets you actually sent.
+    ///
+    /// # Panics
+    /// This function panics if one of two conditions (`bytes_sent >
+    /// bytes_expected` or `packets_sent > packets_expected`) becomes true.
+    pub fn new(
+        bytes_expected: usize,
+        bytes_sent: usize,
+        packets_expected: usize,
+        packets_sent: usize,
+    ) -> SummaryPortion {
+        if bytes_sent > bytes_expected {
+            panic!("bytes_sent cannot be higher than bytes_expected");
+        }
+        if packets_sent > packets_expected {
+            panic!("packets_sent cannot be higher than packets_expected");
+        }
+
+        SummaryPortion {
+            bytes_expected,
+            bytes_sent,
+            packets_expected,
+            packets_sent,
+        }
+    }
+
+    /// Returns a number of bytes you were trying to send (see the
+    /// `SummaryPortion::new()` associated function).
+    pub fn bytes_expected(&self) -> usize {
+        self.bytes_expected
+    }
+
+    /// Returns a number of bytes you actually sent (see the
+    /// `SummaryPortion::new()` associated function).
+    pub fn bytes_sent(&self) -> usize {
+        self.bytes_sent
+    }
+
+    /// Returns a number of packets you were trying to send (see the
+    /// `SummaryPortion::new()` associated function).
+    pub fn packets_expected(&self) -> usize {
+        self.packets_expected
+    }
+
+    /// Returns a number of packets you actually sent (see the
+    /// `SummaryPortion::new()` associated function).
+    pub fn packets_sent(&self) -> usize {
+        self.packets_sent
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -150,11 +218,21 @@ mod tests {
     fn ordinary_updates_work() {
         let mut summary = TestSummary::default();
 
-        summary.update(1024 * 1024 * 23, 2698);
+        summary.update(SummaryPortion::new(
+            1024 * 1024 * 23,
+            1024 * 1024 * 23,
+            2698,
+            2698,
+        ));
         assert_eq!(summary.megabytes_sent(), 23);
         assert_eq!(summary.packets_sent(), 2698);
 
-        summary.update(1024 * 1024 * 85, 4258);
+        summary.update(SummaryPortion::new(
+            1024 * 1024 * 85,
+            1024 * 1024 * 85,
+            4258,
+            4258,
+        ));
         assert_eq!(summary.megabytes_sent(), 85 + 23);
         assert_eq!(summary.packets_sent(), 2698 + 4258);
     }
@@ -163,7 +241,7 @@ mod tests {
     fn truncates_megabytes_correctly() {
         let mut summary = TestSummary::default();
 
-        summary.update(1024 * 1023, 5338);
+        summary.update(SummaryPortion::new(1024 * 1023, 1024 * 1023, 5338, 5338));
         assert_eq!(
             summary.megabytes_sent(),
             0,
@@ -172,16 +250,21 @@ mod tests {
         assert_eq!(summary.packets_sent(), 5338);
 
         // However, we must have one megabyte sent after this update
-        summary.update(1024, 19);
+        summary.update(SummaryPortion::new(1024, 1024, 19, 19));
         assert_eq!(summary.megabytes_sent(), 1);
     }
 
     #[test]
     fn zero_update_works() {
         let mut summary = TestSummary::default();
-        summary.update(1024 * 1024 * 85, 2698);
+        summary.update(SummaryPortion::new(
+            1024 * 1024 * 85,
+            1024 * 1024 * 85,
+            2698,
+            2698,
+        ));
 
-        summary.update(0, 0);
+        summary.update(SummaryPortion::new(0, 0, 0, 0));
         assert_eq!(
             summary.megabytes_sent(),
             85,
@@ -205,10 +288,39 @@ mod tests {
 
         // Do an arbitrary updates and sleep that take some time
         for _ in 0..100 {
-            summary.update(1024 * 1024 * 563, 54138);
+            summary.update(SummaryPortion::new(
+                1024 * 1024 * 563,
+                1024 * 1024 * 563,
+                54138,
+                54138,
+            ));
             sleep(Duration::from_millis(20));
         }
 
         assert!(summary.time_passed() >= initial_time.elapsed());
+    }
+
+    #[test]
+    fn summary_portion_valid_works() {
+        let (bytes_expected, bytes_sent, packets_expected, packets_sent) = (18394, 1223, 94, 74);
+        let portion =
+            SummaryPortion::new(bytes_expected, bytes_sent, packets_expected, packets_sent);
+
+        assert_eq!(portion.bytes_expected(), bytes_expected);
+        assert_eq!(portion.bytes_sent(), bytes_sent);
+        assert_eq!(portion.packets_expected(), packets_expected);
+        assert_eq!(portion.packets_sent(), packets_sent);
+    }
+
+    #[test]
+    #[should_panic(expected = "bytes_sent cannot be higher than bytes_expected")]
+    fn summary_portion_panics_if_invalid_bytes() {
+        SummaryPortion::new(145, 2456, 544, 544);
+    }
+
+    #[test]
+    #[should_panic(expected = "packets_sent cannot be higher than packets_expected")]
+    fn summary_portion_panics_if_invalid_packets() {
+        SummaryPortion::new(457, 456, 8778, 10999);
     }
 }

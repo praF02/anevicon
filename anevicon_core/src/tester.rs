@@ -23,6 +23,7 @@ use std::net::UdpSocket;
 
 use super::summary::TestSummary;
 
+use crate::summary::SummaryPortion;
 use sendmmsg::Sendmmsg;
 
 /// A tester with which you are able to send packets to a server multiple times.
@@ -46,7 +47,8 @@ impl<'a, 'b> Tester<'a, 'b> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
             Ok(bytes) => {
-                self.summary.update(bytes, 1);
+                self.summary
+                    .update(SummaryPortion::new(packet.len(), bytes, 1, 1));
                 Ok(bytes)
             }
         }
@@ -62,11 +64,13 @@ impl<'a, 'b> Tester<'a, 'b> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {
-                for (bytes_sent, _) in portions {
-                    self.summary.update(*bytes_sent, 0);
+                for (bytes_sent, vec) in portions.iter_mut() {
+                    self.summary
+                        .update(SummaryPortion::new(vec.len(), *bytes_sent, 0, 0));
                 }
 
-                self.summary.update(0, packets);
+                self.summary
+                    .update(SummaryPortion::new(0, 0, portions.len(), packets));
                 Ok(packets)
             }
         }
