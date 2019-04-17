@@ -36,6 +36,7 @@ pub struct Tester<'a, 'b> {
 impl<'a, 'b> Tester<'a, 'b> {
     /// Creates a new instance of `Tester` from the specified `socket` and
     /// `summary`.
+    #[inline]
     pub fn new(socket: &'a UdpSocket, summary: &'b mut TestSummary) -> Tester<'a, 'b> {
         Tester { socket, summary }
     }
@@ -43,6 +44,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// Sends the specified packet once, simultaneously updating the inner
     /// `TestSummary`. It returns a bytes sent if an operation succeeds,
     /// otherwise, returns an I/O error.
+    #[inline]
     pub fn send_once(&mut self, packet: IoVec) -> io::Result<usize> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
@@ -60,6 +62,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// `portions` is a slice consisting of a number of bytes sent of each
     /// packet (the function automatically assigns there values after a call)
     /// and `IoVec` to send.
+    #[inline]
     pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)]) -> io::Result<usize> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
@@ -77,16 +80,19 @@ impl<'a, 'b> Tester<'a, 'b> {
     }
 
     /// Returns a reference to the inner `UdpSocket`.
+    #[inline]
     pub fn socket(&self) -> &UdpSocket {
         self.socket
     }
 
     /// Returns an immutable reference to the inner `TestSummary`.
+    #[inline]
     pub fn summary(&self) -> &TestSummary {
         self.summary
     }
 
     /// Returns a mutable reference to the inner `TestSummary`.
+    #[inline]
     pub fn summary_mut(&mut self) -> &mut TestSummary {
         self.summary
     }
