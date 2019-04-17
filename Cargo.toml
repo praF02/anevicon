@@ -26,5 +26,9 @@ tempfile = "3.0.7"
 threadpool = "1.7.1"
 anevicon_core = "0.3.1"
 
+[profile.release]
+opt-level = 3
+lto = true
+
 [workspace]
 members = ["anevicon_core"]
