@@ -66,6 +66,7 @@ impl TestSummary {
     }
 
     /// Returns a count of megabytes you were trying to send.
+    #[inline]
     pub fn megabytes_expected(&self) -> usize {
         self.bytes_expected / 1024 / 1024
     }
@@ -77,6 +78,7 @@ impl TestSummary {
     }
 
     /// Returns a count of packets you were trying to send.
+    #[inline]
     pub fn packets_expected(&self) -> usize {
         self.packets_expected
     }
