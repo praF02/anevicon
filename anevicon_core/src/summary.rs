@@ -44,7 +44,9 @@ use std::time::{Duration, Instant};
 /// The test summary abstraction to analyse test execution results.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct TestSummary {
+    bytes_expected: usize,
     bytes_sent: usize,
+    packets_expected: usize,
     packets_sent: usize,
     initial_time: Instant,
 }
@@ -55,14 +57,27 @@ impl TestSummary {
     /// defined as `summary += portion` and `summary + portion`.
     #[inline]
     pub fn update(&mut self, portion: SummaryPortion) {
+        self.bytes_expected += portion.bytes_expected;
         self.bytes_sent += portion.bytes_sent;
+
+        self.packets_expected += portion.packets_expected;
         self.packets_sent += portion.packets_sent;
+    }
+
+    /// Returns a count of megabytes you were trying to send.
+    pub fn megabytes_expected(&self) -> usize {
+        self.bytes_expected / 1024 / 1024
     }
 
     /// Returns a count of megabytes sent totally.
     #[inline]
     pub fn megabytes_sent(&self) -> usize {
         self.bytes_sent / 1024 / 1024
+    }
+
+    /// Returns a count of packets you were trying to send.
+    pub fn packets_expected(&self) -> usize {
+        self.packets_expected
     }
 
     /// Returns a count of packets sent totally.
@@ -128,7 +143,9 @@ impl Default for TestSummary {
     #[inline]
     fn default() -> TestSummary {
         TestSummary {
+            bytes_expected: 0,
             bytes_sent: 0,
+            packets_expected: 0,
             packets_sent: 0,
             initial_time: Instant::now(),
         }
@@ -235,7 +252,10 @@ mod tests {
     fn is_correct_initial_value() {
         let summary = TestSummary::default();
 
+        assert_eq!(summary.megabytes_expected(), 0);
         assert_eq!(summary.megabytes_sent(), 0);
+
+        assert_eq!(summary.packets_expected(), 0);
         assert_eq!(summary.packets_sent(), 0);
     }
 
@@ -244,12 +264,16 @@ mod tests {
         let mut summary = TestSummary::default();
 
         summary.update(SummaryPortion::new(
+            1024 * 1024 * 24,
             1024 * 1024 * 23,
-            1024 * 1024 * 23,
-            2698,
+            3000,
             2698,
         ));
+
+        assert_eq!(summary.megabytes_expected(), 24);
         assert_eq!(summary.megabytes_sent(), 23);
+
+        assert_eq!(summary.packets_expected(), 3000);
         assert_eq!(summary.packets_sent(), 2698);
 
         summary.update(SummaryPortion::new(
@@ -284,20 +308,32 @@ mod tests {
         let mut summary = TestSummary::default();
         summary.update(SummaryPortion::new(
             1024 * 1024 * 85,
-            1024 * 1024 * 85,
+            1024 * 1024 * 58,
             2698,
-            2698,
+            2000,
         ));
 
         summary.update(SummaryPortion::new(0, 0, 0, 0));
+
         assert_eq!(
-            summary.megabytes_sent(),
+            summary.megabytes_expected(),
             85,
             "'TestSummary' hasn't the same megabytes after zero-update"
         );
         assert_eq!(
-            summary.packets_sent(),
+            summary.megabytes_sent(),
+            58,
+            "'TestSummary' hasn't the same megabytes after zero-update"
+        );
+
+        assert_eq!(
+            summary.packets_expected(),
             2698,
+            "'TestSummary' hasn't the same megabytes after zero-update"
+        );
+        assert_eq!(
+            summary.packets_sent(),
+            2000,
             "'TestSummary' hasn't the same packets after zero-update"
         );
     }

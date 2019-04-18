@@ -19,126 +19,105 @@
 use super::config::{ArgsConfig, ExitConfig, NetworkConfig};
 use super::helpers::{self, SummaryWrapper};
 
-use anevicon_core::summary::TestSummary;
-use anevicon_core::tester;
+use anevicon_core::{self, TestSummary};
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 use threadpool::ThreadPool;
 
-use std::io;
+use std::io::{self, IoVec};
 use std::net::UdpSocket;
+use std::num::NonZeroUsize;
 use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::Instant;
 
-#[derive(Debug)]
-struct Tester {
+pub fn execute_tester(
     config: &'static ArgsConfig,
-    packet: &'static [u8],
+    packet: IoVec<'static>,
     receiver: usize,
-    socket: UdpSocket,
-}
+) -> io::Result<SummaryWrapper> {
+    let socket = init_socket(&config.network_config, receiver)?;
 
-impl Tester {
-    fn new(
-        config: &'static ArgsConfig,
-        packet: &'static [u8],
-        receiver: usize,
-    ) -> io::Result<Tester> {
-        let socket = Tester::init_socket(
-            &config
-                .read()
-                .expect("Error while acquiring reading mode on RwLock")
-                .network_config,
-            receiver,
-        )?;
+    let mut summary = SummaryWrapper(TestSummary::default());
+    let mut tester = anevicon_core::tester::Tester::new(&socket, &mut summary.0);
+    let (remaining_bytes, sendings_count) = compute_strategy(
+        config.exit_config.packets_count,
+        config.network_config.packets_per_syscall,
+    );
+    let mut portions = generate_portions(&packet, config.network_config.packets_per_syscall);
 
-        Ok(Tester {
-            socket,
-            config,
-            packet,
-            receiver,
-        })
-    }
-
-    fn run(&self) -> SummaryWrapper {
-        let mut summary = SummaryWrapper(TestSummary::default());
-
-        // Divide the whole required packets count into sections to send multiple
-        // packets per one syscall
-        let remaining_packets =
-            self.config.exit_config.packets_count % self.config.network_config.packets_per_syscall;
-        let sendings_count = (self.config.exit_config.packets_count - remaining_packets)
-            / self.config.network_config.packets_per_syscall;
-
-        // Run the loop for the current worker until the allotted time expires
-        for _ in 0..sendings_count {
-            if let Err(error) = tester::send(&self.socket, self.packet, &mut summary.0) {
-                error!("An error occurred while sending a packet >>> {}!", error);
-            }
-
-            info!(
-                "Stats for the {receiver} receiver >>> {summary}.",
-                receiver = helpers::cyan(self.config.network_config.receivers[self.receiver]),
-                summary = summary,
-            );
-
-            if Tester::is_limit_reached(&summary, &self.config.exit_config) {
-                return summary;
-            }
-
-            thread::sleep(self.config.send_periodicity);
+    // Run the loop for the current worker until the allotted time expires
+    for _ in 0..sendings_count {
+        if let Err(error) = tester.send_multiple(&mut portions) {
+            error!("An error occurred while sending a packet >>> {}!", error);
         }
 
-        summary
-    }
+        info!(
+            "Stats for the {receiver} receiver >>> {summary}.",
+            receiver = helpers::cyan(config.network_config.receivers[receiver]),
+            summary = summary,
+        );
 
-    // Suggest to inline this function because it is used in a continuous cycle
-    #[inline]
-    fn is_time_reached(summary: &SummaryWrapper, exit_config: &ExitConfig) -> bool {
-        if summary.0.time_passed() >= exit_config.test_duration {
+        if tester.summary().time_passed() >= config.exit_config.test_duration {
             info!(
                 "All the allotted time has passed >>> {summary}.",
                 summary = summary
             );
-
-            true
-        } else if summary.0.packets_sent() == exit_config.packets_count.get() {
-            info!(
-                "All the required packets were sent >>> {summary}.",
-                summary = summary
-            );
-
-            true
-        } else {
-            false
+            return Ok(summary);
         }
+
+        thread::sleep(config.send_periodicity);
     }
 
-    // Initialize a `UdpSocket` connected to a receiver by the specified index
-    fn init_socket(network_config: &NetworkConfig, receiver: usize) -> io::Result<UdpSocket> {
-        info!(
-            "Initializing the socket to the {receiver} receiver using the {sender} sender \
-             address...",
-            receiver = helpers::cyan(network_config.receivers[receiver]),
-            sender = helpers::cyan(network_config.sender),
-        );
+    tester.send_multiple(&mut generate_portions(
+        &packet,
+        config.network_config.packets_per_syscall,
+    ));
+    Ok(summary)
+}
 
-        let socket = UdpSocket::bind(network_config.sender)?;
-        socket.connect(network_config.receivers[receiver])?;
-        socket.set_broadcast(network_config.broadcast)?;
-        socket.set_write_timeout(Some(network_config.send_timeout))?;
+// Divide the whole required packets count into sections to send multiple
+// packets per one syscall
+fn compute_strategy(
+    packets_count: NonZeroUsize,
+    packets_per_syscall: NonZeroUsize,
+) -> (usize, usize) {
+    let remaining_packets = packets_count.get() % packets_per_syscall.get();
+    let sendings_count = (packets_count.get() - remaining_packets) / packets_per_syscall.get();
+    (remaining_packets, sendings_count)
+}
 
-        trace!("A new initialized socket: {:?}", &socket);
-        Ok(socket)
+fn generate_portions(packet: &IoVec<'static>, count: NonZeroUsize) -> Vec<(usize, IoVec<'static>)> {
+    let mut portions = Vec::with_capacity(count.get());
+
+    for i in 0..count.get() {
+        portions.push((0, IoVec::new(packet.as_ref())));
     }
+
+    portions
+}
+
+// Initialize a `UdpSocket` connected to a receiver by the specified index
+fn init_socket(network_config: &NetworkConfig, receiver: usize) -> io::Result<UdpSocket> {
+    info!(
+        "Initializing the socket to the {receiver} receiver using the {sender} sender address...",
+        receiver = helpers::cyan(network_config.receivers[receiver]),
+        sender = helpers::cyan(network_config.sender),
+    );
+
+    let socket = UdpSocket::bind(network_config.sender)?;
+    socket.connect(network_config.receivers[receiver])?;
+    socket.set_broadcast(network_config.broadcast)?;
+    socket.set_write_timeout(Some(network_config.send_timeout))?;
+
+    trace!("A new initialized socket: {:?}", &socket);
+    Ok(socket)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use std::num::NonZeroUsize;
     use std::thread;
     use std::time::Duration;
 
@@ -212,30 +191,5 @@ mod tests {
         assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
         assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
-    }
-
-    #[test]
-    fn exits_correctly() {
-        let config = ExitConfig {
-            test_duration: Duration::from_secs(2156),
-            packets_count: unsafe { NonZeroUsize::new_unchecked(15) },
-        };
-        let mut summary = SummaryWrapper(TestSummary::default());
-        assert!(!Tester::is_limit_reached(&summary, &config));
-
-        // Update the TestSummary so that the limit will be reached
-        summary.0.update(5648, 15);
-        assert!(Tester::is_limit_reached(&summary, &config));
-
-        let config = ExitConfig {
-            test_duration: Duration::from_secs(2),
-            packets_count: unsafe { NonZeroUsize::new_unchecked(15) },
-        };
-        let summary = SummaryWrapper(TestSummary::default());
-        assert!(!Tester::is_limit_reached(&summary, &config));
-
-        // Wait two seconds so that the allotted time will be exactly passed
-        thread::sleep(config.test_duration);
-        assert!(Tester::is_limit_reached(&summary, &config));
     }
 }

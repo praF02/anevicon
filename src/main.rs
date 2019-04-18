@@ -17,6 +17,7 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 #![feature(ip)]
+#![feature(iovec)]
 
 use config::ArgsConfig;
 
