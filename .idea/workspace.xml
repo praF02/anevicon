@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/anevicon_core/src/summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/summary.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/testers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/testers.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,14 +18,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/anevicon_core/src/summary.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="372" column="40" selection-start-line="372" selection-start-column="40" selection-end-line="372" selection-end-column="40" />
-              <folding>
-                <element signature="e#2543#2544#0" expanded="true" />
-                <element signature="e#2589#2590#0" expanded="true" />
-                <element signature="e#2848#2849#0" expanded="true" />
-                <element signature="e#2896#2897#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="408">
+              <caret line="46" column="24" lean-forward="true" selection-start-line="46" selection-start-column="24" selection-end-line="46" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -358,7 +348,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49893278" weight="0.20742358" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49893278" visible="true" weight="0.20742358" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -555,14 +545,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/anevicon_core/src/summary.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="372" column="40" selection-start-line="372" selection-start-column="40" selection-end-line="372" selection-end-column="40" />
-          <folding>
-            <element signature="e#2543#2544#0" expanded="true" />
-            <element signature="e#2589#2590#0" expanded="true" />
-            <element signature="e#2848#2849#0" expanded="true" />
-            <element signature="e#2896#2897#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="408">
+          <caret line="46" column="24" lean-forward="true" selection-start-line="46" selection-start-column="24" selection-end-line="46" selection-end-column="24" />
         </state>
       </provider>
     </entry>

@@ -41,7 +41,8 @@
 use std::ops::{Add, AddAssign};
 use std::time::{Duration, Instant};
 
-/// The test summary abstraction to analyse test execution results.
+/// The structure which represents a whole test execution result by
+/// concatenating `SummaryPortion` instances.
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub struct TestSummary {
     bytes_expected: usize,
