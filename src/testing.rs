@@ -103,7 +103,7 @@ fn wait(duration: Duration) {
 fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
     info!(
         "Trying to resend {count} packets to the {receiver} that weren't sent...",
-        count = count,
+        count = helpers::cyan(count),
         receiver = current_receiver()
     );
 
@@ -124,7 +124,7 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
 
     info!(
         "{count} packets were successfully resent to the {receiver}.",
-        count = count,
+        count = helpers::cyan(count),
         receiver = current_receiver()
     );
 }
