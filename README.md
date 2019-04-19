@@ -277,17 +277,16 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 ----------
 
 ## Performance tips
-Anevicon's speed is great by default, but you can accelerate it using some optional techniques discussed below (if you really want it and know what you are doing).
 
-### Use native architecture
-Allow using hardware acceleration by compiling the sources on your native CPU architecture by passing the `-C target_cpu=native` flag directly to `rustc`:
+### Use native CPU architecture
+Generate hardware acceleration-oriented instructions by compiling the sources on your native CPU architecture by passing the `-C target_cpu=native` flag directly to `rustc`:
 
 ```bash
 $ RUSTFLAGS="-C target_cpu=native" cargo install anevicon
 ```
 
 ### Use Ethernet connection
-Obvisously, using Ethernet connection instead of Wi-Fi will be much more faster since it has larger bandwith and works directly on your cabels.
+Obviously, using Ethernet connection instead of Wi-Fi will be much faster since it usually has larger bandwidth and works directly on your cables.
 
 ----------
 
