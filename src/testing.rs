@@ -20,9 +20,11 @@ use std::fmt::Display;
 use std::io::{self, IoVec};
 use std::net::UdpSocket;
 use std::thread::{self, Builder, JoinHandle};
+use std::time::Duration;
 
 use anevicon_core::{self, TestSummary, Tester};
-use log::{error, info};
+use humantime::format_duration;
+use log::{error, info, warn};
 
 use super::config::{ArgsConfig, NetworkConfig};
 use super::helpers::{self, SummaryWrapper};
@@ -32,6 +34,8 @@ pub fn execute_testers(
     config: &'static ArgsConfig,
     packet: &'static [u8],
 ) -> io::Result<Vec<JoinHandle<()>>> {
+    wait(config.wait);
+
     let remaining_packets =
         config.exit_config.packets_count.get() % config.network_config.packets_per_syscall.get();
     let sendings_count = (config.exit_config.packets_count.get() - remaining_packets)
@@ -86,6 +90,14 @@ pub fn execute_testers(
                 .expect("Unable to spawn a new thread")
         })
         .collect())
+}
+
+fn wait(duration: Duration) {
+    warn!(
+        "Waiting {time} and then starting to initialize the sockets...",
+        time = helpers::cyan(format_duration(duration))
+    );
+    thread::sleep(duration);
 }
 
 fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
