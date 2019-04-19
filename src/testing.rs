@@ -57,11 +57,7 @@ pub fn execute_testers(
                             error!("An error occurred while sending packets >>> {}!", error);
                         }
 
-                        info!(
-                            "Stats for the {receiver} receiver >>> {summary}.",
-                            receiver = helpers::cyan(thread::current().name().unwrap()),
-                            summary = SummaryWrapper(tester.summary()),
-                        );
+                        display_summary(SummaryWrapper(tester.summary()));
 
                         if tester.summary().time_passed() >= config.exit_config.test_duration {
                             info!(
@@ -77,15 +73,21 @@ pub fn execute_testers(
                         error!("An error occurred while sending packets >>> {}!", error);
                     }
 
-                    info!(
-                        "Stats for the {receiver} receiver >>> {summary}.",
-                        receiver = helpers::cyan(thread::current().name().unwrap()),
-                        summary = SummaryWrapper(tester.summary()),
-                    );
+                    display_summary(SummaryWrapper(tester.summary()));
                 })
                 .expect("Unable to spawn a new thread")
         })
         .collect())
+}
+
+// Displays the given SummaryWrapper using the current thread name as a receiver
+// address
+fn display_summary(summary: SummaryWrapper) {
+    info!(
+        "Stats for the {receiver} receiver >>> {summary}.",
+        receiver = helpers::cyan(thread::current().name().unwrap()),
+        summary = summary,
+    );
 }
 
 fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
