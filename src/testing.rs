@@ -129,6 +129,7 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
     );
 }
 
+#[inline]
 fn display_expired_time(summary: SummaryWrapper) {
     info!(
         "The allotted time has passed for the {receiver} >>> {summary}.",
@@ -137,6 +138,7 @@ fn display_expired_time(summary: SummaryWrapper) {
     );
 }
 
+#[inline]
 fn display_packets_sent(summary: SummaryWrapper) {
     info!(
         "All the packets were sent for the {receiver} >>> {summary}",
@@ -145,6 +147,7 @@ fn display_packets_sent(summary: SummaryWrapper) {
     );
 }
 
+#[inline]
 fn display_summary(summary: SummaryWrapper) {
     info!(
         "Stats for the {receiver} >>> {summary}.",
@@ -153,6 +156,7 @@ fn display_summary(summary: SummaryWrapper) {
     );
 }
 
+#[inline]
 fn send_multiple_error<E: Display>(error: E) {
     error!(
         "An error occurred while sending packets to the {receiver} >>> {error}!",
@@ -163,6 +167,7 @@ fn send_multiple_error<E: Display>(error: E) {
 
 // Extracts the current receiver from the current thread name and colorizes it
 // as cyan
+#[inline]
 fn current_receiver() -> ColoredString {
     helpers::cyan(thread::current().name().unwrap())
 }
