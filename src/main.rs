@@ -19,15 +19,17 @@
 #![feature(ip)]
 #![feature(iovec)]
 
+use std::mem;
+
+use colored::Colorize as _;
+use log::{error, trace};
+
 use config::ArgsConfig;
 
 mod config;
 mod helpers;
 mod logging;
-mod testers;
-
-use colored::Colorize as _;
-use log::{error, trace};
+mod testing;
 
 fn main() {
     let args_config = ArgsConfig::setup();
@@ -44,10 +46,20 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    // if let Err(error) = testers::execute_all(args_config, packet) {
-    //  error!("Testing the server failed >>> {}!", error);
-    //       std::process::exit(1);
-    //  }
+    // Expand ordinary lifetimes to 'static for simplicity
+    match testing::execute_testers(unsafe { mem::transmute(&args_config) }, unsafe {
+        mem::transmute(packet.as_slice())
+    }) {
+        Ok(handles) => {
+            for handle in handles {
+                handle.join().expect("A thread has panicked during .join()");
+            }
+        }
+        Err(error) => {
+            error!("Testing the server failed >>> {}!", error);
+            std::process::exit(1);
+        }
+    }
 }
 
 fn title() {

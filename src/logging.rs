@@ -18,13 +18,13 @@
 
 use std::io;
 
-use super::config::LoggingConfig;
-
 use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
 use time;
+
+use super::config::LoggingConfig;
 
 pub fn setup_logging(logging_config: &LoggingConfig) {
     let colors = ColoredLevelConfig::new()

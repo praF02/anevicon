@@ -23,12 +23,12 @@ use std::io;
 use std::num::NonZeroUsize;
 use std::path::Path;
 
-use super::config::PacketConfig;
 use anevicon_core::summary::{SummaryPortion, TestSummary};
 use colored::{ColoredString, Colorize as _};
 use humantime::format_duration;
-
 use rand::{thread_rng, RngCore};
+
+use super::config::PacketConfig;
 
 pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
     // If a user has specified a file, then use its content as a packet
@@ -97,9 +97,9 @@ pub fn cyan<S: ToString>(value: S) -> ColoredString {
 // Just a simple wrapper to implement Display for TestSummary (because they are
 // both external traits)
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct SummaryWrapper(pub TestSummary);
+pub struct SummaryWrapper<'a>(pub &'a TestSummary);
 
-impl Display for SummaryWrapper {
+impl<'a> Display for SummaryWrapper<'a> {
     #[inline]
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(
@@ -124,9 +124,9 @@ impl Display for SummaryWrapper {
 // Just a simple wrapper to implement Display for SummaryPortion (because they
 // are both external traits)
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct SummaryPortionWrapper(pub SummaryPortion);
+pub struct SummaryPortionWrapper<'a>(pub &'a SummaryPortion);
 
-impl Display for SummaryPortionWrapper {
+impl<'a> Display for SummaryPortionWrapper<'a> {
     #[inline]
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(
@@ -148,12 +148,12 @@ impl Display for SummaryPortionWrapper {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     use std::io::Write;
     use std::path::PathBuf;
 
     use tempfile::NamedTempFile;
+
+    use super::*;
 
     fn test_file() -> NamedTempFile {
         NamedTempFile::new().expect("Cannot create a temp file")
@@ -202,7 +202,7 @@ mod tests {
             construct_packet(&PacketConfig {
                 send_file: None,
                 packet_length: Some(packet_length),
-                send_message: None
+                send_message: None,
             })
             .expect("Cannot construct a packet")
             .len(),
