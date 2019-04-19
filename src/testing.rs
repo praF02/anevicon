@@ -16,6 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+use std::fmt::Display;
 use std::io::{self, IoVec};
 use std::net::UdpSocket;
 use std::thread::{self, Builder, JoinHandle};
@@ -55,35 +56,31 @@ pub fn execute_testers(
                     // the packets will have been sent
                     for _ in 0..sendings_count {
                         if let Err(error) = tester.send_multiple(&mut ordinary) {
-                            error!("An error occurred while sending packets >>> {}!", error);
+                            send_multiple_error(error);
                         }
 
                         display_summary(SummaryWrapper(tester.summary()));
 
                         if tester.summary().time_passed() >= config.exit_config.test_duration {
-                            info!(
-                                "The allotted time has passed >>> {summary}.",
-                                summary = SummaryWrapper(tester.summary()),
-                            );
+                            display_expired_time(SummaryWrapper(tester.summary()));
                         }
 
                         thread::sleep(config.send_periodicity);
                     }
 
                     if let Err(error) = tester.send_multiple(&mut remaining) {
-                        error!("An error occurred while sending packets >>> {}!", error);
+                        send_multiple_error(error);
                     }
 
+                    // We might have a situation when not all the required packets are sent, so fix
+                    // it
                     let unsent =
                         tester.summary().packets_expected() - tester.summary().packets_sent();
 
                     if unsent != 0 {
-                        resend_packets(&mut tester, IoVec::new(packet), unsent);
+                        resend_packets(&mut tester, &packet, unsent);
                     } else {
-                        info!(
-                            "All the packets were sent >>> {summary}",
-                            SummaryWrapper(tester.summary())
-                        );
+                        display_packets_sent(SummaryWrapper(tester.summary()));
                     }
                 })
                 .expect("Unable to spawn a new thread")
@@ -91,19 +88,21 @@ pub fn execute_testers(
         .collect())
 }
 
-fn resend_packets(tester: &mut Tester, packet: IoVec, count: usize) {
+fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
     info!(
-        "Trying to resend {count} packets to the {receiver} receiver that weren't sent...",
+        "Trying to resend {count} packets to the {receiver} that weren't sent...",
         count = count,
         receiver = current_receiver()
     );
 
     for _ in 0..count {
         loop {
-            if let Err(error) = tester.send_once(packet) {
+            if let Err(error) = tester.send_once(IoVec::new(packet)) {
                 error!(
-                    "Unable to send a packet to the {receiver} receiver! Retrying the operation...",
-                    receiver = current_receiver()
+                    "An error occurred while sending a packet to the {receiver} >>> {error}! \
+                     Retrying the operation...",
+                    receiver = current_receiver(),
+                    error = error
                 );
             } else {
                 break;
@@ -112,19 +111,41 @@ fn resend_packets(tester: &mut Tester, packet: IoVec, count: usize) {
     }
 
     info!(
-        "{count} packets were successfully resent to the {receiver} receiver.",
+        "{count} packets were successfully resent to the {receiver}.",
         count = count,
         receiver = current_receiver()
     );
 }
 
-// Displays the given SummaryWrapper using the current thread name as a receiver
-// address
-fn display_summary(summary: SummaryWrapper) {
+fn display_expired_time(summary: SummaryWrapper) {
     info!(
-        "Stats for the {receiver} receiver >>> {summary}.",
+        "The allotted time has passed for the {receiver} >>> {summary}.",
         receiver = current_receiver(),
         summary = summary,
+    );
+}
+
+fn display_packets_sent(summary: SummaryWrapper) {
+    info!(
+        "All the packets were sent for the {receiver} >>> {summary}",
+        receiver = current_receiver(),
+        summary = summary
+    );
+}
+
+fn display_summary(summary: SummaryWrapper) {
+    info!(
+        "Stats for the {receiver} >>> {summary}.",
+        receiver = current_receiver(),
+        summary = summary,
+    );
+}
+
+fn send_multiple_error<E: Display>(error: E) {
+    error!(
+        "An error occurred while sending packets to the {receiver} >>> {error}!",
+        receiver = current_receiver(),
+        error = error
     );
 }
 
