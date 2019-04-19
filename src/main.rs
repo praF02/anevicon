@@ -46,7 +46,8 @@ fn main() {
         Ok(packet) => packet,
     };
 
-    // Expand ordinary lifetimes to 'static for simplicity
+    // Expand ordinary lifetimes to 'static ones to avoid using the Arc<RwLock<T>>
+    // construction
     match testing::execute_testers(unsafe { mem::transmute(&args_config) }, unsafe {
         mem::transmute(packet.as_slice())
     }) {
