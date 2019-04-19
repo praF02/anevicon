@@ -78,15 +78,19 @@ OPTIONS:
             
             Specifying a different format with days of weeks might be helpful
             when you want to test a server more than one day. [default: %X]
-        --display-periodicity <TIME-SPAN>
-            A time span per displaying test summaries. It isn't recommended to
-            set a low value (say, 10ms) for performance reasons [default: 3secs]
     -l, --packet-length <POSITIVE-INTEGER>
             Repeatedly send a random-generated packet with a specified bytes
             length. The default is 32768
     -p, --packets-count <POSITIVE-INTEGER>
             A count of packets for sending. When this limit is reached, then the
             program will exit [default: 18446744073709551615]
+        --packets-per-syscall <POSITIVE-INTEGER>
+            A count of packets which the program will send using only one system
+            call. After the operation completed, a test summary will have been
+            printed.
+            
+            It is not recommended to set this option to a low value for some
+            performance reasons. [default: 512]
     -r, --receiver <SOCKET-ADDRESS>...
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
