@@ -25,6 +25,7 @@ use log::{error, info};
 
 use super::config::{ArgsConfig, NetworkConfig};
 use super::helpers::{self, SummaryWrapper};
+use colored::ColoredString;
 
 pub fn execute_testers(
     config: &'static ArgsConfig,
@@ -61,7 +62,7 @@ pub fn execute_testers(
 
                         if tester.summary().time_passed() >= config.exit_config.test_duration {
                             info!(
-                                "All the allotted time has passed >>> {summary}.",
+                                "The allotted time has passed >>> {summary}.",
                                 summary = SummaryWrapper(tester.summary()),
                             );
                         }
@@ -73,11 +74,48 @@ pub fn execute_testers(
                         error!("An error occurred while sending packets >>> {}!", error);
                     }
 
-                    display_summary(SummaryWrapper(tester.summary()));
+                    let unsent =
+                        tester.summary().packets_expected() - tester.summary().packets_sent();
+
+                    if unsent != 0 {
+                        resend_packets(&mut tester, IoVec::new(packet), unsent);
+                    } else {
+                        info!(
+                            "All the packets were sent >>> {summary}",
+                            SummaryWrapper(tester.summary())
+                        );
+                    }
                 })
                 .expect("Unable to spawn a new thread")
         })
         .collect())
+}
+
+fn resend_packets(tester: &mut Tester, packet: IoVec, count: usize) {
+    info!(
+        "Trying to resend {count} packets to the {receiver} receiver that weren't sent...",
+        count = count,
+        receiver = current_receiver()
+    );
+
+    for _ in 0..count {
+        loop {
+            if let Err(error) = tester.send_once(packet) {
+                error!(
+                    "Unable to send a packet to the {receiver} receiver! Retrying the operation...",
+                    receiver = current_receiver()
+                );
+            } else {
+                break;
+            }
+        }
+    }
+
+    info!(
+        "{count} packets were successfully resent to the {receiver} receiver.",
+        count = count,
+        receiver = current_receiver()
+    );
 }
 
 // Displays the given SummaryWrapper using the current thread name as a receiver
@@ -85,9 +123,15 @@ pub fn execute_testers(
 fn display_summary(summary: SummaryWrapper) {
     info!(
         "Stats for the {receiver} receiver >>> {summary}.",
-        receiver = helpers::cyan(thread::current().name().unwrap()),
+        receiver = current_receiver(),
         summary = summary,
     );
+}
+
+// Extracts the current receiver from the current thread name and colorizes it
+// as cyan
+fn current_receiver() -> ColoredString {
+    helpers::cyan(thread::current().name().unwrap())
 }
 
 fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
