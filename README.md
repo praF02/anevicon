@@ -208,12 +208,28 @@ You can explicitly specify your custom date-time format that is used for display
 $ anevicon --receiver 93.184.216.34:80 --date-time-format "%D %X"
 ```
 
-### Specific options
-Wait 7 seconds, and then start to test, displaying summaries after every 4 seconds, and exit with an error if time to send a packet is longer than 200 milliseconds:
+### Packets per one syscall
+For performance reasons, Anevicon uses the [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) syscall by default, reducing CPU usage significantly. Specifying a number of packets being sent per a syscall is also supported.
 
 ```bash
-# Test the 80 port of the example.com site using the specific options
-$ anevicon --receiver 93.184.216.34:80 --wait 7s --display-periodicity 4secs --send-timeout 200ms
+# Test the 80 port of the example.com site with 1200 packets per one syscall
+$ anevicon --receiver 93.184.216.34:80 --packets-per-syscall 1200
+```
+
+### Send timeout
+Network operations sometimes are not performed momentarily. This is why, the program supports the `--send-timeout` option which represents a duration, after which an error will be printed if a packet isn't sent.
+
+```bash
+# Test the 80 port of the example.com site using the timeout of 200 milliseconds
+$ anevicon --receiver 93.184.216.34:80 --send-timeout 200ms
+```
+
+### Waiting before a test
+The most vulnerable element of a system is an object sitting between a computer and a chair. So to prevent executing an erroneous test, there is the `--wait` option which waits five seconds by default:
+
+```bash
+# Test the example.com site waiting 30 seconds before the execution
+$ anevicon --receiver 93.184.216.34:80 --wait 30seconds
 ```
 
 ----------
