@@ -76,6 +76,12 @@ pub fn execute_testers(
                     if let Err(error) = tester.send_multiple(&mut remaining) {
                         error!("An error occurred while sending packets >>> {}!", error);
                     }
+
+                    info!(
+                        "Stats for the {receiver} receiver >>> {summary}.",
+                        receiver = helpers::cyan(thread::current().name().unwrap()),
+                        summary = SummaryWrapper(tester.summary()),
+                    );
                 })
                 .expect("Unable to spawn a new thread")
         })
