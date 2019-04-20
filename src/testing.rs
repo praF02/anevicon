@@ -213,6 +213,17 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_generate_portions() {
+        let portion: &[u8] = b"Something very very useful for all of us";
+
+        for (bytes, vec) in generate_portions(5, portion) {
+            // This value must be always zero for future use of sendmmsg
+            assert_eq!(bytes, 0);
+            assert_eq!(portion, vec.as_ref());
+        }
+    }
+
+    #[test]
     fn test_init_sockets() {
         let config = NetworkConfig {
             receivers: vec![
@@ -232,4 +243,5 @@ mod tests {
             assert_eq!(socket.broadcast().unwrap(), config.broadcast);
         }
     }
+
 }
