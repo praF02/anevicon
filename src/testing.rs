@@ -213,7 +213,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_init_socket() {
+    fn test_init_sockets() {
         let config = NetworkConfig {
             receivers: vec![
                 "45.89.52.36:5236".parse().unwrap(),
@@ -226,14 +226,10 @@ mod tests {
             packets_per_syscall: unsafe { NonZeroUsize::new_unchecked(500) },
         };
 
-        let check_socket = |socket: UdpSocket| {
+        for socket in init_sockets(&config).expect("init_socket() has failed") {
             assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
             assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
             assert_eq!(socket.broadcast().unwrap(), config.broadcast);
-        };
-
-        for socket in init_sockets(&config).expect("init_socket() has failed") {
-            check_socket(socket);
         }
     }
 }
