@@ -23,17 +23,17 @@ use std::thread::{self, Builder, JoinHandle};
 use std::time::Duration;
 
 use anevicon_core::{self, TestSummary, Tester};
+use colored::ColoredString;
 use humantime::format_duration;
 use log::{error, info, warn};
 
 use super::config::{ArgsConfig, NetworkConfig};
 use super::helpers::{self, SummaryWrapper};
-use colored::ColoredString;
 
 pub fn execute_testers(
     config: &'static ArgsConfig,
     packet: &'static [u8],
-) -> io::Result<Vec<JoinHandle<()>>> {
+) -> io::Result<Vec<JoinHandle<TestSummary>>> {
     wait(config.wait);
 
     let remaining_packets =
@@ -67,6 +67,7 @@ pub fn execute_testers(
 
                         if tester.summary().time_passed() >= config.exit_config.test_duration {
                             display_expired_time(SummaryWrapper(tester.summary()));
+                            return summary;
                         }
 
                         thread::sleep(config.send_periodicity);
@@ -86,6 +87,8 @@ pub fn execute_testers(
                     } else {
                         display_packets_sent(SummaryWrapper(tester.summary()));
                     }
+
+                    summary
                 })
                 .expect("Unable to spawn a new thread")
         })
@@ -200,4 +203,37 @@ fn generate_portions(length: usize, packet: &[u8]) -> Vec<(usize, IoVec)> {
     }
 
     portions
+}
+
+#[cfg(test)]
+mod tests {
+    use std::num::NonZeroUsize;
+    use std::time::Duration;
+
+    use super::*;
+
+    #[test]
+    fn test_init_socket() {
+        let config = NetworkConfig {
+            receivers: vec![
+                "45.89.52.36:5236".parse().unwrap(),
+                "89.52.36.41:256".parse().unwrap(),
+                "85.53.23.57:45687".parse().unwrap(),
+            ],
+            sender: "0.0.0.0:0".parse().unwrap(),
+            send_timeout: Duration::from_secs(25),
+            broadcast: true,
+            packets_per_syscall: unsafe { NonZeroUsize::new_unchecked(500) },
+        };
+
+        let check_socket = |socket: UdpSocket| {
+            assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
+            assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
+            assert_eq!(socket.broadcast().unwrap(), config.broadcast);
+        };
+
+        for socket in init_sockets(&config).expect("init_socket() has failed") {
+            check_socket(socket);
+        }
+    }
 }

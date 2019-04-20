@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/testing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/testing.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,21 +15,7 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/testing.rs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="32" column="23" lean-forward="true" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
-              <folding>
-                <element signature="e#4872#4873#0" expanded="true" />
-                <element signature="e#4927#4928#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -70,17 +57,16 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="956" />
-    <option name="y" value="215" />
-    <option name="width" value="939" />
-    <option name="height" value="1035" />
+  <component name="ProjectFrameBounds" extendedState="4">
+    <option name="width" value="959" />
+    <option name="height" value="1039" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -97,7 +83,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -300,18 +285,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_testers__tests__exits_correctly - 2019.04.01 at 22h 25m 44s.xml">
-      <configuration name="Test testers::tests::exits_correctly" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Test_testers__tests__exits_correctly - 2019.04.01 at 22h 25m 48s.xml">
-      <configuration name="Test testers::tests::exits_correctly" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Test_testers__tests__exits_correctly - 2019.04.01 at 22h 25m 55s.xml">
-      <configuration name="Test testers::tests::exits_correctly" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Test_testers__tests__tester_runs_correctly - 2019.04.01 at 22h 39m 02s.xml">
-      <configuration name="Test testers::tests::tester_runs_correctly" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Test_testers__tests__tester_runs_correctly - 2019.04.01 at 22h 39m 16s.xml">
       <configuration name="Test testers::tests::tester_runs_correctly" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -330,12 +303,23 @@
     <history-entry file="Cargo_Test - 2019.04.15 at 14h 06m 21s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.20 at 13h 42m 58s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.20 at 13h 43m 27s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.20 at 13h 44m 44s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.20 at 13h 44m 55s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="0" width="959" height="1039" extended-state="4" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26520813" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3231106" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -344,13 +328,13 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49893278" visible="true" weight="0.46179038" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49893278" weight="0.46120217" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010672" side_tool="true" weight="0.4978166" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49926144" weight="0.072052404" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49926144" weight="0.5125683" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32969433" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -558,12 +542,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/testing.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="32" column="23" lean-forward="true" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="23" />
-          <folding>
-            <element signature="e#4872#4873#0" expanded="true" />
-            <element signature="e#4927#4928#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="324">
+          <caret line="214" column="11" lean-forward="true" selection-start-line="214" selection-start-column="11" selection-end-line="214" selection-end-column="11" />
         </state>
       </provider>
     </entry>
