@@ -24,7 +24,7 @@ use std::net::UdpSocket;
 use super::summary::TestSummary;
 
 use crate::summary::SummaryPortion;
-use sendmmsg::Sendmmsg;
+use sendmmsg::SendMMsg;
 
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
