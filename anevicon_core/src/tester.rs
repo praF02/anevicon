@@ -73,7 +73,11 @@ impl<'a, 'b> Tester<'a, 'b> {
     ///
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]
-    pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)], options: SendOptions) -> io::Result<SummaryPortion> {
+    pub fn send_multiple(
+        &mut self,
+        portions: &mut [(usize, IoVec)],
+        options: SendOptions,
+    ) -> io::Result<SummaryPortion> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {

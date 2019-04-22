@@ -22,7 +22,8 @@
 //! ```rust
 //! use anevicon_core::SendOptions;
 //!
-//! // Create your custom options which tell to don't update a test summary after sending packets
+//! // Create your custom options which tell to don't update a test
+//! // summary after sending packets
 //! let options = SendOptions::default().update(false);
 //! ```
 

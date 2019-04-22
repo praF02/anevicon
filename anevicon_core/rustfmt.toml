@@ -1,0 +1,4 @@
+format_strings = true
+normalize_comments = true
+format_doc_comments = true
+wrap_comments = true
