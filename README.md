@@ -329,6 +329,8 @@ You are always welcome for any contribution to this project! But before you star
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for your computer) load on the specified receiver. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
  
+ - This program runs **ONLY ON LINUX-BASED SYSTEMS** since it uses some natives system calls which aren't simply exist on other platforms. But alternatives exist, and everyone can implement them via sending a pull request.
+ 
 - Anevicon was developed as a means of testing stress resistance of web servers, and not for hacking, that is, the author of the project **IS NOT RESPONSIBLE** for any damage caused by your use of my program.
  
  - Despite the fact that Anevicon is heavily tested both automatically and manually, does not mean that the author is responsible for any bug in his work because the program comes with **ABSOLUTELY NO WARRANTY**.
