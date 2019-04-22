@@ -121,7 +121,7 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: NonZeroUsize) {
 
     for _ in 0..count.get() {
         loop {
-            if let Err(error) = tester.send_once(IoVec::new(packet)) {
+            if let Err(error) = tester.send_one(IoVec::new(packet)) {
                 error!(
                     "An error occurred while sending a packet to the {receiver} >>> {error}! \
                      Retrying the operation...",
