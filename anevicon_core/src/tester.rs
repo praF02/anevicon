@@ -45,7 +45,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// `TestSummary`. It returns an associated `SummaryPortion` if an operation
     /// succeeds, otherwise, returns an I/O error.
     #[inline]
-    pub fn send_once(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
+    pub fn send_one(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
             Ok(bytes) => {
@@ -149,7 +149,7 @@ mod tests {
         let message = b"Generals gathered in their masses";
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-            .send_once(IoVec::new(message))
+            .send_one(IoVec::new(message))
             .expect("tester.send_once() has failed");
 
         assert_eq!(result.packets_sent(), 1);
