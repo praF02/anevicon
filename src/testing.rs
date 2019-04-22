@@ -85,10 +85,13 @@ pub fn execute_testers(
 
                     // We might have a situation when not all the required packets are sent, so fix
                     // it
-                    let unsent =
-                        tester.summary().packets_expected() - tester.summary().packets_sent();
+                    let unsent = unsafe {
+                        NonZeroUsize::new_unchecked(
+                            tester.summary().packets_expected() - tester.summary().packets_sent(),
+                        )
+                    };
 
-                    if unsent != 0 {
+                    if unsent.get() != 0 {
                         resend_packets(&mut tester, &packet, unsent);
                     } else {
                         display_packets_sent(SummaryWrapper(tester.summary()));
@@ -109,14 +112,14 @@ fn wait(duration: Duration) {
     thread::sleep(duration);
 }
 
-fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
+fn resend_packets(tester: &mut Tester, packet: &[u8], count: NonZeroUsize) {
     info!(
         "Trying to resend {count} packets to the {receiver} that weren't sent...",
-        count = helpers::cyan(count),
+        count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
 
-    for _ in 0..count {
+    for _ in 0..count.get() {
         loop {
             if let Err(error) = tester.send_once(IoVec::new(packet)) {
                 error!(
@@ -133,7 +136,7 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: usize) {
 
     info!(
         "{count} packets were successfully resent to the {receiver}.",
-        count = helpers::cyan(count),
+        count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
 }
