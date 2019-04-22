@@ -38,7 +38,7 @@ This example demonstrates sending a couple of messages to the `example.com` doma
 use std::io::IoVec;
 use std::net::UdpSocket;
 
-use anevicon_core::{TestSummary, Tester};
+use anevicon_core::{SendOptions, TestSummary, Tester};
 
 fn main() {
     // Setup the socket connected to the example.com domain
@@ -59,7 +59,10 @@ fn main() {
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",
-        tester.send_multiple(payload).unwrap().packets_sent(),
+        tester
+            .send_multiple(payload, SendOptions::default())
+            .unwrap()
+            .packets_sent(),
         summary.time_passed().as_secs()
     );
 }

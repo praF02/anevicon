@@ -28,7 +28,7 @@
 //! ```
 
 /// The main structure describing all the available options for sending packets
-/// via `Tester`.
+/// via `Tester`. This structure behaves just like an ordinary builder.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct SendOptions {
     /// Tells a tester to do not update a specified test summary after sending

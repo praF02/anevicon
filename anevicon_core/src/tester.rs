@@ -139,21 +139,58 @@ mod tests {
         };
     }
 
-    #[test]
-    fn test_send_multiple() {
-        let messages = &mut [
+    fn messages() -> Vec<(usize, IoVec<'static>)> {
+        vec![
             (0, IoVec::new(b"Generals gathered in their masses")),
             (0, IoVec::new(b"Just like witches at black masses")),
             (0, IoVec::new(b"Evil minds that plot destruction")),
             (0, IoVec::new(b"Sorcerers of death's construction")),
-        ];
+        ]
+    }
 
+    // Normally test that all the packets were sent correctly and the specified
+    // `TestSummary` was updates as well.
+    #[test]
+    fn test_send_multiple() {
+        let mut messages = messages();
+
+        let mut summary = TestSummary::default();
+        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
+
+        let result = tester
+            .send_multiple(messages.as_mut_slice(), SendOptions::default())
+            .expect("tester.send_multiple() has failed");
+
+        assert_eq!(result.packets_sent(), messages.len());
+        assert_eq!(summary.packets_sent(), messages.len());
+    }
+
+    // Now expect that the specified `TestSummary` wasn't updated if we create an
+    // appropriate `SendOptions`.
+    #[test]
+    fn send_multiple_does_not_update() {
+        let mut messages = messages();
+
+        let mut summary = TestSummary::default();
+        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
+
+        let result = tester
+            .send_multiple(
+                messages.as_mut_slice(),
+                SendOptions::default().update(false),
+            )
+            .expect("tester.send_multiple() has failed");
+
+        assert_eq!(result.packets_sent(), messages.len());
         assert_eq!(
-            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-                .send_multiple(messages, SendOptions::default())
-                .expect("tester.send_multiple() has failed")
-                .packets_sent(),
-            messages.len()
+            summary.packets_expected() + summary.packets_sent(),
+            0,
+            "The packets value isn't equal to zero"
+        );
+        assert_eq!(
+            summary.megabytes_expected() + summary.megabytes_sent(),
+            0,
+            "The megabytes value isn't equal to zero"
         );
     }
 
@@ -167,5 +204,30 @@ mod tests {
 
         assert_eq!(result.packets_sent(), 1);
         assert_eq!(result.bytes_sent(), message.len());
+    }
+
+    #[test]
+    fn send_one_does_not_update() {
+        let message = b"Generals gathered in their masses";
+
+        let mut summary = TestSummary::default();
+        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
+
+        let result = tester
+            .send_one(IoVec::new(message), SendOptions::default().update(false))
+            .expect("tester.send_once() has failed");
+
+        assert_eq!(result.bytes_sent(), message.len());
+        assert_eq!(result.bytes_expected(), message.len());
+        assert_eq!(
+            summary.packets_expected() + summary.packets_sent(),
+            0,
+            "The packets value isn't equal to zero"
+        );
+        assert_eq!(
+            summary.megabytes_expected() + summary.megabytes_sent(),
+            0,
+            "The megabytes value isn't equal to zero"
+        );
     }
 }
