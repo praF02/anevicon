@@ -216,9 +216,23 @@ fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<(usize, IoVec)>
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
+    use lazy_static::lazy_static;
+    use structopt::StructOpt;
+
+    use std::mem;
     use std::time::Duration;
 
-    use super::*;
+    lazy_static! {
+        static ref UDP_SOCKET: UdpSocket = {
+            let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
+            socket
+                .connect(socket.local_addr().unwrap())
+                .expect("Cannot connect the socket to itself");
+            socket
+        };
+    }
 
     #[test]
     fn test_generate_portions() {
@@ -233,13 +247,8 @@ mod tests {
 
     #[test]
     fn resends_all_packets() {
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
-        socket
-            .connect(socket.local_addr().unwrap())
-            .expect("Cannot connect the socket to itself");
-
         let mut summary = TestSummary::default();
-        let mut tester = Tester::new(&socket, &mut summary);
+        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
 
         // Just be sure that this call doesn't panic
         resend_packets(
@@ -270,4 +279,30 @@ mod tests {
         }
     }
 
+    #[test]
+    fn executes_testers_correctly() {
+        let config = ArgsConfig::from_iter(&[
+            "anevicon",
+            "--receiver",
+            &UDP_SOCKET.local_addr().unwrap().to_string(),
+            "--packets-count",
+            "14",
+            "--send-message",
+            "Are you gonna take me home tonight?",
+        ]);
+
+        let packet = helpers::construct_packet(&config.packet_config)
+            .expect("helpers::construct_packet() has failed");
+        let packets_count = config.exit_config.packets_count.get();
+
+        execute_testers(unsafe { mem::transmute(&config) }, unsafe {
+            mem::transmute(packet.as_slice())
+        })
+        .expect("execute_testers(...) returned an error")
+        .into_iter()
+        .map(|handle| handle.join().expect("handle.join() returned an error"))
+        .for_each(|summary| {
+            assert_eq!(summary.packets_sent(), summary.packets_expected());
+        });
+    }
 }

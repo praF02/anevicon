@@ -71,8 +71,10 @@
 
 #![feature(iovec)]
 
+pub mod options;
 pub mod summary;
 pub mod tester;
 
+pub use options::SendOptions;
 pub use summary::{SummaryPortion, TestSummary};
 pub use tester::Tester;
