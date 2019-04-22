@@ -19,6 +19,7 @@
 use std::fmt::Display;
 use std::io::{self, IoVec};
 use std::net::UdpSocket;
+use std::num::NonZeroUsize;
 use std::thread::{self, Builder, JoinHandle};
 use std::time::Duration;
 
@@ -36,9 +37,14 @@ pub fn execute_testers(
 ) -> io::Result<Vec<JoinHandle<TestSummary>>> {
     wait(config.wait);
 
-    let remaining_packets =
-        config.exit_config.packets_count.get() % config.network_config.packets_per_syscall.get();
-    let sendings_count = (config.exit_config.packets_count.get() - remaining_packets)
+    let remaining_packets = unsafe {
+        NonZeroUsize::new_unchecked(
+            config.exit_config.packets_count.get()
+                % config.network_config.packets_per_syscall.get(),
+        )
+    };
+
+    let sendings_count = (config.exit_config.packets_count.get() - remaining_packets.get())
         / config.network_config.packets_per_syscall.get();
 
     Ok(init_sockets(&config.network_config)?
@@ -49,7 +55,7 @@ pub fn execute_testers(
                 .name(config.network_config.receivers[i].to_string())
                 .spawn(move || {
                     let (mut ordinary, mut remaining) = (
-                        generate_portions(config.network_config.packets_per_syscall.get(), &packet),
+                        generate_portions(config.network_config.packets_per_syscall, &packet),
                         generate_portions(remaining_packets, &packet),
                     );
 
@@ -195,10 +201,10 @@ fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
     Ok(sockets)
 }
 
-fn generate_portions(length: usize, packet: &[u8]) -> Vec<(usize, IoVec)> {
-    let mut portions = Vec::with_capacity(length);
+fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<(usize, IoVec)> {
+    let mut portions = Vec::with_capacity(length.get());
 
-    for _ in 0..length {
+    for _ in 0..length.get() {
         portions.push((0, IoVec::new(packet)));
     }
 
@@ -207,7 +213,6 @@ fn generate_portions(length: usize, packet: &[u8]) -> Vec<(usize, IoVec)> {
 
 #[cfg(test)]
 mod tests {
-    use std::num::NonZeroUsize;
     use std::time::Duration;
 
     use super::*;
@@ -216,7 +221,7 @@ mod tests {
     fn test_generate_portions() {
         let portion: &[u8] = b"Something very very useful for all of us";
 
-        for (bytes, vec) in generate_portions(5, portion) {
+        for (bytes, vec) in generate_portions(unsafe { NonZeroUsize::new_unchecked(5) }, portion) {
             // This value must be always zero for future use of sendmmsg
             assert_eq!(bytes, 0);
             assert_eq!(portion, vec.as_ref());
