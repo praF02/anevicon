@@ -158,7 +158,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_once() {
+    fn test_send_one() {
         let message = b"Generals gathered in their masses";
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())

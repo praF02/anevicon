@@ -37,7 +37,8 @@ pub struct SendOptions {
 }
 
 impl SendOptions {
-    /// Updates the `update` field with your custom value.
+    /// Updates the `update` field with your custom value and returns the same
+    /// instance.
     pub fn update(mut self, update: bool) -> SendOptions {
         self.update = update;
         self
