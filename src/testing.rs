@@ -232,6 +232,24 @@ mod tests {
     }
 
     #[test]
+    fn resends_all_packets() {
+        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
+        socket
+            .connect(socket.local_addr().unwrap())
+            .expect("Cannot connect the socket to itself");
+
+        let mut summary = TestSummary::default();
+        let mut tester = Tester::new(&socket, &mut summary);
+
+        // Just be sure that this call doesn't panic
+        resend_packets(
+            &mut tester,
+            b"Trying to resend packets which weren't sent yet",
+            unsafe { NonZeroUsize::new_unchecked(12) },
+        );
+    }
+
+    #[test]
     fn test_init_sockets() {
         let config = NetworkConfig {
             receivers: vec![
