@@ -148,7 +148,11 @@ OPTIONS:
             number, separated by a colon [default: 0.0.0.0:0]
     -d, --test-duration <TIME-SPAN>
             A whole test duration. When this limit is reached, then the program
-            will exit [default: 64years 64hours 64secs]
+            will exit.
+            
+            The program might exit a few seconds later because of long syscalls.
+            For more precision, decrease the `--packets-per-syscall` value.
+            [default: 64years 64hours 64secs]
     -v, --verbosity <LEVEL>
             Enable one of the possible verbosity levels. The zero level doesn't
             print anything, and the last level prints everything [default: 3]
