@@ -183,7 +183,10 @@ pub struct ExitConfig {
     pub packets_count: NonZeroUsize,
 
     /// A whole test duration. When this limit is reached, then the program will
-    /// exit
+    /// exit.
+    ///
+    /// The program might exit a few seconds later because of long syscalls. For
+    /// more precision, decrease the `--packets-per-syscall` value.
     #[structopt(
         short = "d",
         long = "test-duration",

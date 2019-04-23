@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anevicon_core/src/tester.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/tester.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/helpers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/helpers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/testing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/testing.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,7 +15,17 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/config.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="273">
+              <caret line="188" column="67" lean-forward="true" selection-start-line="188" selection-start-column="67" selection-end-line="188" selection-end-column="67" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -47,7 +54,6 @@
         <option value="$PROJECT_DIR$/anevicon_core/src/summary.rs" />
         <option value="$PROJECT_DIR$/src/testers.rs" />
         <option value="$PROJECT_DIR$/src/pool.rs" />
-        <option value="$PROJECT_DIR$/src/config.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/rustfmt.toml" />
         <option value="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/src/lib.rs" />
@@ -59,6 +65,7 @@
         <option value="$PROJECT_DIR$/src/main.rs" />
         <option value="$PROJECT_DIR$/src/testing.rs" />
         <option value="$PROJECT_DIR$/anevicon_core/src/tester.rs" />
+        <option value="$PROJECT_DIR$/src/config.rs" />
       </list>
     </option>
   </component>
@@ -83,12 +90,6 @@
             <path>
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
               <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="anevicon_core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
-              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="anevicon_core" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -296,9 +297,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_testing__tests__resends_all_packets - 2019.04.22 at 11h 21m 43s.xml">
-      <configuration name="Test testing::tests::resends_all_packets" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Cargo_Test - 2019.04.22 at 11h 25m 34s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -326,11 +324,15 @@
     <history-entry file="Cargo_Test - 2019.04.23 at 22h 04m 44s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.23 at 22h 07m 50s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="959" height="1039" extended-state="4" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21905805" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.21905805" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -339,13 +341,13 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49893278" visible="true" weight="0.13551913" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49893278" weight="0.4918033" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010672" side_tool="true" weight="0.4978166" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49926144" weight="0.21420765" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49926144" weight="0.21639344" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32969433" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -553,13 +555,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3399">
-          <caret line="123" column="36" selection-start-line="123" selection-start-column="36" selection-end-line="123" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/helpers.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1257">
@@ -603,6 +598,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="183">
           <caret line="360" column="17" selection-start-line="360" selection-start-column="17" selection-end-line="360" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="188" column="67" lean-forward="true" selection-start-line="188" selection-start-column="67" selection-end-line="188" selection-end-column="67" />
         </state>
       </provider>
     </entry>
