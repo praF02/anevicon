@@ -32,13 +32,13 @@ mod logging;
 mod testing;
 
 fn main() {
-    let args_config = ArgsConfig::setup();
+    let config = ArgsConfig::setup();
     title();
 
-    logging::setup_logging(&args_config.logging_config);
-    trace!("{:?}", args_config);
+    logging::setup_logging(&config.logging_config);
+    trace!("{:?}", config);
 
-    let packet = match helpers::construct_packet(&args_config.packet_config) {
+    let packet = match helpers::construct_packet(&config.packet_config) {
         Err(error) => {
             error!("Constructing the packet failed >>> {}!", error);
             std::process::exit(1);
@@ -48,7 +48,7 @@ fn main() {
 
     // Expand ordinary lifetimes to 'static ones to avoid using the Arc<RwLock<T>>
     // construction
-    match testing::execute_testers(unsafe { mem::transmute(&args_config) }, unsafe {
+    match testing::execute_testers(unsafe { mem::transmute(&config) }, unsafe {
         mem::transmute(packet.as_slice())
     }) {
         Ok(handles) => {

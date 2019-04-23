@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn generates_random_packet() {
-        let length = unsafe { NonZeroUsize::new_unchecked(35684) };
+        let length = NonZeroUsize::new(35684).unwrap();
         let buffer = random_packet(length);
 
         // Check that we've got the correctly length and capacity
@@ -195,7 +195,7 @@ mod tests {
 
     #[test]
     fn test_choose_random_packet() {
-        let packet_length = unsafe { NonZeroUsize::new_unchecked(24550) };
+        let packet_length = NonZeroUsize::new(24550).unwrap();
 
         // The function must generate a random set of bytes as a packet
         assert_eq!(

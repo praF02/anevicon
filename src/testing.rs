@@ -296,14 +296,18 @@ mod tests {
         let packet = helpers::construct_packet(&config.packet_config)
             .expect("helpers::construct_packet() has failed");
 
-        execute_testers(unsafe { mem::transmute(&config) }, unsafe {
+        for handle in execute_testers(unsafe { mem::transmute(&config) }, unsafe {
             mem::transmute(packet.as_slice())
         })
         .expect("execute_testers(...) returned an error")
-        .into_iter()
-        .map(|handle| handle.join().expect("handle.join() returned an error"))
-        .for_each(|summary| {
-            assert_eq!(summary.packets_sent(), 14);
-        });
+        {
+            assert_eq!(
+                handle
+                    .join()
+                    .expect("handle.join() returned an error")
+                    .packets_sent(),
+                14
+            );
+        }
     }
 }

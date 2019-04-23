@@ -135,13 +135,12 @@ mod tests {
             (0, IoVec::new(b"Sorcerers of death's construction")),
         ];
 
-        assert_eq!(
-            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-                .send_multiple(messages)
-                .expect("tester.send_multiple() has failed")
-                .packets_sent(),
-            messages.len()
-        );
+        let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
+            .send_multiple(messages)
+            .expect("tester.send_multiple() has failed");
+
+        assert_eq!(result.packets_sent(), messages.len());
+        assert_eq!(result.packets_expected(), messages.len());
     }
 
     #[test]
@@ -153,6 +152,6 @@ mod tests {
             .expect("tester.send_once() has failed");
 
         assert_eq!(result.packets_sent(), 1);
-        assert_eq!(result.bytes_sent(), message.len());
+        assert_eq!(result.packets_expected(), 1);
     }
 }
