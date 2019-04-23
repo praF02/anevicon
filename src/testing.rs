@@ -250,12 +250,14 @@ mod tests {
         let mut summary = TestSummary::default();
         let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
 
-        // Just be sure that this call doesn't panic
         resend_packets(
             &mut tester,
             b"Trying to resend packets which weren't sent yet",
             unsafe { NonZeroUsize::new_unchecked(12) },
         );
+
+        assert_eq!(summary.packets_sent(), 12);
+        assert_eq!(summary.packets_expected(), 12);
     }
 
     #[test]
@@ -293,7 +295,6 @@ mod tests {
 
         let packet = helpers::construct_packet(&config.packet_config)
             .expect("helpers::construct_packet() has failed");
-        let packets_count = config.exit_config.packets_count.get();
 
         execute_testers(unsafe { mem::transmute(&config) }, unsafe {
             mem::transmute(packet.as_slice())
@@ -302,7 +303,7 @@ mod tests {
         .into_iter()
         .map(|handle| handle.join().expect("handle.join() returned an error"))
         .for_each(|summary| {
-            assert_eq!(summary.packets_sent(), summary.packets_expected());
+            assert_eq!(summary.packets_sent(), 14);
         });
     }
 }
