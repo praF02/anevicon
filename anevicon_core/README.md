@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
   </a>
   <a href="https://crates.io/crates/anevicon_core">
-    <img src="https://img.shields.io/badge/crates.io-v0.4.6-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v0.4.7-orange.svg">
   </a>
   <a href="https://docs.rs/anevicon_core">
     <img src="https://img.shields.io/badge/docs.rs-link-blue.svg">
@@ -38,7 +38,7 @@ This example demonstrates sending a couple of messages to the `example.com` doma
 use std::io::IoVec;
 use std::net::UdpSocket;
 
-use anevicon_core::{SendOptions, TestSummary, Tester};
+use anevicon_core::{TestSummary, Tester};
 
 fn main() {
     // Setup the socket connected to the example.com domain
@@ -59,10 +59,7 @@ fn main() {
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",
-        tester
-            .send_multiple(payload, SendOptions::default())
-            .unwrap()
-            .packets_sent(),
+        tester.send_multiple(payload).unwrap().packets_sent(),
         summary.time_passed().as_secs()
     );
 }

@@ -21,11 +21,10 @@
 use std::io::{self, IoVec};
 use std::net::UdpSocket;
 
-use sendmmsg::SendMMsg;
-
-use super::options::SendOptions;
 use super::summary::TestSummary;
+
 use crate::summary::SummaryPortion;
+use sendmmsg::SendMMsg;
 
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
@@ -46,16 +45,12 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// `TestSummary`. It returns an associated `SummaryPortion` if an operation
     /// succeeds, otherwise, returns an I/O error.
     #[inline]
-    pub fn send_one(&mut self, packet: IoVec, options: SendOptions) -> io::Result<SummaryPortion> {
+    pub fn send_one(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
             Ok(bytes) => {
                 let portion = SummaryPortion::new(packet.len(), bytes, 1, 1);
-
-                if options.update {
-                    self.summary.update(portion);
-                }
-
+                self.summary.update(portion);
                 Ok(portion)
             }
         }
@@ -73,11 +68,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     ///
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]
-    pub fn send_multiple(
-        &mut self,
-        portions: &mut [(usize, IoVec)],
-        options: SendOptions,
-    ) -> io::Result<SummaryPortion> {
+    pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)]) -> io::Result<SummaryPortion> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {
@@ -94,11 +85,7 @@ impl<'a, 'b> Tester<'a, 'b> {
                     portions.len(),
                     packets,
                 );
-
-                if options.update {
-                    self.summary.update(portion);
-                }
-
+                self.summary.update(portion);
                 Ok(portion)
             }
         }
@@ -125,9 +112,9 @@ impl<'a, 'b> Tester<'a, 'b> {
 
 #[cfg(test)]
 mod tests {
-    use lazy_static::lazy_static;
-
     use super::*;
+
+    use lazy_static::lazy_static;
 
     lazy_static! {
         static ref UDP_SOCKET: UdpSocket = {
@@ -139,95 +126,33 @@ mod tests {
         };
     }
 
-    fn messages() -> Vec<(usize, IoVec<'static>)> {
-        vec![
+    #[test]
+    fn test_send_multiple() {
+        let messages = &mut [
             (0, IoVec::new(b"Generals gathered in their masses")),
             (0, IoVec::new(b"Just like witches at black masses")),
             (0, IoVec::new(b"Evil minds that plot destruction")),
             (0, IoVec::new(b"Sorcerers of death's construction")),
-        ]
-    }
+        ];
 
-    // Normally test that all the packets were sent correctly and the specified
-    // `TestSummary` was updates as well.
-    #[test]
-    fn test_send_multiple() {
-        let mut messages = messages();
-
-        let mut summary = TestSummary::default();
-        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
-
-        let result = tester
-            .send_multiple(messages.as_mut_slice(), SendOptions::default())
-            .expect("tester.send_multiple() has failed");
-
-        assert_eq!(result.packets_sent(), messages.len());
-        assert_eq!(summary.packets_sent(), messages.len());
-    }
-
-    // Now expect that the specified `TestSummary` wasn't updated if we create an
-    // appropriate `SendOptions`.
-    #[test]
-    fn send_multiple_does_not_update() {
-        let mut messages = messages();
-
-        let mut summary = TestSummary::default();
-        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
-
-        let result = tester
-            .send_multiple(
-                messages.as_mut_slice(),
-                SendOptions::default().update(false),
-            )
-            .expect("tester.send_multiple() has failed");
-
-        assert_eq!(result.packets_sent(), messages.len());
         assert_eq!(
-            summary.packets_expected() + summary.packets_sent(),
-            0,
-            "The packets value isn't equal to zero"
-        );
-        assert_eq!(
-            summary.megabytes_expected() + summary.megabytes_sent(),
-            0,
-            "The megabytes value isn't equal to zero"
+            Tester::new(&UDP_SOCKET, &mut TestSummary::default())
+                .send_multiple(messages)
+                .expect("tester.send_multiple() has failed")
+                .packets_sent(),
+            messages.len()
         );
     }
 
     #[test]
-    fn test_send_one() {
+    fn test_send_once() {
         let message = b"Generals gathered in their masses";
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-            .send_one(IoVec::new(message), SendOptions::default())
+            .send_one(IoVec::new(message))
             .expect("tester.send_once() has failed");
 
         assert_eq!(result.packets_sent(), 1);
         assert_eq!(result.bytes_sent(), message.len());
-    }
-
-    #[test]
-    fn send_one_does_not_update() {
-        let message = b"Generals gathered in their masses";
-
-        let mut summary = TestSummary::default();
-        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
-
-        let result = tester
-            .send_one(IoVec::new(message), SendOptions::default().update(false))
-            .expect("tester.send_once() has failed");
-
-        assert_eq!(result.bytes_sent(), message.len());
-        assert_eq!(result.bytes_expected(), message.len());
-        assert_eq!(
-            summary.packets_expected() + summary.packets_sent(),
-            0,
-            "The packets value isn't equal to zero"
-        );
-        assert_eq!(
-            summary.megabytes_expected() + summary.megabytes_sent(),
-            0,
-            "The megabytes value isn't equal to zero"
-        );
     }
 }
