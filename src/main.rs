@@ -85,6 +85,12 @@ fn title() {
         r" \__,_|_| |_|\___| \_/ |_|\___\___/|_| |_|".cyan()
     );
     println!(
+        "                       {}",
+        format!("version {}", structopt::clap::crate_version!())
+            .red()
+            .bold()
+    );
+    println!(
         "{}\n",
         "A high-performance UDP-based load generator, written in Rust"
             .green()
