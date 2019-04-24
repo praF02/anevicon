@@ -66,6 +66,12 @@ This tool can be also used as a bot to build a botnet for simulating UDP-based D
 
 ## Installation
 
+Currently, this project requires unstable standard library features, so this is why you must switch to the nightly channel to avoid compilation errors:
+
+```bash
+$ rustup override set nightly
+```
+
 ### From package registry
 This command will download the source code from the https://crates.io package registry and compile Anevicon right for your platform, using our lovely `cargo`:
 
