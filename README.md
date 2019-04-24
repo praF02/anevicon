@@ -35,6 +35,7 @@ This tool can be also used as a bot to build a botnet for simulating UDP-based D
 ----------
 
 ## Contents
+ - [Ass-kicking features](https://github.com/Gymmasssorla/anevicon#ass-kicking-features)
  - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
    - [From package registry](https://github.com/Gymmasssorla/anevicon#from-package-registry)
    - [As a repository](https://github.com/Gymmasssorla/anevicon#as-a-repository)
@@ -61,6 +62,16 @@ This tool can be also used as a bot to build a botnet for simulating UDP-based D
  - [Cautions](https://github.com/Gymmasssorla/anevicon#cautions)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
  
+
+----------
+
+## Ass-kicking features
+
+ - **Written in Rust.** How you can see, Anevicon is completely written in [Rust](https://www.rust-lang.org/), which means that it leverages high-level safeness and bare-metal performance, achieved by zero-cost abstractions.
+ 
+ - **Linux acceleration.** Anevicon is developed for Linux-based operating systems not just like that. It interacts with the kernel using the [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call, transmitting multiple messages at once.
+ 
+ - **Functionality.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
 
 ----------
 
