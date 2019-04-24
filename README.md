@@ -133,7 +133,7 @@ OPTIONS:
             been printed.
             
             It is not recommended to set this option to a low value for some
-            performance reasons. [default: 1000]
+            performance reasons. [default: 800]
     -r, --receiver <SOCKET-ADDRESS>...
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
