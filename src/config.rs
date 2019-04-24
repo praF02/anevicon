@@ -124,7 +124,7 @@ pub struct NetworkConfig {
         long = "packets-per-syscall",
         takes_value = true,
         value_name = "POSITIVE-INTEGER",
-        default_value = "800",
+        default_value = "600",
         parse(try_from_str = "parse_non_zero_usize")
     )]
     pub packets_per_syscall: NonZeroUsize,
