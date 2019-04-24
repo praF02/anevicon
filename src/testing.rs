@@ -62,8 +62,8 @@ pub fn execute_testers(
                     let mut summary = TestSummary::default();
                     let mut tester = Tester::new(&socket, &mut summary);
 
-                    // Run the loop for the current worker until the allotted time expires or all
-                    // the packets will have been sent
+                    // Run the main cycle for the current worker, and exit if the allotted time
+                    // expires
                     for _ in 0..sendings_count {
                         if let Err(error) = tester.send_multiple(&mut ordinary) {
                             send_multiple_error(error);
