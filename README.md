@@ -69,7 +69,7 @@ This tool can be also used as a bot to build a botnet for simulating UDP-based D
 
  - **Written in Rust.** How you can see, Anevicon is completely written in [Rust](https://www.rust-lang.org/), which means that it leverages high-level safeness and bare-metal performance, achieved by zero-cost abstractions.
  
- - **Linux acceleration.** Anevicon is developed for Linux-based operating systems not just like that. It interacts with the kernel using the [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call, transmitting multiple messages at once.
+ - **Linux acceleration.** Anevicon is developed for Linux-based operating systems not just like that. It interacts with the kernel using the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call, transmitting multiple messages at once.
  
  - **Functionality.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
 
@@ -256,7 +256,7 @@ $ anevicon --receiver 93.184.216.34:80 --date-time-format "%D %X"
 ```
 
 ### Packets per one syscall
-For performance reasons, Anevicon uses the [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) syscall by default, reducing CPU usage significantly. Specifying a number of packets being sent per a syscall is also supported.
+For performance reasons, Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) syscall by default, reducing CPU usage significantly. Specifying a number of packets being sent per a syscall is also supported.
 
 ```bash
 # Test the 80 port of the example.com site with 1200 packets per one syscall
