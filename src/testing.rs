@@ -93,10 +93,9 @@ pub fn execute_testers(
 
                     if unsent.get() != 0 {
                         resend_packets(&mut tester, &packet, unsent);
-                    } else {
-                        display_packets_sent(SummaryWrapper(tester.summary()));
                     }
 
+                    display_packets_sent(SummaryWrapper(tester.summary()));
                     summary
                 })
                 .expect("Unable to spawn a new thread")
