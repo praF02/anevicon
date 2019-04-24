@@ -92,7 +92,7 @@ fn title() {
     );
     println!(
         "{}\n",
-        "A high-performance UDP-based load generator, written in Rust"
+        "A high-performant UDP-based load generator, written in Rust"
             .green()
             .underline()
     );

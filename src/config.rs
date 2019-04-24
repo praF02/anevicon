@@ -31,7 +31,7 @@ use time::ParseError;
 #[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
 #[structopt(
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
-    about = "An UDP-based server stress-testing tool, written in Rust.",
+    about = "A high-performant UDP-based load generator, written in Rust.",
     after_help = "For more information see <https://github.com/Gymmasssorla/anevicon>.",
     set_term_width = 80
 )]
