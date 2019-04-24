@@ -71,7 +71,7 @@ Currently, this project requires unstable standard library features, so this is 
 $ rustup override set nightly
 ```
 
-### Building from package registry
+### Building from crates.io
 ```bash
 $ cargo install anevicon
 ```
