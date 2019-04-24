@@ -221,10 +221,10 @@ $ anevicon --receiver 93.184.216.34:80 --send-message "How do you do?"
 ```
 
 ### Test intensity
-In some situations, you don't need to generate the maximum amount of packets per second, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
-# Test the 80 port of example.com waiting for 270 microseconds after each send
+# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
 $ anevicon --receiver 93.184.216.34:80 --send-periodicity 270us
 ```
 
