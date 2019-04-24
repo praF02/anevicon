@@ -106,7 +106,7 @@ pub fn execute_testers(
 
 fn wait(duration: Duration) {
     warn!(
-        "Waiting {time} and then starting to initialize the sockets...",
+        "Waiting {time} and then starting to initialize the sockets and executing the tests...",
         time = helpers::cyan(format_duration(duration))
     );
     thread::sleep(duration);
