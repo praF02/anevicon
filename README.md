@@ -23,7 +23,7 @@ A high-performant traffic generator, designed to be as convenient and reliable a
 numerous UDP-packets to a server, thereby simulating an activity that can be produced by your end users or a
 group of hackers.
 
-This tool can be also used as a bot to build a botnet for simulating UDP-based DDoS attacks (but only for educational and pentesting purposes). This is achieved by the [Anevicon Core Library](https://crates.io/crates/anevicon_core) with which this program depends on.
+This tool can be also used as a bot to build a botnet for simulating [UDP-based DDoS attacks](https://en.wikipedia.org/wiki/UDP_flood_attack) (but only for educational and pentesting purposes). This is achieved by the [Anevicon Core Library](https://crates.io/crates/anevicon_core) with which this program depends on.
   <h4>
     <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
     <a href="https://github.com/Gymmasssorla/anevicon/stargazers">Stargazers</a> &middot;
