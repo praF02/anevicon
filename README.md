@@ -117,9 +117,9 @@ OPTIONS:
             A count of packets for sending. When this limit is reached, then the
             program will exit [default: 18446744073709551615]
         --packets-per-syscall <POSITIVE-INTEGER>
-            A count of packets which the program will send using only one system
-            call. After the operation completed, a test summary will have been
-            printed.
+            A count of packets which the program will send using only one
+            syscall. After the operation completed, a test summary will have
+            been printed.
             
             It is not recommended to set this option to a low value for some
             performance reasons. [default: 1000]
@@ -139,11 +139,11 @@ OPTIONS:
             Interpret the specified UTF-8 encoded text message as a single
             packet and repeatedly send it to each receiver
         --send-periodicity <TIME-SPAN>
-            A periodicity of sending packets. This option can be used to
-            decrease test intensity [default: 0secs]
+            A time interval between sendmmsg syscalls. This option can be used
+            to decrease test intensity [default: 0secs]
     -t, --send-timeout <TIME-SPAN>
             A timeout of sending every single packet. If a timeout is reached,
-            an error will be printed [default: 10secs]
+            then a packet will be sent later. [default: 10secs]
     -s, --sender <SOCKET-ADDRESS>
             A sender of generated traffic, specified as an IP-address and a port
             number, separated by a colon [default: 0.0.0.0:0]
@@ -151,9 +151,9 @@ OPTIONS:
             A whole test duration. When this limit is reached, then the program
             will exit.
             
-            The program might exit a few seconds later because of long syscalls.
-            For more precision, decrease the `--packets-per-syscall` value.
-            [default: 64years 64hours 64secs]
+            Exit might occur a few seconds later because of long sendmmsg
+            syscalls. For more precision, decrease the `--packets-per-syscall`
+            value. [default: 64years 64hours 64secs]
     -v, --verbosity <LEVEL>
             Enable one of the possible verbosity levels. The zero level doesn't
             print anything, and the last level prints everything [default: 3]
