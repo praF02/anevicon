@@ -48,7 +48,7 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A periodicity of sending packets. This option can be used to
+    /// A time interval between sendmmsg syscalls. This option can be used to
     /// decrease test intensity
     #[structopt(
         long = "send-periodicity",
@@ -102,8 +102,8 @@ pub struct NetworkConfig {
     )]
     pub sender: SocketAddr,
 
-    /// A timeout of sending every single packet. If a timeout is reached, an
-    /// error will be printed
+    /// A timeout of sending every single packet. If a timeout is reached, then
+    /// a packet will be sent later.
     #[structopt(
         short = "t",
         long = "send-timeout",
@@ -114,8 +114,8 @@ pub struct NetworkConfig {
     )]
     pub send_timeout: Duration,
 
-    /// A count of packets which the program will send using only one system
-    /// call. After the operation completed, a test summary will have been
+    /// A count of packets which the program will send using only one syscall.
+    /// After the operation completed, a test summary will have been
     /// printed.
     ///
     /// It is not recommended to set this option to a low value for some
@@ -185,8 +185,8 @@ pub struct ExitConfig {
     /// A whole test duration. When this limit is reached, then the program will
     /// exit.
     ///
-    /// The program might exit a few seconds later because of long syscalls. For
-    /// more precision, decrease the `--packets-per-syscall` value.
+    /// Exit might occur a few seconds later because of long sendmmsg syscalls.
+    /// For more precision, decrease the `--packets-per-syscall` value.
     #[structopt(
         short = "d",
         long = "test-duration",
