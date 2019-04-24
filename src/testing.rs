@@ -152,7 +152,7 @@ fn display_expired_time(summary: SummaryWrapper) {
 #[inline]
 fn display_packets_sent(summary: SummaryWrapper) {
     info!(
-        "All the packets were sent for the {receiver} >>> {summary}",
+        "All the packets were sent for the {receiver} >>> {summary}.",
         receiver = current_receiver(),
         summary = summary
     );
