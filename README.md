@@ -37,8 +37,8 @@ This tool can be also used as a bot to build a botnet for simulating UDP-based D
 ## Contents
  - [Ass-kicking features](https://github.com/Gymmasssorla/anevicon#ass-kicking-features)
  - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
-   - [From package registry](https://github.com/Gymmasssorla/anevicon#from-package-registry)
-   - [As a repository](https://github.com/Gymmasssorla/anevicon#as-a-repository)
+   - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
+   - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
    - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
  - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Using as a program](https://github.com/Gymmasssorla/anevicon#using-as-a-program)
