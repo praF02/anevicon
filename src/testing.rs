@@ -195,8 +195,8 @@ fn display_summary(summary: &TestSummary) {
         )),
         average_speed = helpers::cyan(format!(
             "{packets_per_sec} packets/sec ({mbps} Mbps)",
-            mbps = summary.megabytes_sent(),
-            packets_per_sec = summary.packets_per_sec()
+            packets_per_sec = summary.packets_per_sec(),
+            mbps = summary.megabites_per_sec(),
         )),
         time_passed = helpers::cyan(format_duration(summary.time_passed())),
     );
