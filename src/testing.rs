@@ -238,7 +238,7 @@ fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
     Ok(sockets)
 }
 
-fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<(usize, IoVec)> {
+fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
     let mut portions = Vec::with_capacity(length.get());
 
     for _ in 0..length.get() {

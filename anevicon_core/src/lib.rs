@@ -74,5 +74,6 @@
 pub mod summary;
 pub mod tester;
 
+pub use sendmmsg::Portion;
 pub use summary::{SummaryPortion, TestSummary};
 pub use tester::Tester;
