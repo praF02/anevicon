@@ -69,9 +69,9 @@ pub fn execute_testers(
                             send_multiple_error(error);
                         }
 
-                        display_summary(tester.summary());
+                        display_summary(tester.summary);
 
-                        if tester.summary().time_passed() >= config.exit_config.test_duration {
+                        if tester.summary.time_passed() >= config.exit_config.test_duration {
                             display_expired_time();
                             return summary;
                         }
@@ -87,7 +87,7 @@ pub fn execute_testers(
                     // it
                     let unsent = unsafe {
                         NonZeroUsize::new_unchecked(
-                            tester.summary().packets_expected() - tester.summary().packets_sent(),
+                            tester.summary.packets_expected() - tester.summary.packets_sent(),
                         )
                     };
 
@@ -139,7 +139,7 @@ fn resend_packets(
     );
 
     for _ in 0..count.get() {
-        if tester.summary().time_passed() >= limit {
+        if tester.summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
 
