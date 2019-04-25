@@ -72,7 +72,8 @@ impl<'a, 'b> Tester<'a, 'b> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {
-                let (mut bytes_expected_total, mut bytes_sent_total) = (0, 0);
+                let mut bytes_expected_total = 0;
+                let mut bytes_sent_total = 0;
 
                 for (bytes_sent, vec) in portions.iter_mut() {
                     bytes_expected_total += vec.len();
@@ -85,6 +86,7 @@ impl<'a, 'b> Tester<'a, 'b> {
                     portions.len(),
                     packets,
                 );
+
                 self.summary.update(portion);
                 Ok(portion)
             }
