@@ -320,7 +320,7 @@ mod tests {
             sender: "0.0.0.0:0".parse().unwrap(),
             send_timeout: Duration::from_secs(25),
             broadcast: true,
-            packets_per_syscall: unsafe { NonZeroUsize::new_unchecked(500) },
+            packets_per_syscall: NonZeroUsize::new(500).unwrap(),
         };
 
         for socket in init_sockets(&config).expect("init_socket() has failed") {
