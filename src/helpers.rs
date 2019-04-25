@@ -23,23 +23,21 @@ use std::io;
 use std::num::NonZeroUsize;
 use std::path::Path;
 
-use anevicon_core::summary::{SummaryPortion, TestSummary};
 use colored::{ColoredString, Colorize as _};
-use humantime::format_duration;
 use rand::{thread_rng, RngCore};
 
 use super::config::PacketConfig;
 
 pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If a user has specified a file, then use its content as a packet
+    // If a user has specified a file, use its content as a packet
     if let Some(ref filename) = packet_config.send_file {
         read_packet(filename)
 
-    // If a user has specified a message, then use it as a packet
+    // If a user has specified a message, use it as a packet
     } else if let Some(ref message) = packet_config.send_message {
         Ok(message.bytes().collect())
 
-    // If both file and message were not specified, then at least packet length must
+    // If both file and message were not specified, at least packet length must
     // be already specified
     } else {
         Ok(random_packet(packet_config.packet_length.unwrap()))
@@ -48,7 +46,7 @@ pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPac
 
 pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
     // Create a packet without an unnecessary initialization because we'll fill this
-    // buffer with random values next
+    // buffer with random values
     let mut buffer = Vec::with_capacity(length.get());
     unsafe {
         buffer.set_len(length.get());
@@ -92,58 +90,6 @@ impl Error for ReadPacketError {}
 #[inline]
 pub fn cyan<S: ToString>(value: S) -> ColoredString {
     value.to_string().cyan()
-}
-
-// Just a simple wrapper to implement Display for TestSummary (because they are
-// both external traits)
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct SummaryWrapper<'a>(pub &'a TestSummary);
-
-impl<'a> Display for SummaryWrapper<'a> {
-    #[inline]
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        write!(
-            fmt,
-            "Packets sent: {data_sent}, the average speed: {average_speed}, time passed: \
-             {time_passed}",
-            data_sent = cyan(format_args!(
-                "{packets} ({megabytes} MB)",
-                packets = self.0.packets_sent(),
-                megabytes = self.0.megabytes_sent(),
-            )),
-            average_speed = cyan(format_args!(
-                "{mbps} Mbps ({packets_per_sec} packets/sec)",
-                mbps = self.0.megabytes_sent(),
-                packets_per_sec = self.0.packets_per_sec()
-            )),
-            time_passed = cyan(format_duration(self.0.time_passed())),
-        )
-    }
-}
-
-// Just a simple wrapper to implement Display for SummaryPortion (because they
-// are both external traits)
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct SummaryPortionWrapper<'a>(pub &'a SummaryPortion);
-
-impl<'a> Display for SummaryPortionWrapper<'a> {
-    #[inline]
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        write!(
-            fmt,
-            "Packets sent: {packets}, bytes sent: {bytes}",
-            packets = cyan(format_args!(
-                "{packets_sent}/{packets_expected}",
-                packets_sent = self.0.packets_sent(),
-                packets_expected = self.0.packets_expected(),
-            )),
-            bytes = cyan(format_args!(
-                "{bytes_sent}/{bytes_expected}",
-                bytes_sent = self.0.bytes_sent(),
-                bytes_expected = self.0.bytes_expected(),
-            )),
-        )
-    }
 }
 
 #[cfg(test)]

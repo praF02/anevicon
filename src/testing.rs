@@ -29,7 +29,7 @@ use humantime::format_duration;
 use log::{error, info, warn};
 
 use super::config::{ArgsConfig, NetworkConfig};
-use super::helpers::{self, SummaryWrapper};
+use super::helpers;
 
 pub fn execute_testers(
     config: &'static ArgsConfig,
@@ -69,10 +69,10 @@ pub fn execute_testers(
                             send_multiple_error(error);
                         }
 
-                        display_summary(SummaryWrapper(tester.summary()));
+                        display_summary(tester.summary());
 
                         if tester.summary().time_passed() >= config.exit_config.test_duration {
-                            display_expired_time(SummaryWrapper(tester.summary()));
+                            display_expired_time();
                             return summary;
                         }
 
@@ -98,15 +98,11 @@ pub fn execute_testers(
                             unsent,
                             config.exit_config.test_duration,
                         ) {
-                            ResendPacketsResult::Completed => {
-                                display_packets_sent(SummaryWrapper(tester.summary()));
-                            }
-                            ResendPacketsResult::TimeExpired => {
-                                display_expired_time(SummaryWrapper(tester.summary()))
-                            }
+                            ResendPacketsResult::Completed => display_packets_sent(),
+                            ResendPacketsResult::TimeExpired => display_expired_time(),
                         }
                     } else {
-                        display_packets_sent(SummaryWrapper(tester.summary()));
+                        display_packets_sent();
                     }
 
                     summary
@@ -171,29 +167,38 @@ fn resend_packets(
 }
 
 #[inline]
-fn display_expired_time(summary: SummaryWrapper) {
+fn display_expired_time() {
     info!(
-        "The allotted time has passed for the {receiver} >>> {summary}.",
-        receiver = current_receiver(),
-        summary = summary,
+        "The allotted time has passed for the {receiver}.",
+        receiver = current_receiver()
     );
 }
 
 #[inline]
-fn display_packets_sent(summary: SummaryWrapper) {
+fn display_packets_sent() {
     info!(
-        "All the packets were sent for the {receiver} >>> {summary}.",
+        "All the packets were sent for the {receiver}.",
         receiver = current_receiver(),
-        summary = summary
     );
 }
 
 #[inline]
-fn display_summary(summary: SummaryWrapper) {
+fn display_summary(summary: &TestSummary) {
     info!(
-        "Stats for the {receiver} >>> {summary}.",
+        "Stats for {receiver}:\n\tData Sent: {data_sent}\n\tAverage Speed: \
+         {average_speed}\n\tTime Passed: {time_passed}",
         receiver = current_receiver(),
-        summary = summary,
+        data_sent = helpers::cyan(format!(
+            "{packets} packets ({megabytes} MB)",
+            packets = summary.packets_sent(),
+            megabytes = summary.megabytes_sent(),
+        )),
+        average_speed = helpers::cyan(format!(
+            "{packets_per_sec} packets/sec ({mbps} Mbps)",
+            mbps = summary.megabytes_sent(),
+            packets_per_sec = summary.packets_per_sec()
+        )),
+        time_passed = helpers::cyan(format_duration(summary.time_passed())),
     );
 }
 
