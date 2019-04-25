@@ -133,7 +133,7 @@ fn resend_packets(
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
-        "Trying to resend {count} packets to the {receiver} that weren't sent...",
+        "Trying to resend {count} packets to the {receiver} that weren't sent yet...",
         count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
