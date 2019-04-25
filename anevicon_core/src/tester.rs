@@ -29,8 +29,8 @@ use sendmmsg::{Portion, SendMMsg};
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
 pub struct Tester<'a, 'b> {
-    socket: &'a UdpSocket,
-    summary: &'b mut TestSummary,
+    pub socket: &'a UdpSocket,
+    pub summary: &'b mut TestSummary,
 }
 
 impl<'a, 'b> Tester<'a, 'b> {
@@ -89,24 +89,6 @@ impl<'a, 'b> Tester<'a, 'b> {
                 Ok(portion)
             }
         }
-    }
-
-    /// Returns a reference to the inner `UdpSocket`.
-    #[inline]
-    pub fn socket(&self) -> &UdpSocket {
-        self.socket
-    }
-
-    /// Returns an immutable reference to the inner `TestSummary`.
-    #[inline]
-    pub fn summary(&self) -> &TestSummary {
-        self.summary
-    }
-
-    /// Returns a mutable reference to the inner `TestSummary`.
-    #[inline]
-    pub fn summary_mut(&mut self) -> &mut TestSummary {
-        self.summary
     }
 }
 
