@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
   </a>
   <a href="https://crates.io/crates/anevicon">
-    <img src="https://img.shields.io/badge/crates.io-v5.0.2-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v5.0.3-orange.svg">
   </a>
   <a href="https://semver.org">
     <img src="https://img.shields.io/badge/semver-follows-green.svg">
@@ -101,7 +101,7 @@ The easiest way to run Anevicon on your system is to download the pre-compiled b
 
 ## Options
 ```
-anevicon 5.0.2
+anevicon 5.0.3
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 An UDP-based server stress-testing tool, written in Rust.
 
