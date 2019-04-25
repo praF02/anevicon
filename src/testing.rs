@@ -158,7 +158,7 @@ fn resend_packets(
     }
 
     info!(
-        "{count} packets were successfully resent to the {receiver}.",
+        "{count} packets have been successfully resent to the {receiver}.",
         count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
@@ -228,7 +228,7 @@ fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
         socket.set_write_timeout(Some(config.send_timeout))?;
 
         info!(
-            "A new socket was initialized to the {receiver} receiver.",
+            "A new socket has been initialized to the {receiver} receiver.",
             receiver = helpers::cyan(receiver),
         );
 
