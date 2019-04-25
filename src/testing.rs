@@ -23,7 +23,7 @@ use std::num::NonZeroUsize;
 use std::thread::{self, Builder, JoinHandle};
 use std::time::Duration;
 
-use anevicon_core::{self, TestSummary, Tester};
+use anevicon_core::{self, Portion, TestSummary, Tester};
 use colored::ColoredString;
 use humantime::format_duration;
 use log::{error, info, warn};
