@@ -24,7 +24,7 @@ use std::net::UdpSocket;
 use super::summary::TestSummary;
 
 use crate::summary::SummaryPortion;
-use sendmmsg::SendMMsg;
+use sendmmsg::{Portion, SendMMsg};
 
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
@@ -68,7 +68,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     ///
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]
-    pub fn send_multiple(&mut self, portions: &mut [(usize, IoVec)]) -> io::Result<SummaryPortion> {
+    pub fn send_multiple(&mut self, portions: &mut [Portion]) -> io::Result<SummaryPortion> {
         match self.socket.sendmmsg(portions) {
             Err(error) => Err(error),
             Ok(packets) => {
