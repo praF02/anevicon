@@ -42,8 +42,11 @@ impl<'a, 'b> Tester<'a, 'b> {
     }
 
     /// Sends the specified packet once, simultaneously updating the inner
-    /// `TestSummary`. It returns an associated `SummaryPortion` if an operation
-    /// succeeds, otherwise, returns an I/O error.
+    /// `TestSummary`.
+    ///
+    /// # Returns
+    /// It returns an associated `SummaryPortion` if an operation succeeds,
+    /// otherwise, returns an I/O error.
     #[inline]
     pub fn send_one(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
         match self.socket.send(&packet) {
@@ -63,8 +66,9 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// packet (the function automatically assigns there values after a call)
     /// and `IoVec` to send.
     ///
-    /// This method return an associated `SummaryPortion` instance consisting of
-    /// the concatenated results from [`sendmmsg`].
+    /// # Returns
+    /// This method returns an associated `SummaryPortion` instance consisting
+    /// of the concatenated results from [`sendmmsg`].
     ///
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]

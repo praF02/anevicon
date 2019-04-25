@@ -23,11 +23,12 @@
 //! ```rust
 //! use anevicon_core::summary::{SummaryPortion, TestSummary};
 //!
-//! // Create the default TestSummary object with zero generated traffic
+//! // Create the default TestSummary object with zero generated
+//! // traffic
 //! let mut summary = TestSummary::default();
 //!
-//! // Update our TestSummary with 59 packets sent containing 52364 bytes
-//! // totally
+//! // Update our TestSummary with 59 packets sent containing
+//! // 52364 bytes totally
 //! summary.update(SummaryPortion::new(72678, 52364, 79, 59));
 //!
 //! println!(
