@@ -92,10 +92,23 @@ pub fn execute_testers(
                     };
 
                     if unsent.get() != 0 {
-                        resend_packets(&mut tester, &packet, unsent);
+                        match resend_packets(
+                            &mut tester,
+                            &packet,
+                            unsent,
+                            config.exit_config.test_duration,
+                        ) {
+                            ResendPacketsResult::Completed => {
+                                display_packets_sent(SummaryWrapper(tester.summary()));
+                            }
+                            ResendPacketsResult::TimeExpired => {
+                                display_expired_time(SummaryWrapper(tester.summary()))
+                            }
+                        }
+                    } else {
+                        display_packets_sent(SummaryWrapper(tester.summary()));
                     }
 
-                    display_packets_sent(SummaryWrapper(tester.summary()));
                     summary
                 })
                 .expect("Unable to spawn a new thread")
@@ -111,7 +124,18 @@ fn wait(duration: Duration) {
     thread::sleep(duration);
 }
 
-fn resend_packets(tester: &mut Tester, packet: &[u8], count: NonZeroUsize) {
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum ResendPacketsResult {
+    Completed,
+    TimeExpired,
+}
+
+fn resend_packets(
+    tester: &mut Tester,
+    packet: &[u8],
+    count: NonZeroUsize,
+    limit: Duration,
+) -> ResendPacketsResult {
     info!(
         "Trying to resend {count} packets to the {receiver} that weren't sent...",
         count = helpers::cyan(count.get()),
@@ -119,6 +143,10 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: NonZeroUsize) {
     );
 
     for _ in 0..count.get() {
+        if tester.summary().time_passed() >= limit {
+            return ResendPacketsResult::TimeExpired;
+        }
+
         loop {
             if let Err(error) = tester.send_one(IoVec::new(packet)) {
                 error!(
@@ -138,6 +166,8 @@ fn resend_packets(tester: &mut Tester, packet: &[u8], count: NonZeroUsize) {
         count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
+
+    ResendPacketsResult::Completed
 }
 
 #[inline]
@@ -237,7 +267,7 @@ mod tests {
     fn test_generate_portions() {
         let portion: &[u8] = b"Something very very useful for all of us";
 
-        for (bytes, vec) in generate_portions(unsafe { NonZeroUsize::new_unchecked(5) }, portion) {
+        for (bytes, vec) in generate_portions(NonZeroUsize::new(5).unwrap(), portion) {
             // This value must be always zero for future use of sendmmsg
             assert_eq!(bytes, 0);
             assert_eq!(portion, vec.as_ref());
@@ -249,14 +279,34 @@ mod tests {
         let mut summary = TestSummary::default();
         let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
 
-        resend_packets(
-            &mut tester,
-            b"Trying to resend packets which weren't sent yet",
-            unsafe { NonZeroUsize::new_unchecked(12) },
+        let message = b"Trying to resend packets which weren't sent yet";
+
+        // All the packets will be sent because the allotted time is too long to be
+        // expired
+        assert_eq!(
+            resend_packets(
+                &mut tester,
+                message,
+                NonZeroUsize::new(12).unwrap(),
+                Duration::from_secs(3656),
+            ),
+            ResendPacketsResult::Completed
         );
 
-        assert_eq!(summary.packets_sent(), 12);
-        assert_eq!(summary.packets_expected(), 12);
+        assert_eq!(tester.summary().packets_sent(), 12);
+        assert_eq!(tester.summary().packets_expected(), 12);
+
+        // Now the allotted time eventually expires, so check that resend_packets
+        // returns TimeExpired
+        assert_eq!(
+            resend_packets(
+                &mut tester,
+                message,
+                NonZeroUsize::new(12).unwrap(),
+                Duration::from_nanos(1),
+            ),
+            ResendPacketsResult::TimeExpired
+        );
     }
 
     #[test]
