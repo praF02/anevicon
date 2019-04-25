@@ -298,8 +298,8 @@ mod tests {
             ResendPacketsResult::Completed
         );
 
-        assert_eq!(tester.summary().packets_sent(), 12);
-        assert_eq!(tester.summary().packets_expected(), 12);
+        assert_eq!(tester.summary.packets_sent(), 12);
+        assert_eq!(tester.summary.packets_expected(), 12);
 
         // Now the allotted time eventually expires, so check that resend_packets
         // returns TimeExpired

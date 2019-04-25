@@ -17,7 +17,17 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/testing.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="284">
+              <caret line="308" column="24" lean-forward="true" selection-start-line="308" selection-start-column="24" selection-end-line="308" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -75,6 +85,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -92,7 +103,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -298,9 +308,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Cargo_Test - 2019.04.23 at 21h 45m 11s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Cargo_Test - 2019.04.23 at 21h 45m 29s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -328,11 +335,15 @@
     <history-entry file="Cargo_Test - 2019.04.25 at 19h 53m 59s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.04.25 at 21h 08m 06s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11632871" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.117395945" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -600,8 +611,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/testing.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="141" column="50" lean-forward="true" selection-start-line="141" selection-start-column="50" selection-end-line="141" selection-end-column="50" />
+        <state relative-caret-position="284">
+          <caret line="308" column="24" lean-forward="true" selection-start-line="308" selection-start-column="24" selection-end-line="308" selection-end-column="24" />
         </state>
       </provider>
     </entry>
