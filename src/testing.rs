@@ -25,13 +25,13 @@ use std::time::Duration;
 
 use anevicon_core::{self, Portion, TestSummary, Tester};
 use colored::ColoredString;
+use dialoguer::Select;
 use get_if_addrs::get_if_addrs;
 use humantime::format_duration;
 use log::{error, info, trace, warn};
 
 use super::config::{ArgsConfig, NetworkConfig};
 use super::helpers;
-use dialoguer::Select;
 
 pub fn execute_testers(
     config: &'static ArgsConfig,
@@ -285,13 +285,13 @@ fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use std::mem;
+    use std::time::Duration;
 
     use lazy_static::lazy_static;
     use structopt::StructOpt;
 
-    use std::mem;
-    use std::time::Duration;
+    use super::*;
 
     lazy_static! {
         static ref UDP_SOCKET: UdpSocket = {
