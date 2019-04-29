@@ -103,7 +103,7 @@ The easiest way to run Anevicon on your system is to download the pre-compiled b
 ```
 anevicon 5.0.3
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
-An UDP-based server stress-testing tool, written in Rust.
+A high-performant UDP-based load generator, written in Rust.
 
 USAGE:
     anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>...
@@ -143,6 +143,12 @@ OPTIONS:
             
             All receivers will be tested identically. Run multiple instances of
             this program to describe specific characteristics for each receiver.
+        --select-if <PORT>
+            Displays an interactive menu of network interfaces to use. If unset,
+            a default one will be used.
+            
+            It accepts a port number to which the program will bind all sockets,
+            because it conflicts with the `--sender` option.
     -f, --send-file <FILENAME>
             Interpret the specified file content as a single packet and
             repeatedly send it to each receiver
@@ -154,7 +160,7 @@ OPTIONS:
             to decrease test intensity [default: 0secs]
     -t, --send-timeout <TIME-SPAN>
             A timeout of sending every single packet. If a timeout is reached,
-            then a packet will be sent later. [default: 10secs]
+            then a packet will be sent later [default: 10secs]
     -s, --sender <SOCKET-ADDRESS>
             A sender of generated traffic, specified as an IP-address and a port
             number, separated by a colon [default: 0.0.0.0:0]
@@ -277,6 +283,14 @@ The most vulnerable element of a system is an object sitting between a computer 
 ```bash
 # Test the example.com site waiting 30 seconds before the execution
 $ anevicon --receiver 93.184.216.34:80 --wait 30seconds
+```
+
+### Network interfaces
+Anevicon automatically uses a default network interface for your system, but you can also choose yours custom. Consider the `--select-if` option which accepts a port number to which the program will bind all sockets.
+
+```bash
+# Bind sockets to the 16739 port and choose a custom network interface
+$ anevicon --receiver 93.184.216.34:80 --select-if 16739
 ```
 
 ----------

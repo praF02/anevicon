@@ -18,18 +18,20 @@
 
 use std::fmt::Display;
 use std::io::{self, IoVec};
-use std::net::UdpSocket;
+use std::net::{IpAddr, SocketAddr, UdpSocket};
 use std::num::NonZeroUsize;
 use std::thread::{self, Builder, JoinHandle};
 use std::time::Duration;
 
 use anevicon_core::{self, Portion, TestSummary, Tester};
 use colored::ColoredString;
+use get_if_addrs::get_if_addrs;
 use humantime::format_duration;
-use log::{error, info, warn};
+use log::{error, info, trace, warn};
 
 use super::config::{ArgsConfig, NetworkConfig};
 use super::helpers;
+use dialoguer::Select;
 
 pub fn execute_testers(
     config: &'static ArgsConfig,
@@ -219,10 +221,16 @@ fn current_receiver() -> ColoredString {
 }
 
 fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
+    let local_addr = if let Some(port) = config.select_if {
+        SocketAddr::new(select_if(), port)
+    } else {
+        config.sender
+    };
+
     let mut sockets = Vec::with_capacity(config.receivers.len());
 
     for receiver in config.receivers.iter() {
-        let socket = UdpSocket::bind(config.sender)?;
+        let socket = UdpSocket::bind(local_addr)?;
         socket.connect(receiver)?;
         socket.set_broadcast(config.broadcast)?;
         socket.set_write_timeout(Some(config.send_timeout))?;
@@ -236,6 +244,33 @@ fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
     }
 
     Ok(sockets)
+}
+
+// Displays interactive menu of network interfaces
+fn select_if() -> IpAddr {
+    let mut select = Select::new();
+    select.clear(true);
+    select.default(0);
+    select.with_prompt("Select one of the available network interfaces");
+
+    let addrs = get_if_addrs().expect("get_if_addrs() failed");
+    addrs.iter().for_each(|addr| {
+        select.item(&format!(
+            "name: {name}, ip: {ip}",
+            name = helpers::cyan(&addr.name),
+            ip = helpers::cyan(addr.ip())
+        ));
+    });
+
+    let choice = select
+        .interact()
+        .expect("Failed to choose a network interface");
+
+    trace!(
+        "Using the {} network interface.",
+        helpers::cyan(&addrs[choice].name)
+    );
+    addrs[choice].ip()
 }
 
 fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
