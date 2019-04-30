@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Anevicon</h1>
+  <h1>anevicon</h1>
   
   <a href="https://gitter.im/Gymmasssorla/anevicon">
     <img src="https://img.shields.io/badge/chat-on%20gitter-pink.svg">
