@@ -16,110 +16,102 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+use std::cell::RefCell;
 use std::fmt::Display;
 use std::io::{self, IoVec};
-use std::net::{IpAddr, SocketAddr, UdpSocket};
 use std::num::NonZeroUsize;
-use std::thread::{self, Builder, JoinHandle};
+use std::sync::Arc;
+use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
 use anevicon_core::{self, Portion, TestSummary, Tester};
-use colored::ColoredString;
-use dialoguer::Select;
-use get_if_addrs::get_if_addrs;
+use colored::{ColoredString, Colorize};
 use humantime::format_duration;
-use log::{error, info, trace, warn};
 
-use super::config::{ArgsConfig, NetworkConfig};
+use crate::config::TesterConfig;
+use crate::sockets::AneviconSocket;
+
 use super::helpers;
 
-pub fn execute_testers(
-    config: &'static ArgsConfig,
-    packet: &'static [u8],
-) -> io::Result<Vec<JoinHandle<TestSummary>>> {
-    wait(config.wait);
+thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined".cyan()));
 
+pub fn execute_testers(
+    config: Arc<TesterConfig>,
+    packet: Arc<Vec<u8>>,
+    sockets: Vec<AneviconSocket>,
+) -> io::Result<Vec<JoinHandle<TestSummary>>> {
     let remaining_packets = unsafe {
         NonZeroUsize::new_unchecked(
-            config.exit_config.packets_count.get()
-                % config.network_config.packets_per_syscall.get(),
+            config.exit_config.packets_count.get() % config.packets_per_syscall.get(),
         )
     };
-
     let sendings_count = (config.exit_config.packets_count.get() - remaining_packets.get())
-        / config.network_config.packets_per_syscall.get();
+        / config.packets_per_syscall.get();
 
-    Ok(init_sockets(&config.network_config)?
+    Ok(sockets
         .into_iter()
-        .enumerate()
-        .map(|(i, socket)| {
-            Builder::new()
-                .name(config.network_config.receivers[i].to_string())
-                .spawn(move || {
-                    let (mut ordinary, mut remaining) = (
-                        generate_portions(config.network_config.packets_per_syscall, &packet),
-                        generate_portions(remaining_packets, &packet),
-                    );
+        .map(|socket| {
+            let config = config.clone();
+            let packet = packet.clone();
 
-                    let mut summary = TestSummary::default();
-                    let mut tester = Tester::new(&socket, &mut summary);
+            thread::spawn(move || {
+                RECEIVER.with(|receiver| *receiver.borrow_mut() = socket.receiver().clone());
 
-                    // Run the main cycle for the current worker, and exit if the allotted time
-                    // expires
-                    for _ in 0..sendings_count {
-                        if let Err(error) = tester.send_multiple(&mut ordinary) {
-                            send_multiple_error(error);
-                        }
+                let (mut ordinary, mut remaining) = (
+                    generate_portions(config.packets_per_syscall, &packet),
+                    generate_portions(remaining_packets, &packet),
+                );
 
-                        display_summary(tester.summary);
+                let mut summary = TestSummary::default();
+                let mut tester = Tester::new(socket.socket(), &mut summary);
 
-                        if tester.summary.time_passed() >= config.exit_config.test_duration {
-                            display_expired_time();
-                            return summary;
-                        }
-
-                        thread::sleep(config.send_periodicity);
-                    }
-
-                    if let Err(error) = tester.send_multiple(&mut remaining) {
+                // Run the main cycle for the current worker, and exit if the allotted time
+                // expires
+                for _ in 0..sendings_count {
+                    if let Err(error) = tester.send_multiple(&mut ordinary) {
                         send_multiple_error(error);
                     }
 
-                    // We might have a situation when not all the required packets are sent, so fix
-                    // it
-                    let unsent = unsafe {
-                        NonZeroUsize::new_unchecked(
-                            tester.summary.packets_expected() - tester.summary.packets_sent(),
-                        )
-                    };
+                    display_summary(tester.summary);
 
-                    if unsent.get() != 0 {
-                        match resend_packets(
-                            &mut tester,
-                            &packet,
-                            unsent,
-                            config.exit_config.test_duration,
-                        ) {
-                            ResendPacketsResult::Completed => display_packets_sent(),
-                            ResendPacketsResult::TimeExpired => display_expired_time(),
-                        }
-                    } else {
-                        display_packets_sent();
+                    if tester.summary.time_passed() >= config.exit_config.test_duration {
+                        display_expired_time();
+                        return summary;
                     }
 
-                    summary
-                })
-                .expect("Unable to spawn a new thread")
+                    thread::sleep(config.send_periodicity);
+                }
+
+                if let Err(error) = tester.send_multiple(&mut remaining) {
+                    send_multiple_error(error);
+                }
+
+                // We might have a situation when not all the required packets are sent, so fix
+                // it
+                let unsent = unsafe {
+                    NonZeroUsize::new_unchecked(
+                        tester.summary.packets_expected() - tester.summary.packets_sent(),
+                    )
+                };
+
+                if unsent.get() != 0 {
+                    match resend_packets(
+                        &mut tester,
+                        &packet,
+                        unsent,
+                        config.exit_config.test_duration,
+                    ) {
+                        ResendPacketsResult::Completed => display_packets_sent(),
+                        ResendPacketsResult::TimeExpired => display_expired_time(),
+                    }
+                } else {
+                    display_packets_sent();
+                }
+
+                summary
+            })
         })
         .collect())
-}
-
-fn wait(duration: Duration) {
-    warn!(
-        "Waiting {time} and then starting to initialize the sockets and executing the tests...",
-        time = helpers::cyan(format_duration(duration))
-    );
-    thread::sleep(duration);
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -169,6 +161,11 @@ fn resend_packets(
 }
 
 #[inline]
+fn current_receiver() -> ColoredString {
+    RECEIVER.with(|string| string.borrow().clone())
+}
+
+#[inline]
 fn display_expired_time() {
     info!(
         "The allotted time has passed for the {receiver}.",
@@ -180,7 +177,7 @@ fn display_expired_time() {
 fn display_packets_sent() {
     info!(
         "All the packets were sent for the {receiver}.",
-        receiver = current_receiver(),
+        receiver = current_receiver()
     );
 }
 
@@ -213,66 +210,6 @@ fn send_multiple_error<E: Display>(error: E) {
     );
 }
 
-// Extracts the current receiver from the current thread name and colorizes it
-// as cyan
-#[inline]
-fn current_receiver() -> ColoredString {
-    helpers::cyan(thread::current().name().unwrap())
-}
-
-fn init_sockets(config: &NetworkConfig) -> io::Result<Vec<UdpSocket>> {
-    let local_addr = if let Some(port) = config.select_if {
-        SocketAddr::new(select_if(), port)
-    } else {
-        config.sender
-    };
-
-    let mut sockets = Vec::with_capacity(config.receivers.len());
-
-    for receiver in config.receivers.iter() {
-        let socket = UdpSocket::bind(local_addr)?;
-        socket.connect(receiver)?;
-        socket.set_broadcast(config.broadcast)?;
-        socket.set_write_timeout(Some(config.send_timeout))?;
-
-        info!(
-            "A new socket has been initialized to the {receiver} receiver.",
-            receiver = helpers::cyan(receiver),
-        );
-
-        sockets.push(socket);
-    }
-
-    Ok(sockets)
-}
-
-// Displays interactive menu of network interfaces
-fn select_if() -> IpAddr {
-    let mut select = Select::new();
-    select.clear(true);
-    select.default(0);
-    select.with_prompt("Select one of the available network interfaces");
-
-    let addrs = get_if_addrs().expect("get_if_addrs() failed");
-    addrs.iter().for_each(|addr| {
-        select.item(&format!(
-            "name: {name}, ip: {ip}",
-            name = helpers::cyan(&addr.name),
-            ip = helpers::cyan(addr.ip())
-        ));
-    });
-
-    let choice = select
-        .interact()
-        .expect("Failed to choose a network interface");
-
-    trace!(
-        "Using the {} network interface.",
-        helpers::cyan(&addrs[choice].name)
-    );
-    addrs[choice].ip()
-}
-
 fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
     let mut portions = Vec::with_capacity(length.get());
 
@@ -285,22 +222,20 @@ fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
 
 #[cfg(test)]
 mod tests {
-    use std::mem;
     use std::time::Duration;
 
-    use lazy_static::lazy_static;
     use structopt::StructOpt;
+
+    use crate::config::ArgsConfig;
 
     use super::*;
 
-    lazy_static! {
-        static ref UDP_SOCKET: UdpSocket = {
-            let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
-            socket
-                .connect(socket.local_addr().unwrap())
-                .expect("Cannot connect the socket to itself");
-            socket
-        };
+    fn loopback_socket() -> UdpSocket {
+        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
+        socket
+            .connect(socket.local_addr().unwrap())
+            .expect("Cannot connect the socket to itself");
+        socket
     }
 
     #[test]
@@ -317,7 +252,8 @@ mod tests {
     #[test]
     fn resends_all_packets() {
         let mut summary = TestSummary::default();
-        let mut tester = Tester::new(&UDP_SOCKET, &mut summary);
+        let socket = loopback_socket();
+        let mut tester = Tester::new(&socket, &mut summary);
 
         let message = b"Trying to resend packets which weren't sent yet";
 
@@ -350,45 +286,12 @@ mod tests {
     }
 
     #[test]
-    fn test_init_sockets() {
-        let config = NetworkConfig {
-            receivers: vec![
-                "45.89.52.36:5236".parse().unwrap(),
-                "89.52.36.41:256".parse().unwrap(),
-                "85.53.23.57:45687".parse().unwrap(),
-            ],
-            sender: "0.0.0.0:0".parse().unwrap(),
-            send_timeout: Duration::from_secs(25),
-            broadcast: true,
-            packets_per_syscall: NonZeroUsize::new(500).unwrap(),
-        };
-
-        for socket in init_sockets(&config).expect("init_socket() has failed") {
-            assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
-            assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
-            assert_eq!(socket.broadcast().unwrap(), config.broadcast);
-        }
-    }
-
-    #[test]
     fn executes_testers_correctly() {
-        let config = ArgsConfig::from_iter(&[
-            "anevicon",
-            "--receiver",
-            &UDP_SOCKET.local_addr().unwrap().to_string(),
-            "--packets-count",
-            "14",
-            "--send-message",
-            "Are you gonna take me home tonight?",
-        ]);
+        let sockets = vec![loopback_socket()];
+        let packet = Vec::from_iter(b"Are you gonna take me home tonight?");
 
-        let packet = helpers::construct_packet(&config.packet_config)
-            .expect("helpers::construct_packet() has failed");
-
-        for handle in execute_testers(unsafe { mem::transmute(&config) }, unsafe {
-            mem::transmute(packet.as_slice())
-        })
-        .expect("execute_testers(...) returned an error")
+        for handle in execute_testers(Arc::new(config), Arc::new(packet), sockets)
+            .expect("execute_testers(...) returned an error")
         {
             assert_eq!(
                 handle

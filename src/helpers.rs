@@ -28,19 +28,19 @@ use rand::{thread_rng, RngCore};
 
 use super::config::PacketConfig;
 
-pub fn construct_packet(packet_config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
+pub fn construct_packet(config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
     // If a user has specified a file, use its content as a packet
-    if let Some(ref filename) = packet_config.send_file {
+    if let Some(ref filename) = config.send_file {
         read_packet(filename)
 
     // If a user has specified a message, use it as a packet
-    } else if let Some(ref message) = packet_config.send_message {
+    } else if let Some(ref message) = config.send_message {
         Ok(message.bytes().collect())
 
     // If both file and message were not specified, at least packet length must
     // be already specified
     } else {
-        Ok(random_packet(packet_config.packet_length.unwrap()))
+        Ok(random_packet(config.packet_length.unwrap()))
     }
 }
 

@@ -19,16 +19,24 @@
 #![feature(ip)]
 #![feature(iovec)]
 
-use std::mem;
+#[macro_use]
+extern crate log;
 
-use colored::Colorize as _;
-use log::{error, trace};
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
+
+use colored::Colorize;
+use humantime::format_duration;
 
 use config::ArgsConfig;
+
+use crate::sockets::init_sockets;
 
 mod config;
 mod helpers;
 mod logging;
+mod sockets;
 mod testing;
 
 fn main() {
@@ -38,29 +46,37 @@ fn main() {
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
-    let packet = match helpers::construct_packet(&config.packet_config) {
-        Err(error) => {
-            error!("Constructing the packet failed >>> {}!", error);
-            std::process::exit(1);
-        }
-        Ok(packet) => packet,
-    };
+    let packet = helpers::construct_packet(&config.packet_config).unwrap_or_else(|err| {
+        error!("Constructing the packet failed >>> {}!", err);
+        std::process::exit(1);
+    });
 
-    // Expand ordinary lifetimes to 'static ones to avoid using the Arc<RwLock<T>>
-    // construction
-    match testing::execute_testers(unsafe { mem::transmute(&config) }, unsafe {
-        mem::transmute(packet.as_slice())
-    }) {
+    let sockets = init_sockets(&config.tester_config.sockets_config).unwrap_or_else(|err| {
+        error!("Socket initialization failed >>> {}!", err);
+        std::process::exit(1);
+    });
+
+    wait(config.wait);
+
+    match testing::execute_testers(Arc::new(config.tester_config), Arc::new(packet), sockets) {
         Ok(handles) => {
             for handle in handles {
                 handle.join().expect("A thread has panicked during .join()");
             }
         }
-        Err(error) => {
-            error!("Testing the server failed >>> {}!", error);
+        Err(err) => {
+            error!("Testing the server failed >>> {}!", err);
             std::process::exit(1);
         }
     }
+}
+
+fn wait(duration: Duration) {
+    warn!(
+        "Waiting {time} and then starting to execute the tests...",
+        time = helpers::cyan(format_duration(duration))
+    );
+    thread::sleep(duration);
 }
 
 fn title() {

@@ -48,6 +48,18 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
+    #[structopt(flatten)]
+    pub logging_config: LoggingConfig,
+
+    #[structopt(flatten)]
+    pub tester_config: TesterConfig,
+
+    #[structopt(flatten)]
+    pub packet_config: PacketConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct TesterConfig {
     /// A time interval between sendmmsg syscalls. This option can be used to
     /// decrease test intensity
     #[structopt(
@@ -59,21 +71,30 @@ pub struct ArgsConfig {
     )]
     pub send_periodicity: Duration,
 
+    /// A count of packets which the program will send using only one syscall.
+    /// After the operation completed, a test summary will have been
+    /// printed.
+    ///
+    /// It is not recommended to set this option to a low value for some
+    /// performance reasons.
+    #[structopt(
+        long = "packets-per-syscall",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "600",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packets_per_syscall: NonZeroUsize,
+
     #[structopt(flatten)]
-    pub logging_config: LoggingConfig,
+    pub sockets_config: SocketsConfig,
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
-
-    #[structopt(flatten)]
-    pub packet_config: PacketConfig,
-
-    #[structopt(flatten)]
-    pub network_config: NetworkConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct NetworkConfig {
+pub struct SocketsConfig {
     /// A receiver of generated traffic, specified as an IP-address and a port
     /// number, separated by a colon.
     ///
@@ -126,21 +147,6 @@ pub struct NetworkConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Duration,
-
-    /// A count of packets which the program will send using only one syscall.
-    /// After the operation completed, a test summary will have been
-    /// printed.
-    ///
-    /// It is not recommended to set this option to a low value for some
-    /// performance reasons.
-    #[structopt(
-        long = "packets-per-syscall",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        default_value = "600",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub packets_per_syscall: NonZeroUsize,
 
     /// Allow sockets to send packets to a broadcast address
     #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
@@ -271,7 +277,7 @@ impl ArgsConfig {
     }
 }
 
-pub fn parse_time_format(format: &str) -> Result<String, ParseError> {
+fn parse_time_format(format: &str) -> Result<String, ParseError> {
     // If the strftime function consumes the specified date-time format correctly,
     // then the format is also correctly
     time::strftime(format, &time::now())?;
@@ -280,14 +286,14 @@ pub fn parse_time_format(format: &str) -> Result<String, ParseError> {
     Ok(String::from(format))
 }
 
-pub fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
+fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
     let number: usize = number.parse().map_err(NonZeroUsizeError::InvalidFormat)?;
 
     NonZeroUsize::new(number).ok_or(NonZeroUsizeError::ZeroValue)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum NonZeroUsizeError {
+enum NonZeroUsizeError {
     InvalidFormat(ParseIntError),
     ZeroValue,
 }
@@ -307,77 +313,71 @@ impl Error for NonZeroUsizeError {}
 mod tests {
     use super::*;
 
+    // Check that ordinary formats are passed correctly
     #[test]
     fn parses_valid_time_format() {
-        // Check that ordinary formats are passed correctly
-        assert_eq!(parse_time_format("%x %X %e"), Ok(String::from("%x %X %e")));
-        assert_eq!(parse_time_format("%H %a %G"), Ok(String::from("%H %a %G")));
+        let check = |format| {
+            assert_eq!(
+                parse_time_format(format),
+                Ok(String::from(format)),
+                "Parses valid time incorrectly"
+            )
+        };
 
-        assert_eq!(
-            parse_time_format("something"),
-            Ok(String::from("something"))
-        );
-        assert_eq!(
-            parse_time_format("flower %d"),
-            Ok(String::from("flower %d"))
-        );
+        check("%x %X %e");
+        check("%H %a %G");
+        check("something");
+        check("flower %d");
     }
 
+    // Invalid formats must produce the invalid format error
     #[test]
     fn parses_invalid_time_format() {
-        let panic_if_invalid = |format| {
-            if let Ok(_) = parse_time_format(format) {
-                panic!("Parses invalid date-time format correctly");
-            }
+        let check = |format| {
+            assert!(
+                parse_time_format(format).is_err(),
+                "Parses invalid time correctly"
+            )
         };
 
-        // Invalid formats must produce the invalid format error
-        panic_if_invalid("%_=-%vbg=");
-        panic_if_invalid("yufb%44htv");
-        panic_if_invalid("sf%jhei9%990");
+        check("%_=-%vbg=");
+        check("yufb%44htv");
+        check("sf%jhei9%990");
     }
 
+    // Check that ordinary values are parsed correctly
     #[test]
     fn parses_valid_non_zero_usize() {
-        unsafe {
-            // Check that ordinary values are parsed correctly
+        let check = |num| {
             assert_eq!(
-                parse_non_zero_usize("1"),
-                Ok(NonZeroUsize::new_unchecked(1))
-            );
-            assert_eq!(
-                parse_non_zero_usize("3"),
-                Ok(NonZeroUsize::new_unchecked(3))
-            );
-            assert_eq!(
-                parse_non_zero_usize("26655"),
-                Ok(NonZeroUsize::new_unchecked(26655))
-            );
-            assert_eq!(
-                parse_non_zero_usize("+75"),
-                Ok(NonZeroUsize::new_unchecked(75))
-            );
-        }
-    }
-
-    #[test]
-    fn parses_invalid_non_zero_usize() {
-        let panic_if_invalid = |string| {
-            if let Ok(_) = parse_non_zero_usize(string) {
-                panic!("Parses invalid formatted usize correctly");
-            }
+                parse_non_zero_usize(num),
+                Ok(NonZeroUsize::new(num.parse().unwrap()).unwrap()),
+                "Parses valid NonZeroUsize incorrectly"
+            )
         };
 
-        // Invalid numbers must produce the invalid format error
-        panic_if_invalid("   ");
+        check("1");
+        check("3");
+        check("26655");
+        check("+75");
+    }
 
-        panic_if_invalid("abc5653odr!");
-        panic_if_invalid("6485&02hde");
+    // Invalid numbers must produce the invalid format error
+    #[test]
+    fn parses_invalid_non_zero_usize() {
+        let check = |num| {
+            assert!(
+                parse_non_zero_usize(num).is_err(),
+                "Parses invalid NonZeroUsize correctly"
+            )
+        };
 
-        panic_if_invalid("-565642");
-        panic_if_invalid(&"2178".repeat(50));
+        check("   ");
+        check("abc5653odr!");
+        check("6485&02hde");
+        check("-565642");
+        check(&"2178".repeat(50));
 
-        // Check that the zero value is not allowed
         assert_eq!(parse_non_zero_usize("0"), Err(NonZeroUsizeError::ZeroValue));
     }
 }
