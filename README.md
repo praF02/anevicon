@@ -54,6 +54,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Packets per one syscall](https://github.com/Gymmasssorla/anevicon#packets-per-one-syscall)
    - [Send timeout](https://github.com/Gymmasssorla/anevicon#send-timeout)
    - [Waiting before a test](https://github.com/Gymmasssorla/anevicon#waiting-before-a-test)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Performance tips](https://github.com/Gymmasssorla/anevicon#performance-tips)
    - [Use native CPU architecture](https://github.com/Gymmasssorla/anevicon#use-native-cpu-architecture)
