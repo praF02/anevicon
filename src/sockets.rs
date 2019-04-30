@@ -17,11 +17,11 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 use std::io;
-use std::net::{IpAddr, SocketAddr, UdpSocket};
+use std::io::Write;
+use std::net::{SocketAddr, UdpSocket};
 
 use colored::ColoredString;
-use dialoguer::Select;
-use get_if_addrs::{get_if_addrs, IfAddr};
+use ifaces::Interface;
 
 use crate::config::SocketsConfig;
 use crate::helpers;
@@ -46,9 +46,11 @@ impl AneviconSocket {
 
 // Returns a vector of sockets connected to a certain receivers
 pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
-    let if_addr = config
-        .select_if
-        .map_or(None, |port| Some(SocketAddr::new(select_if(), port)));
+    let if_addr = if config.select_if {
+        Some(select_if())
+    } else {
+        None
+    };
 
     let mut sockets = Vec::with_capacity(config.receivers.len());
     for i in 0..config.receivers.len() {
@@ -80,39 +82,63 @@ pub fn init_one_sock(
 }
 
 // Displays interactive menu of network interfaces
-fn select_if() -> IpAddr {
-    let mut select = Select::new();
-    select.clear(true);
-    select.default(0);
-    select.with_prompt("Select a network interface");
+fn select_if() -> SocketAddr {
+    let addrs = Interface::get_all().expect("Failed to get network interfaces");
+    print_ifs_table(&addrs);
 
-    let addrs = get_if_addrs().expect("get_if_addrs() failed");
-    addrs.iter().for_each(|addr| match &addr.addr {
-        IfAddr::V4(v4_addr) => {
-            select.item(&format!(
-                "[name: {name}, IPv4: {ip}]",
-                name = helpers::cyan(&addr.name),
-                ip = helpers::cyan(v4_addr.ip),
-            ));
-        }
-        IfAddr::V6(v6_addr) => {
-            select.item(&format!(
-                "[name: {name}, IPv6: {ip}]",
-                name = helpers::cyan(&addr.name),
-                ip = helpers::cyan(v6_addr.ip),
-            ));
-        }
-    });
+    print!("Select a network interface by a number: #");
+    io::stdout().flush().expect("flush() failed");
 
-    let choice = select
-        .interact()
-        .expect("Failed to choose a network interface");
+    loop {
+        let mut choice = String::new();
+        io::stdin()
+            .read_line(&mut choice)
+            .expect("read_line(...) failed");
+        choice.pop(); // Delete the ending '\n' character
 
-    trace!(
-        "Using the {} network interface.",
-        helpers::cyan(&addrs[choice].name)
-    );
-    addrs[choice].ip()
+        let choice = match choice.parse::<usize>() {
+            Ok(num) => num,
+            Err(_) => {
+                print!("This is not a number. Try again: #");
+                io::stdout().flush().expect("flush() failed");
+                continue;
+            }
+        };
+
+        let addr = match addrs.get(choice) {
+            Some(interface) => interface,
+            None => {
+                print!("The number is out of range. Try again: #");
+                io::stdout().flush().expect("flush() failed");
+                continue;
+            }
+        };
+
+        return match addr.addr {
+            Some(addr) => addr,
+            None => {
+                print!("The selected interface doesn't contain an address. Try again: #");
+                io::stdout().flush().expect("flush() failed");
+                continue;
+            }
+        };
+    }
+}
+
+fn print_ifs_table(if_addrs: &[Interface]) {
+    let mut table = table!(["Number", "Name", "Address"]);
+
+    for i in 0..if_addrs.len() {
+        table.add_row(row![
+            &format!("#{}", i.to_string()),
+            &if_addrs[i].name,
+            &if_addrs[i]
+                .addr
+                .map_or_else(|| String::from("None"), |val| val.to_string()),
+        ]);
+    }
+
+    table.printstd();
 }
 
 #[cfg(test)]

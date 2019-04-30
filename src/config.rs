@@ -126,15 +126,10 @@ pub struct SocketsConfig {
     /// Displays an interactive menu of network interfaces to use. If unset, a
     /// default one will be used.
     ///
-    /// It accepts a port number to which the program will bind all sockets,
-    /// because it conflicts with the `--sender` option.
-    #[structopt(
-        long = "select-if",
-        takes_value = true,
-        value_name = "PORT",
-        conflicts_with = "sender"
-    )]
-    pub select_if: Option<u16>,
+    /// This option conflicts with the `--sender` because it will automatically
+    /// bind an appropriate interface's IP.
+    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
+    pub select_if: bool,
 
     /// A timeout of sending every single packet. If a timeout is reached, then
     /// a packet will be sent later

@@ -14,8 +14,8 @@ edition = "2018"
 travis-ci = { repository = "Gymmasssorla/anevicon", branch = "master" }
 
 [dependencies]
-dialoguer = "0.3.0"
-get_if_addrs = "0.5.3"
+prettytable-rs = "0.8.0"
+ifaces = "0.1.0"
 fern = { version = "0.5.7", features = ["colored"] }
 log = "0.4.6"
 time = "0.1.42"

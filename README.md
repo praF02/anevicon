@@ -115,6 +115,12 @@ FLAGS:
     -b, --allow-broadcast    Allow sockets to send packets to a broadcast
                              address
     -h, --help               Prints help information
+        --select-if          Displays an interactive menu of network interfaces
+                             to use. If unset, a default one will be used.
+                             
+                             This option conflicts with the `--sender` because
+                             it will automatically bind an appropriate
+                             interface's IP.
     -V, --version            Prints version information
 
 OPTIONS:
@@ -146,12 +152,6 @@ OPTIONS:
             
             All receivers will be tested identically. Run multiple instances of
             this program to describe specific characteristics for each receiver.
-        --select-if <PORT>
-            Displays an interactive menu of network interfaces to use. If unset,
-            a default one will be used.
-            
-            It accepts a port number to which the program will bind all sockets,
-            because it conflicts with the `--sender` option.
     -f, --send-file <FILENAME>
             Interpret the specified file content as a single packet and
             repeatedly send it to each receiver
@@ -289,10 +289,10 @@ $ anevicon --receiver 93.184.216.34:80 --wait 30seconds
 ```
 
 ### Network interfaces
-Anevicon automatically uses a default network interface for your system, but you can also choose yours custom. Consider the `--select-if` option which accepts a port number to which the program will bind all sockets.
+Anevicon automatically uses a default network interface for your system, but you can also choose yours custom. Consider the `--select-if` option which tells the program to display interactive menu of network interfaces.
 
 ```bash
-# Bind sockets to the 16739 port and choose a custom network interface
+# Choose a custom network interface to which bind all future sockets
 $ anevicon --receiver 93.184.216.34:80 --select-if 16739
 ```
 
