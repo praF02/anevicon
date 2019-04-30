@@ -47,7 +47,9 @@ impl AneviconSocket {
 // Returns a vector of sockets connected to a certain receivers
 pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     let if_addr = if config.select_if {
-        Some(select_if())
+        let if_addr = select_if();
+        trace!("{:?} network interface will be used.", if_addr);
+        Some(if_addr)
     } else {
         None
     };
@@ -84,7 +86,9 @@ pub fn init_one_sock(
 // Displays interactive menu of network interfaces
 fn select_if() -> SocketAddr {
     let addrs = Interface::get_all().expect("Failed to get network interfaces");
+
     print_ifs_table(&addrs);
+    println!();
 
     print!("Select a network interface by a number: #");
     io::stdout().flush().expect("flush() failed");
