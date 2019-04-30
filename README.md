@@ -293,7 +293,7 @@ Anevicon automatically uses a default network interface for your system, but you
 
 ```bash
 # Choose a custom network interface to which bind all future sockets
-$ anevicon --receiver 93.184.216.34:80 --select-if 16739
+$ anevicon --receiver 93.184.216.34:80 --select-if
 ```
 
 ----------
