@@ -20,13 +20,13 @@ use std::io;
 use std::net::{IpAddr, SocketAddr, UdpSocket};
 
 use colored::ColoredString;
-use dialoguer::Select;
 use get_if_addrs::get_if_addrs;
 
 use crate::config::SocketsConfig;
 use crate::helpers;
+use dialoguer::Select;
 use std::collections::HashMap;
-use std::io::Read;
+use std::fmt::Write;
 
 // Represents a UDP socket with its colored receiver name
 pub struct AneviconSocket {
@@ -93,39 +93,29 @@ pub fn init_one_sock(
 
 // Displays interactive menu of network interfaces
 fn select_if() -> IpAddr {
-    let mut ifs = HashMap::new();
-    for addr in get_if_addrs().expect("get_if_addrs() failed") {
-        ifs.insert(addr.name, addr.ip());
-    }
+    let mut select = Select::new();
+    select.clear(true);
+    select.default(0);
+    select.with_prompt("Select a network interface");
 
-    if ifs.is_empty() {
-        error!("The program haven't recognized any network interfaces.");
-        std::process::exit(1);
-    }
+    let addrs = get_if_addrs().expect("get_if_addrs() failed");
+    addrs.iter().for_each(|addr| {
+        select.item(&format!(
+            "name: {name}, ip: {ip}",
+            name = helpers::cyan(&addr.name),
+            ip = helpers::cyan(addr.ip())
+        ));
+    });
 
-    for (name, ip) in &map {
-        info!(
-            "Recognized a network interface called {name} with {ip} IP",
-            name = name.cyan().italic(),
-            ip = helpers::cyan(ip)
-        );
-    }
+    let choice = select
+        .interact()
+        .expect("Failed to choose a network interface");
 
-    loop {
-        info!("Type a network interface's name which you want to use: ");
-        let mut choice = String::new();
-        io::stdin().read_to_string(&mut choice);
-
-        if let Some(&ip) = ifs.get(choise) {
-            trace!(
-                "Using the {} network interface.",
-                helpers::cyan(&addrs[choice].name)
-            );
-            return ip;
-        } else {
-            error!("No such network interface in existence. Try again: ");
-        }
-    }
+    trace!(
+        "Using the {} network interface.",
+        helpers::cyan(&addrs[choice].name)
+    );
+    addrs[choice].ip()
 }
 
 #[cfg(test)]
