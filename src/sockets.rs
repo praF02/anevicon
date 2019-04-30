@@ -21,7 +21,7 @@ use std::net::{IpAddr, SocketAddr, UdpSocket};
 
 use colored::ColoredString;
 use dialoguer::Select;
-use get_if_addrs::get_if_addrs;
+use get_if_addrs::{get_if_addrs, IfAddr};
 
 use crate::config::SocketsConfig;
 use crate::helpers;
@@ -87,12 +87,21 @@ fn select_if() -> IpAddr {
     select.with_prompt("Select a network interface");
 
     let addrs = get_if_addrs().expect("get_if_addrs() failed");
-    addrs.iter().for_each(|addr| {
-        select.item(&format!(
-            "name: {name}, ip: {ip}",
-            name = helpers::cyan(&addr.name),
-            ip = helpers::cyan(addr.ip())
-        ));
+    addrs.iter().for_each(|addr| match &addr.addr {
+        IfAddr::V4(v4_addr) => {
+            select.item(&format!(
+                "[name: {name}, IPv4: {ip}]",
+                name = helpers::cyan(&addr.name),
+                ip = helpers::cyan(v4_addr.ip),
+            ));
+        }
+        IfAddr::V6(v6_addr) => {
+            select.item(&format!(
+                "[name: {name}, IPv6: {ip}]",
+                name = helpers::cyan(&addr.name),
+                ip = helpers::cyan(v6_addr.ip),
+            ));
+        }
     });
 
     let choice = select
