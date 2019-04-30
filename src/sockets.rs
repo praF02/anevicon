@@ -20,13 +20,11 @@ use std::io;
 use std::net::{IpAddr, SocketAddr, UdpSocket};
 
 use colored::ColoredString;
+use dialoguer::Select;
 use get_if_addrs::get_if_addrs;
 
 use crate::config::SocketsConfig;
 use crate::helpers;
-use dialoguer::Select;
-use std::collections::HashMap;
-use std::fmt::Write;
 
 // Represents a UDP socket with its colored receiver name
 pub struct AneviconSocket {
@@ -43,16 +41,6 @@ impl AneviconSocket {
     #[inline]
     pub fn receiver(&self) -> &ColoredString {
         &self.receiver
-    }
-
-    #[inline]
-    pub fn unwrap_socket(self) -> UdpSocket {
-        self.socket
-    }
-
-    #[inline]
-    pub fn unwrap_receiver(self) -> ColoredString {
-        self.receiver
     }
 }
 
