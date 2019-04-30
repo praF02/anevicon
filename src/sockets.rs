@@ -22,6 +22,7 @@ use std::net::{SocketAddr, UdpSocket};
 
 use colored::ColoredString;
 use ifaces::Interface;
+use prettytable::Table;
 
 use crate::config::SocketsConfig;
 use crate::helpers;
@@ -130,7 +131,8 @@ fn select_if() -> SocketAddr {
 }
 
 fn print_ifs_table(if_addrs: &[Interface]) {
-    let mut table = table!(["Number", "Name", "Address"]);
+    let mut table = Table::new();
+    table.set_titles(row!["Number", "Name", "Address"]);
 
     for i in 0..if_addrs.len() {
         table.add_row(row![
