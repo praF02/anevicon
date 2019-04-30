@@ -49,7 +49,10 @@ impl AneviconSocket {
 pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
-        debug!("{:?} network interface will be used.", if_addr);
+        debug!(
+            "Bind all future sockets to the {} network interface.",
+            helpers::cyan(if_addr)
+        );
         Some(if_addr)
     } else {
         None
