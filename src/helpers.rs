@@ -28,12 +28,14 @@ use rand::{thread_rng, RngCore};
 
 use super::config::PacketConfig;
 
+/// Constructs a bytes packet from `PacketConfig`. Then it must be sent to all
+/// receivers multiple times.
 pub fn construct_packet(config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If a user has specified a file, use its content as a packet
+    // If a file was specified, use its content as a packet
     if let Some(ref filename) = config.send_file {
         read_packet(filename)
 
-    // If a user has specified a message, use it as a packet
+    // If a message was specified, use it as a packet
     } else if let Some(ref message) = config.send_message {
         Ok(message.bytes().collect())
 
@@ -45,8 +47,8 @@ pub fn construct_packet(config: &PacketConfig) -> Result<Vec<u8>, ReadPacketErro
 }
 
 pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
-    // Create a packet without an unnecessary initialization because we'll fill this
-    // buffer with random values
+    // Don't do unnecessary initialization because we'll fill this buffer with
+    // random values
     let mut buffer = Vec::with_capacity(length.get());
     unsafe {
         buffer.set_len(length.get());
@@ -85,8 +87,8 @@ impl Display for ReadPacketError {
 
 impl Error for ReadPacketError {}
 
-// Formats the given value as cyan-colored string. This function is often used
-// to display values (1000 packets, 5s 264ms 125us, etc)
+/// Formats the given value as cyan-colored string. This function is often used
+/// to display values (1000 packets, 5s 264ms 125us, etc).
 #[inline]
 pub fn cyan<S: ToString>(value: S) -> ColoredString {
     value.to_string().cyan()

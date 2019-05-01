@@ -247,6 +247,8 @@ pub struct PacketConfig {
 }
 
 impl ArgsConfig {
+    /// Use it to setup the current structure. It does special additional stuff
+    /// unlike the typical `StructOpt::from_args()`.
     pub fn setup() -> ArgsConfig {
         let matches = ArgsConfig::clap()
             .group(ArgGroup::with_name("message").args(&[
@@ -273,18 +275,14 @@ impl ArgsConfig {
 }
 
 fn parse_time_format(format: &str) -> Result<String, ParseError> {
-    // If the strftime function consumes the specified date-time format correctly,
-    // then the format is also correctly
+    // If this call succeeds, then the format is also correctly
     time::strftime(format, &time::now())?;
-
-    // Return the same date-time format, but as an owned String instance
     Ok(String::from(format))
 }
 
 fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
-    let number: usize = number.parse().map_err(NonZeroUsizeError::InvalidFormat)?;
-
-    NonZeroUsize::new(number).ok_or(NonZeroUsizeError::ZeroValue)
+    NonZeroUsize::new(number.parse().map_err(NonZeroUsizeError::InvalidFormat)?)
+        .ok_or(NonZeroUsizeError::ZeroValue)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -308,7 +306,7 @@ impl Error for NonZeroUsizeError {}
 mod tests {
     use super::*;
 
-    // Check that ordinary formats are passed correctly
+    /// Checks that ordinary formats are passed correctly.
     #[test]
     fn parses_valid_time_format() {
         let check = |format| {
@@ -325,7 +323,7 @@ mod tests {
         check("flower %d");
     }
 
-    // Invalid formats must produce the invalid format error
+    /// Invalid formats must produce the invalid format error.
     #[test]
     fn parses_invalid_time_format() {
         let check = |format| {
@@ -340,7 +338,7 @@ mod tests {
         check("sf%jhei9%990");
     }
 
-    // Check that ordinary values are parsed correctly
+    /// Checks that ordinary values are parsed correctly.
     #[test]
     fn parses_valid_non_zero_usize() {
         let check = |num| {
@@ -357,7 +355,7 @@ mod tests {
         check("+75");
     }
 
-    // Invalid numbers must produce the invalid format error
+    /// Invalid numbers must produce the invalid format error.
     #[test]
     fn parses_invalid_non_zero_usize() {
         let check = |num| {

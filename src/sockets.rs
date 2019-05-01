@@ -25,7 +25,7 @@ use ifaces::Interface;
 use crate::config::SocketsConfig;
 use crate::helpers;
 
-// Represents a UDP socket with its colored receiver name
+/// Represents a UDP socket with its colored receiver name.
 pub struct AneviconSocket {
     socket: UdpSocket,
     receiver: ColoredString,
@@ -43,7 +43,8 @@ impl AneviconSocket {
     }
 }
 
-// Returns a vector of sockets connected to a certain receivers
+/// Returns a vector of sockets connected to certain receivers or `io::Error`
+/// because initializations might fail.
 pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
@@ -64,6 +65,8 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     Ok(sockets)
 }
 
+/// Initializes **ONLY ONE** socket connected to `config.receivers[receiver]`.
+/// If `if_addr` is any, it will bind a socket to it.
 pub fn init_one_socket(
     config: &SocketsConfig,
     receiver: usize,
@@ -85,7 +88,7 @@ pub fn init_one_socket(
     Ok(AneviconSocket { socket, receiver })
 }
 
-// Displays an interactive menu of network interfaces
+/// Displays an interactive menu of network interfaces to a user.
 fn select_if() -> SocketAddr {
     let addrs = Interface::get_all().expect("Failed to get network interfaces");
     print_ifs(&addrs);
@@ -125,6 +128,7 @@ fn select_if() -> SocketAddr {
     }
 }
 
+/// Prints all the given network interfaces to a user.
 fn print_ifs(if_addrs: &[Interface]) {
     for i in 0..if_addrs.len() {
         info!(

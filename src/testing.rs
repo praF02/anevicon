@@ -33,8 +33,11 @@ use crate::sockets;
 
 use super::helpers;
 
+// A receiver name for this thread.
 thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined".cyan()));
 
+/// This is the key function which accepts a whole `ArgsConfig` and returns an
+/// exit code (either 1 on failure or 0 on success).
 pub fn run(config: ArgsConfig) -> i32 {
     let packet = match helpers::construct_packet(&config.packet_config) {
         Err(err) => {
@@ -72,7 +75,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         let tester_config = tester_config.clone();
 
         thread::spawn(move || {
-            RECEIVER.with(|receiver| *receiver.borrow_mut() = socket.receiver().clone());
+            init_receiver(socket.receiver().clone());
 
             let (mut ordinary, mut remaining) = (
                 generate_portions(tester_config.packets_per_syscall, &packet),
@@ -132,6 +135,11 @@ pub fn run(config: ArgsConfig) -> i32 {
     return 0;
 }
 
+/// Initializes the `RECEIVER` thread-local variable with the given value.
+fn init_receiver(value: ColoredString) {
+    RECEIVER.with(|receiver| *receiver.borrow_mut() = value);
+}
+
 fn wait(duration: Duration) {
     warn!(
         "Waiting {time} and then starting to execute the tests...",
@@ -146,6 +154,8 @@ pub enum ResendPacketsResult {
     TimeExpired,
 }
 
+/// Resends `count` packets using the given `tester`. If the `limit` is reached,
+/// it will return `TimeExpired`, otherwise, `Completed`.
 fn resend_packets(
     tester: &mut Tester,
     packet: &[u8],
@@ -185,6 +195,8 @@ fn resend_packets(
 
     ResendPacketsResult::Completed
 }
+
+/// Returns the thread-local value of a current receiver.
 #[inline]
 fn current_receiver() -> ColoredString {
     RECEIVER.with(|string| string.borrow().clone())
@@ -235,6 +247,8 @@ fn send_multiple_error<E: Display>(error: E) {
     );
 }
 
+/// Generates exactly `length` portions referring to a `packet`. They will be
+/// sent to all receivers later.
 fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
     let mut portions = Vec::with_capacity(length.get());
 
@@ -252,6 +266,7 @@ mod tests {
 
     use super::*;
 
+    /// Returns a `UdpSocket` connected to itself for testing reasons.
     fn loopback_socket() -> UdpSocket {
         let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
         socket
