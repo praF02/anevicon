@@ -159,12 +159,13 @@ mod tests {
             broadcast: true,
         };
 
-        let socket = init_one_socket(&config, 1, None)
-            .expect("init_one_socket() has failed")
-            .socket;
+        let res = init_one_socket(&config, 1, None).expect("init_one_socket() has failed");
+        let socket = res.socket;
 
         assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
         assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
+
+        assert_eq!(res.receiver, helpers::cyan(config.receivers[1]));
     }
 }
