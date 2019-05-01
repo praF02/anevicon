@@ -118,7 +118,7 @@ fn select_if() -> SocketAddr {
         return match addr.addr {
             Some(addr) => addr,
             None => {
-                info!("The selected interface doesn't contain an address. Try again: #");
+                info!("The selected interface haven't got an address. Try again: #");
                 continue;
             }
         };

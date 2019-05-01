@@ -38,7 +38,7 @@ thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined"
 pub fn run(config: ArgsConfig) -> i32 {
     let packet = match helpers::construct_packet(&config.packet_config) {
         Err(err) => {
-            error!("Constructing the packet failed >>> {}!", err);
+            error!("Constructing a packet failed >>> {}!", err);
             return 1;
         }
         Ok(packet) => packet,
@@ -166,8 +166,8 @@ fn resend_packets(
         loop {
             if let Err(error) = tester.send_one(IoVec::new(packet)) {
                 error!(
-                    "An error occurred while sending a packet to the {receiver} >>> {error}! \
-                     Retrying the operation...",
+                    "Sending a packet to the {receiver} failed >>> {error}! Retrying the \
+                     operation...",
                     receiver = current_receiver(),
                     error = error
                 );
@@ -178,7 +178,7 @@ fn resend_packets(
     }
 
     info!(
-        "{count} packets have been successfully resent to the {receiver}.",
+        "{count} packets have been resent to the {receiver}.",
         count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
@@ -229,7 +229,7 @@ fn display_summary(summary: &TestSummary) {
 #[inline]
 fn send_multiple_error<E: Display>(error: E) {
     error!(
-        "An error occurred while sending packets to the {receiver} >>> {error}!",
+        "Sending packets to the {receiver} failed >>> {error}!",
         receiver = current_receiver(),
         error = error
     );
