@@ -56,6 +56,9 @@ pub struct ArgsConfig {
 
     #[structopt(flatten)]
     pub packet_config: PacketConfig,
+
+    #[structopt(flatten)]
+    pub sockets_config: SocketsConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
@@ -85,9 +88,6 @@ pub struct TesterConfig {
         parse(try_from_str = "parse_non_zero_usize")
     )]
     pub packets_per_syscall: NonZeroUsize,
-
-    #[structopt(flatten)]
-    pub sockets_config: SocketsConfig,
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,

@@ -17,12 +17,10 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 use std::io;
-use std::io::Write;
 use std::net::{SocketAddr, UdpSocket};
 
-use colored::ColoredString;
+use colored::{ColoredString, Colorize};
 use ifaces::Interface;
-use prettytable::Table;
 
 use crate::config::SocketsConfig;
 use crate::helpers;
@@ -60,13 +58,13 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
 
     let mut sockets = Vec::with_capacity(config.receivers.len());
     for i in 0..config.receivers.len() {
-        sockets.push(init_one_sock(config, i, if_addr)?);
+        sockets.push(init_one_socket(config, i, if_addr)?);
     }
 
     Ok(sockets)
 }
 
-pub fn init_one_sock(
+pub fn init_one_socket(
     config: &SocketsConfig,
     receiver: usize,
     if_addr: Option<SocketAddr>,
@@ -87,15 +85,12 @@ pub fn init_one_sock(
     Ok(AneviconSocket { socket, receiver })
 }
 
-// Displays interactive menu of network interfaces
+// Displays an interactive menu of network interfaces
 fn select_if() -> SocketAddr {
     let addrs = Interface::get_all().expect("Failed to get network interfaces");
+    print_ifs(&addrs);
 
-    print_ifs_table(&addrs);
-    println!();
-
-    print!("Select a network interface by a number: #");
-    io::stdout().flush().expect("flush() failed");
+    info!("Select a network interface by a number: #");
 
     loop {
         let mut choice = String::new();
@@ -107,8 +102,7 @@ fn select_if() -> SocketAddr {
         let choice = match choice.parse::<usize>() {
             Ok(num) => num,
             Err(_) => {
-                print!("This is not a number. Try again: #");
-                io::stdout().flush().expect("flush() failed");
+                info!("This is not a number. Try again: #");
                 continue;
             }
         };
@@ -116,8 +110,7 @@ fn select_if() -> SocketAddr {
         let addr = match addrs.get(choice) {
             Some(interface) => interface,
             None => {
-                print!("The number is out of range. Try again: #");
-                io::stdout().flush().expect("flush() failed");
+                info!("The number is out of range. Try again: #");
                 continue;
             }
         };
@@ -125,29 +118,25 @@ fn select_if() -> SocketAddr {
         return match addr.addr {
             Some(addr) => addr,
             None => {
-                print!("The selected interface doesn't contain an address. Try again: #");
-                io::stdout().flush().expect("flush() failed");
+                info!("The selected interface doesn't contain an address. Try again: #");
                 continue;
             }
         };
     }
 }
 
-fn print_ifs_table(if_addrs: &[Interface]) {
-    let mut table = Table::new();
-    table.set_titles(row!["Number", "Name", "Address"]);
-
+fn print_ifs(if_addrs: &[Interface]) {
     for i in 0..if_addrs.len() {
-        table.add_row(row![
-            &format!("#{}", i.to_string()),
-            &if_addrs[i].name,
-            &if_addrs[i]
-                .addr
-                .map_or_else(|| String::from("None"), |val| val.to_string()),
-        ]);
+        info!(
+            "Found a network interface {number} called {name} with {ip} IP.",
+            number = helpers::cyan(format!("#{}", i)),
+            name = helpers::cyan(&if_addrs[i].name).italic(),
+            ip = if_addrs[i].addr.map_or_else(
+                || "haven't got an".normal(),
+                |val| helpers::cyan(val.to_string())
+            )
+        );
     }
-
-    table.printstd();
 }
 
 #[cfg(test)]
@@ -165,12 +154,15 @@ mod tests {
                 "85.53.23.57:45687".parse().unwrap(),
             ],
             sender: "0.0.0.0:0".parse().unwrap(),
-            select_if: None,
+            select_if: false,
             send_timeout: Duration::from_secs(25),
             broadcast: true,
         };
 
-        let socket = init_socket(&config, 1, None).expect("init_socket() has failed");
+        let socket = init_one_socket(&config, 1, None)
+            .expect("init_one_socket() has failed")
+            .socket;
+
         assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
         assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
