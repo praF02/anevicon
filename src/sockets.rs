@@ -78,7 +78,7 @@ pub fn init_one_socket(
 
     let receiver = helpers::cyan(config.receivers[receiver]);
     info!(
-        "A new socket has been initialized to the {receiver} receiver.",
+        "A new socket has been initialized to the {receiver}.",
         receiver = receiver,
     );
 

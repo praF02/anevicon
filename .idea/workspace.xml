@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/src/sockets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/sockets.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/testing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/testing.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,11 +18,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/sockets.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="169">
+              <caret line="135" column="21" selection-start-line="135" selection-start-column="21" selection-end-line="135" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/testing.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="272" lean-forward="true" selection-start-line="272" selection-end-line="272" />
+            <state relative-caret-position="180">
+              <caret line="52" column="6" lean-forward="true" selection-start-line="52" selection-start-column="6" selection-end-line="52" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -74,8 +82,8 @@
         <option value="$PROJECT_DIR$/src/config.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
         <option value="$PROJECT_DIR$/Cargo.toml" />
-        <option value="$PROJECT_DIR$/src/sockets.rs" />
         <option value="$PROJECT_DIR$/src/testing.rs" />
+        <option value="$PROJECT_DIR$/src/sockets.rs" />
       </list>
     </option>
   </component>
@@ -361,13 +369,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.41375545" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.13646288" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010672" side_tool="true" weight="0.7150655" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49893278" weight="0.22489083" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49893278" weight="0.03275109" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32969433" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -675,15 +683,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/sockets.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="134" column="21" lean-forward="true" selection-start-line="134" selection-start-column="21" selection-end-line="134" selection-end-column="21" />
+        <state relative-caret-position="169">
+          <caret line="135" column="21" selection-start-line="135" selection-start-column="21" selection-end-line="135" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/testing.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="272" lean-forward="true" selection-start-line="272" selection-end-line="272" />
+        <state relative-caret-position="180">
+          <caret line="52" column="6" lean-forward="true" selection-start-line="52" selection-start-column="6" selection-end-line="52" selection-end-column="6" />
         </state>
       </provider>
     </entry>
