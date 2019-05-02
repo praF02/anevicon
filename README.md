@@ -56,10 +56,10 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Waiting before a test](https://github.com/Gymmasssorla/anevicon#waiting-before-a-test)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
- - [Images](https://github.com/Gymmasssorla/anevicon#images)
+ - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
    - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
-   - [Be verbose](https://github.com/Gymmasssorla/anevicon#be-verbose)
+   - [Being verbose](https://github.com/Gymmasssorla/anevicon#being-verbose)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Cautions](https://github.com/Gymmasssorla/anevicon#cautions)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -339,7 +339,7 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 
 ----------
 
-## Images
+## Gallery
 
 <div align="center">
   <h3>Statistics</h3>
@@ -348,7 +348,7 @@ This is how you are able to build your own stress-testing bot. Now you can follo
   <h3>Network interfaces</h3>
   <img src="media/INTERFACES.png">
   
-  <h3>Be verbose</h3>
+  <h3>Being verbose</h3>
   <img src="media/VERBOSE.png">
 </div>
 
