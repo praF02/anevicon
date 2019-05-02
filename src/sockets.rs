@@ -132,10 +132,15 @@ fn select_if() -> SocketAddr {
 fn print_ifs(if_addrs: &[Interface]) {
     for i in 0..if_addrs.len() {
         info!(
-            "Found a network interface {number}:\n\tName: {name}\n\tAddress: {ip}",
+            "Found a network interface {number}:\n\tName: {name}\n\tAddress: {ip}\n\tNetmask: \
+             {mask}",
             number = helpers::cyan(format!("#{}", i)),
             name = helpers::cyan(&if_addrs[i].name).italic(),
             ip = if_addrs[i].addr.map_or_else(
+                || helpers::cyan("none"),
+                |val| helpers::cyan(val.to_string())
+            ),
+            mask = if_addrs[i].mask.map_or_else(
                 || helpers::cyan("none"),
                 |val| helpers::cyan(val.to_string())
             )
