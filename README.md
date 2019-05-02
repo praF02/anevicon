@@ -81,12 +81,10 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 ----------
 
 ## Installation
-> Currently Anevicon compiles only on 1.34.0 version of Rust. This will be fixed in the near future, but for now, try to run this command before installation: `rustup install nightly-2019-04-11`.
-
 Currently, this project requires unstable standard library features, so this is why you must switch to the nightly channel to avoid compilation errors:
 
 ```bash
-$ rustup override set nightly
+$ rustup override set nightly-2019-04-11
 ```
 
 ### Building from crates.io
