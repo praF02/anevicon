@@ -151,7 +151,7 @@ fn wait(duration: Duration) {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum ResendPacketsResult {
+enum ResendPacketsResult {
     Completed,
     TimeExpired,
 }
