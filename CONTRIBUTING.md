@@ -28,13 +28,8 @@ $ ./appimage.sh
 
 Then you'll see the generated executable in https://github.com/Gymmasssorla/anevicon/tree/master/anevicon.AppDir. The already compiled AppImages are located in the [releases](https://github.com/Gymmasssorla/anevicon/releases) page.
 
-## Debugging
-You can receive additional debugging information and some traces by specifying the `--verbosity 5` option before running the compiled program. It's possible to print your own messages using the [`trace!()`](https://docs.rs/log/0.4.6/log/macro.trace.html) and the [`debug!()`](https://docs.rs/log/0.4.6/log/macro.debug.html) macros.
-
-## Formatting
-To make the code readable and maintainable, we use the great tool from the original Rust team called [rustfmt](https://github.com/rust-lang/rustfmt). You need to format your code before pushing any changes just by typing the `cargo fmt` command in your terminal.
 
 ## Where to go?
  - **[Issues](https://github.com/Gymmasssorla/anevicon/issues)** are meant for reporting found bugs and new functionality suggestions. Discussions are welcome too, and I will try to answer you in near future.
  
- - **[Pulls](https://github.com/Gymmasssorla/anevicon/pulls)** are meant for implementing new functionality and fixing bugs. Note that other people can criticize your code, and you should answer them.
+ - **[Pulls](https://github.com/Gymmasssorla/anevicon/pulls)** are meant for implementing new functionality and fixing bugs. Note that other people can criticize your code, and you should answer them. Also don't forget to run `cargo fmt` before pushing any changes.
