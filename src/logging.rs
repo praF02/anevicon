@@ -16,6 +16,9 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing the `setup_config` function which setups the whole
+//! logging system.
+
 use std::io;
 
 use colored::Colorize as _;

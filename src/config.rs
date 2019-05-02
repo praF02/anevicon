@@ -16,6 +16,9 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing command-line configurations such as receivers, date-time
+//! format and so on.
+
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::net::SocketAddr;

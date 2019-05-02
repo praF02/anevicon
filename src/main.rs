@@ -16,6 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! The main entry of this program, you already know this :)
+
 #![feature(ip)]
 #![feature(iovec)]
 

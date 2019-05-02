@@ -16,6 +16,9 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing some helping functions such as constructing a packet,
+//! coloring to cyan, etc.
+
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::fs;

@@ -16,6 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing abstractions for socket initialization and future usage.
+
 use std::io;
 use std::net::{SocketAddr, UdpSocket};
 

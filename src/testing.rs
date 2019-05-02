@@ -16,6 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing the key function `run` which does the main work.
+
 use std::cell::RefCell;
 use std::fmt::Display;
 use std::io::IoVec;
