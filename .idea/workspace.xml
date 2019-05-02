@@ -15,7 +15,17 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -59,28 +69,28 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/src/config.rs" />
-        <option value="$PROJECT_DIR$/src/main.rs" />
         <option value="$PROJECT_DIR$/src/logging.rs" />
         <option value="$PROJECT_DIR$/src/helpers.rs" />
         <option value="$PROJECT_DIR$/src/sockets.rs" />
         <option value="$PROJECT_DIR$/src/testing.rs" />
+        <option value="$PROJECT_DIR$/src/main.rs" />
       </list>
     </option>
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="OdtwNIyU" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
-    <option name="width" value="959" />
-    <option name="height" value="1039" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-220" />
+    <option name="y" value="30" />
+    <option name="width" value="949" />
+    <option name="height" value="1037" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -97,6 +107,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -117,7 +129,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Cargo Command.Cargo Fmt">
+  <component name="RunManager" selected="Cargo Command.Cargo Test">
     <configuration name="Cargo Build Release" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
@@ -302,9 +314,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Cargo_Test - 2019.04.25 at 08h 26m 17s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Cargo_Test - 2019.04.25 at 19h 53m 59s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -332,11 +341,14 @@
     <history-entry file="Cargo_Test - 2019.05.02 at 01h 12m 16s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.05.02 at 18h 54m 37s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="959" height="1039" extended-state="4" />
+    <frame x="-220" y="30" width="949" height="1037" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.4359255" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.45182723" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -348,13 +360,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.17139737" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.41949618" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5010672" side_tool="true" weight="0.7150655" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49893278" visible="true" weight="0.3748634" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49893278" weight="0.37336245" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32969433" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -601,17 +613,17 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="-714">
-          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="594">
             <caret line="184" column="68" selection-start-line="184" selection-start-column="68" selection-end-line="184" selection-end-column="68" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="-714">
+          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -633,13 +645,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="2" lean-forward="true" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -679,6 +684,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-748">
           <caret line="7" column="2" lean-forward="true" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
         </state>
       </provider>
     </entry>

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=anevicon
+Comment=A high-performant UDP-based load generator, written in Rust
+Icon=anevicon
