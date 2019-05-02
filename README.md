@@ -98,9 +98,9 @@ $ cargo build --release
 
 ### Pre-compiled binaries
 ```bash
-$ wget https://github.com/Gymmasssorla/anevicon/releases/download/<VERSION>/anevicon.AppImage
-$ chmod a+x anevicon.AppImage
-$ ./anevicon.AppImage
+$ wget https://github.com/Gymmasssorla/anevicon/releases/download/<VERSION>/anevicon-x86_64.AppImage
+$ chmod a+x anevicon-x86_64.AppImage
+$ ./anevicon-x86_64.AppImage
 ```
 
 ----------
