@@ -69,7 +69,7 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
 
 /// Initializes **ONLY ONE** socket connected to `config.receivers[receiver]`.
 /// If `if_addr` is any, it will bind a socket to it.
-pub fn init_one_socket(
+fn init_one_socket(
     config: &SocketsConfig,
     receiver: usize,
     if_addr: Option<SocketAddr>,

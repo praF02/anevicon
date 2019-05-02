@@ -142,6 +142,12 @@ fn init_receiver(value: ColoredString) {
     RECEIVER.with(|receiver| *receiver.borrow_mut() = value);
 }
 
+/// Returns the thread-local value of a current receiver.
+#[inline]
+fn current_receiver() -> ColoredString {
+    RECEIVER.with(|string| string.borrow().clone())
+}
+
 fn wait(duration: Duration) {
     warn!(
         "Waiting {time} and then starting to execute the tests...",
@@ -196,12 +202,6 @@ fn resend_packets(
     );
 
     ResendPacketsResult::Completed
-}
-
-/// Returns the thread-local value of a current receiver.
-#[inline]
-fn current_receiver() -> ColoredString {
-    RECEIVER.with(|string| string.borrow().clone())
 }
 
 #[inline]
