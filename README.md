@@ -60,6 +60,10 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Use native CPU architecture](https://github.com/Gymmasssorla/anevicon#use-native-cpu-architecture)
    - [Use Ethernet connection](https://github.com/Gymmasssorla/anevicon#use-ethernet-connection)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
+ - [Images](https://github.com/Gymmasssorla/anevicon#images)
+   - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
+   - [Be verbose](https://github.com/Gymmasssorla/anevicon#be-verbose)
  - [Cautions](https://github.com/Gymmasssorla/anevicon#cautions)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
  
