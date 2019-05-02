@@ -60,9 +60,6 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
    - [Be verbose](https://github.com/Gymmasssorla/anevicon#be-verbose)
- - [Performance tips](https://github.com/Gymmasssorla/anevicon#performance-tips)
-   - [Use native CPU architecture](https://github.com/Gymmasssorla/anevicon#use-native-cpu-architecture)
-   - [Use Ethernet connection](https://github.com/Gymmasssorla/anevicon#use-ethernet-connection)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Cautions](https://github.com/Gymmasssorla/anevicon#cautions)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -357,23 +354,8 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 
 ----------
 
-## Performance tips
-
-### Use native CPU architecture
-Generate hardware acceleration-oriented instructions by compiling the sources on your native CPU architecture by passing the `-C target_cpu=native` flag directly to `rustc`:
-
-```bash
-$ RUSTFLAGS="-C target_cpu=native" cargo install anevicon
-```
-
-### Use Ethernet connection
-Obviously, using Ethernet connection instead of Wi-Fi will be much faster since it usually has larger bandwidth and works directly on your cables.
-
-----------
-
 ## Contributing
 You are always welcome for any contribution to this project! But before you start, you should read [the appropriate document](https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md) to know about the preferred development process and the basic communication rules.
-
 
 ----------
 
