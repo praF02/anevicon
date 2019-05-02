@@ -359,6 +359,21 @@ You are always welcome for any contribution to this project! But before you star
 
 ----------
 
+## Images
+
+<div align="center">
+  <h3>Statistics</h3>
+  <img src="media/STATS.png">
+  
+  <h3>Network interfaces</h3>
+  <img src="media/INTERFACES.png">
+  
+  <h3>Be verbose</h3>
+  <img src="media/VERBOSE.png">
+</div>
+
+----------
+
 ## Cautions
  - The goal of Anevicon is to produce the maximum possible (for your computer) load on the specified receiver. Thereby, this **DOES NOT MEAN** that Anevicon will break **ABSOLUTELY ANY SERVER** while running on your computer.
  
