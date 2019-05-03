@@ -19,16 +19,6 @@ $ cargo build --verbose --all
 $ cargo test --verbose --all
 ```
 
-## AppImage generation
-This project uses the [AppImage](https://appimage.org/) format to easily distribute packets which run on every Linux-based system. To generate it, type the following command in the root folder:
-
-```bash
-$ ./appimage.sh
-```
-
-Then you'll see the generated executable in https://github.com/Gymmasssorla/anevicon/tree/master/anevicon.AppDir. The already compiled AppImages are located in the [releases](https://github.com/Gymmasssorla/anevicon/releases) page.
-
-
 ## Where to go?
  - **[Issues](https://github.com/Gymmasssorla/anevicon/issues)** are meant for reporting found bugs and new functionality suggestions. Discussions are welcome too, and I will try to answer you in near future.
  
