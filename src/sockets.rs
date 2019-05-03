@@ -82,7 +82,7 @@ fn init_one_socket(
     socket.set_write_timeout(Some(config.send_timeout))?;
 
     let receiver = helpers::cyan(config.receivers[receiver]);
-    info!(
+    debug!(
         "A new socket has been initialized to the {receiver}.",
         receiver = receiver,
     );
@@ -140,11 +140,11 @@ fn print_ifs(if_addrs: &[Interface]) {
             name = helpers::cyan(&if_addrs[i].name).italic(),
             ip = if_addrs[i].addr.map_or_else(
                 || helpers::cyan("none"),
-                |val| helpers::cyan(val.to_string())
+                |val| helpers::cyan(val.to_string()),
             ),
             mask = if_addrs[i].mask.map_or_else(
                 || helpers::cyan("none"),
-                |val| helpers::cyan(val.to_string())
+                |val| helpers::cyan(val.to_string()),
             )
         );
     }
