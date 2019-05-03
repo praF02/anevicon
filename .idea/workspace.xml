@@ -119,7 +119,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Cargo Command.Cargo Fmt">
+  <component name="RunManager" selected="Cargo Command.Cargo Clean">
     <configuration name="Cargo Build Release" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
@@ -143,6 +143,16 @@
     <configuration name="Cargo Check" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="check" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Cargo Clean" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="clean" />
       <option name="allFeatures" value="false" />
       <option name="nocapture" value="false" />
       <option name="backtrace" value="SHORT" />
@@ -270,6 +280,7 @@
       <item itemvalue="Cargo Command.Cargo Run Release" />
       <item itemvalue="Cargo Command.Cargo Run" />
       <item itemvalue="Cargo Command.Cargo Test" />
+      <item itemvalue="Cargo Command.Cargo Clean" />
       <item itemvalue="Cargo Command.Test summary::tests::summary_portion_valid_works" />
       <item itemvalue="Cargo Command.Test summary::tests::truncates_megabytes_correctly" />
       <item itemvalue="Cargo Command.Test testers::tests::tester_runs_correctly" />
