@@ -133,6 +133,9 @@ OPTIONS:
             
             Specifying a different format with days of weeks might be helpful
             when you want to test a server more than one day. [default: %X]
+        --ip-ttl <UNSIGNED-INTEGER>
+            Specifies the IP_TTL value for all future sockets. Usually this
+            value equals a number of routers that a packet can go through.
     -l, --packet-length <POSITIVE-INTEGER>
             Repeatedly send a random-generated packet with a specified bytes
             length. The default is 32768
@@ -297,6 +300,14 @@ Anevicon automatically uses a default network interface for your system, but you
 ```bash
 # Choose a custom network interface to which bind all future sockets
 $ anevicon --receiver 93.184.216.34:80 --select-if
+```
+
+### The `IP_TTL` option
+The `--ip-ttl` option specified how long each packet can live. Usually, it is equal to a number of routers that a packet can go through. This example demonstrates the feature:
+
+```bash
+# Test example.com and specify the `IP_TTL` option to 15
+$ anevicon --receiver 93.184.216.34:80 --ip-ttl 15
 ```
 
 ----------

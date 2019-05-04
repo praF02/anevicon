@@ -146,6 +146,11 @@ pub struct SocketsConfig {
     )]
     pub send_timeout: Duration,
 
+    /// Specifies the IP_TTL value for all future sockets. Usually this value
+    /// equals a number of routers that a packet can go through.
+    #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
+    pub ip_ttl: Option<u32>,
+
     /// Allow sockets to send packets to a broadcast address
     #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
     pub broadcast: bool,

@@ -81,6 +81,10 @@ fn init_one_socket(
     socket.set_broadcast(config.broadcast)?;
     socket.set_write_timeout(Some(config.send_timeout))?;
 
+    if let Some(val) = config.ip_ttl {
+        socket.set_ttl(val)?;
+    }
+
     let receiver = helpers::cyan(config.receivers[receiver]);
     debug!(
         "A new socket has been initialized to the {receiver}.",
@@ -167,6 +171,7 @@ mod tests {
             sender: "0.0.0.0:0".parse().unwrap(),
             select_if: false,
             send_timeout: Duration::from_secs(25),
+            ip_ttl: Some(13),
             broadcast: true,
         };
 
@@ -176,6 +181,7 @@ mod tests {
         assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
         assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
+        assert_eq!(socket.ttl().unwrap(), config.ip_ttl.unwrap());
 
         assert_eq!(res.receiver, helpers::cyan(config.receivers[1]));
     }
