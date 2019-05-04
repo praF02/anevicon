@@ -223,8 +223,8 @@ fn display_packets_sent() {
 #[inline]
 fn display_summary(summary: &TestSummary) {
     info!(
-        "Stats for {receiver}:\n\tData Sent: {data_sent}\n\tAverage Speed: \
-         {average_speed}\n\tTime Passed: {time_passed}",
+        "Stats for {receiver}:\n\tData Sent:     {data_sent}\n\tAverage Speed: \
+         {average_speed}\n\tTime Passed:   {time_passed}",
         receiver = current_receiver(),
         data_sent = helpers::cyan(format!(
             "{packets} packets ({megabytes} MB)",
