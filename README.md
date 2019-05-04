@@ -302,7 +302,7 @@ Anevicon automatically uses a default network interface for your system, but you
 $ anevicon --receiver 93.184.216.34:80 --select-if
 ```
 
-### The `IP_TTL` option
+### Time to live
 The `--ip-ttl` option specified how long each packet can live. Usually, it is equal to a number of routers that a packet can go through. This example demonstrates the feature:
 
 ```bash
