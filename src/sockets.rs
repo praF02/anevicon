@@ -18,7 +18,7 @@
 
 //! A module containing abstractions for socket initialization and future usage.
 
-use std::io;
+use std::io::{self, Write};
 use std::net::{SocketAddr, UdpSocket};
 
 use colored::{ColoredString, Colorize};
@@ -99,7 +99,10 @@ fn select_if() -> SocketAddr {
     let addrs = Interface::get_all().expect("Failed to get network interfaces");
     print_ifs(&addrs);
 
-    info!("Select a network interface by a number: #");
+    let mut stdout = io::stdout();
+
+    print!("Select a network interface {}", ">>>#".yellow());
+    stdout.flush().unwrap();
 
     loop {
         let mut choice = String::new();
@@ -111,7 +114,8 @@ fn select_if() -> SocketAddr {
         let choice = match choice.parse::<usize>() {
             Ok(num) => num,
             Err(_) => {
-                info!("This is not a number. Try again: #");
+                print!("This is not a number {}", ">>>#".yellow());
+                stdout.flush().unwrap();
                 continue;
             }
         };
@@ -119,7 +123,8 @@ fn select_if() -> SocketAddr {
         let addr = match addrs.get(choice) {
             Some(interface) => interface,
             None => {
-                info!("The number is out of range. Try again: #");
+                print!("The number is out of range {}", ">>>#".yellow());
+                stdout.flush().unwrap();
                 continue;
             }
         };
@@ -127,7 +132,8 @@ fn select_if() -> SocketAddr {
         return match addr.addr {
             Some(addr) => addr,
             None => {
-                info!("The selected interface haven't got an address. Try again: #");
+                print!("Cannot get an address {}", ">>>#".yellow());
+                stdout.flush().unwrap();
                 continue;
             }
         };
@@ -152,6 +158,8 @@ fn print_ifs(if_addrs: &[Interface]) {
             )
         );
     }
+
+    println!();
 }
 
 #[cfg(test)]
