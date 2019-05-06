@@ -99,15 +99,15 @@ pub fn cyan<S: ToString>(value: S) -> ColoredString {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Write;
     use std::path::PathBuf;
-
-    use tempfile::NamedTempFile;
 
     use super::*;
 
-    fn test_file() -> NamedTempFile {
-        NamedTempFile::new().expect("Cannot create a temp file")
+    lazy_static! {
+        static ref PACKET_FILE: PathBuf = PathBuf::from("files/packet.txt");
+        static ref ZERO_FILE: PathBuf = PathBuf::from("files/zero.txt");
+        static ref PACKET_CONTENT: Vec<u8> =
+            fs::read("files/packet.txt").expect("fs::read(...) failed");
     }
 
     #[test]
@@ -124,24 +124,11 @@ mod tests {
     #[test]
     #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
-        let temp_file = test_file();
-
-        if let Err(ReadPacketError::ZeroSize) = read_packet(temp_file.path()) {
+        if let Err(ReadPacketError::ZeroSize) = read_packet(ZERO_FILE.to_str().unwrap()) {
             panic!("Zero packet size");
         } else {
             panic!("Must return the 'ZeroSize' error");
         }
-    }
-
-    #[test]
-    fn test_read_valid_file() {
-        let mut temp_file = test_file();
-
-        let content = vec![26; 4096];
-        temp_file.write_all(&content).unwrap();
-
-        let read_file = read_packet(temp_file.path()).expect("Cannot read a temp file");
-        assert_eq!(read_file, content);
     }
 
     #[test]
@@ -163,21 +150,16 @@ mod tests {
 
     #[test]
     fn test_choose_file_packet() {
-        let mut temp_file = test_file();
-
-        let content = vec![165; 4096];
-        temp_file.write_all(&content).unwrap();
-
         // The function must return a valid file content that we have
         // already written
         assert_eq!(
-            construct_packet(&PacketConfig {
-                send_file: Some(PathBuf::from(temp_file.path().to_str().unwrap())),
+            &construct_packet(&PacketConfig {
+                send_file: Some(PACKET_FILE.clone()),
                 packet_length: None,
                 send_message: None,
             })
             .expect("Cannot construct a packet"),
-            content
+            &PACKET_CONTENT.as_slice(),
         );
     }
 
