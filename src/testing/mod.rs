@@ -31,9 +31,9 @@ use colored::{ColoredString, Colorize};
 use humantime::format_duration;
 
 use crate::config::ArgsConfig;
-use crate::sockets;
 
-use super::helpers;
+mod helpers;
+mod sockets;
 
 // A receiver name for this thread.
 thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined".cyan()));

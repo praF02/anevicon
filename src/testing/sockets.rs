@@ -24,8 +24,8 @@ use std::net::{SocketAddr, UdpSocket};
 use colored::{ColoredString, Colorize};
 use ifaces::Interface;
 
+use super::helpers;
 use crate::config::SocketsConfig;
-use crate::helpers;
 
 /// Represents a UDP socket with its colored receiver name.
 pub struct AneviconSocket {

@@ -29,7 +29,7 @@ use std::path::Path;
 use colored::{ColoredString, Colorize as _};
 use rand::{thread_rng, RngCore};
 
-use super::config::PacketConfig;
+use crate::config::PacketConfig;
 
 /// Constructs a bytes packet from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
@@ -49,7 +49,7 @@ pub fn construct_packet(config: &PacketConfig) -> Result<Vec<u8>, ReadPacketErro
     }
 }
 
-pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
+fn random_packet(length: NonZeroUsize) -> Vec<u8> {
     // Don't do unnecessary initialization because we'll fill this buffer with
     // random values
     let mut buffer = Vec::with_capacity(length.get());
@@ -61,7 +61,7 @@ pub fn random_packet(length: NonZeroUsize) -> Vec<u8> {
     buffer
 }
 
-pub fn read_packet<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
+fn read_packet<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
     let content = fs::read(path).map_err(ReadPacketError::ReadFailed)?;
 
     if content.is_empty() {
@@ -120,12 +120,12 @@ mod tests {
         assert!(buffer.capacity() >= length.get());
     }
 
+    /// Check that the function must return the 'ZeroSize' error.
     #[test]
     #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
         let temp_file = test_file();
 
-        // Check that the function must return the 'ZeroSize' error
         if let Err(ReadPacketError::ZeroSize) = read_packet(temp_file.path()) {
             panic!("Zero packet size");
         } else {

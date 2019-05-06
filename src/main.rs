@@ -29,9 +29,7 @@ use colored::Colorize;
 use config::ArgsConfig;
 
 mod config;
-mod helpers;
 mod logging;
-mod sockets;
 mod testing;
 
 fn main() {
