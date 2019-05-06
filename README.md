@@ -62,6 +62,11 @@ $ ./anevicon-x86_64-linux
 
 ----------
 
+## Getting started
+You can start with the `anevicon --receiver=93.184.216.34:80` minimal command which will send thousands of UDP packets (also called datagrams) to http://example.com/. Advanced options are described in the section below.
+
+----------
+
 ## Options
 ```
 anevicon 5.0.3
