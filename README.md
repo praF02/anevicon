@@ -34,6 +34,15 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 
 ----------
 
+## Features
+ - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
+
+ - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
+ 
+ - **Written in Rust.** How you can see, all the logic is written completely in [Rust](https://www.rust-lang.org/), which means that it leverages bare-metal performance and high-level safety.
+
+----------
+
 ## Installation
 Currently, this project requires unstable standard library features, so this is why you must switch to the nightly channel to avoid compilation errors:
 
