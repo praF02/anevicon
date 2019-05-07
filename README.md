@@ -34,6 +34,25 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 
 ----------
 
+## Contents
+ - [Features](https://github.com/Gymmasssorla/anevicon#features)
+ - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
+   - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
+   - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
+   - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
+ - [Getting started](https://github.com/Gymmasssorla/anevicon#getting-started)
+ - [Options](https://github.com/Gymmasssorla/anevicon#options)
+ - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
+ - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
+   - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Being verbose](https://github.com/Gymmasssorla/anevicon#being-verbose)
+ - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
+ - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
+ - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
+
+----------
+
 ## Features
  - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
