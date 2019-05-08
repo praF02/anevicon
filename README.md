@@ -121,13 +121,10 @@ FLAGS:
 OPTIONS:
         --date-time-format <STRING>
             A format for displaying local date and time in log messages. Type
-            `man strftime` to see the format specification.
-            
-            Specifying a different format with days of weeks might be helpful
-            when you want to test a server more than one day. [default: %X]
+            `man strftime` to see the format specification [default: %X]
         --ip-ttl <UNSIGNED-INTEGER>
             Specifies the IP_TTL value for all future sockets. Usually this
-            value equals a number of routers that a packet can go through.
+            value equals a number of routers that a packet can go through
     -l, --packet-length <POSITIVE-INTEGER>
             Repeatedly send a random-generated packet with a specified bytes
             length. The default is 32768
@@ -137,19 +134,13 @@ OPTIONS:
         --packets-per-syscall <POSITIVE-INTEGER>
             A count of packets which the program will send using only one
             syscall. After the operation completed, a test summary will have
-            been printed.
-            
-            It is not recommended to set this option to a low value for some
-            performance reasons. [default: 600]
+            been printed [default: 600]
     -r, --receiver <SOCKET-ADDRESS>...
             A receiver of generated traffic, specified as an IP-address and a
             port number, separated by a colon.
             
-            This option can be specified several times to test multiple
-            receivers in parallel mode.
-            
-            All receivers will be tested identically. Run multiple instances of
-            this program to describe specific characteristics for each receiver.
+            This option can be specified several times to identically test
+            multiple receivers in parallel mode.
     -f, --send-file <FILENAME>
             Interpret the specified file content as a single packet and
             repeatedly send it to each receiver

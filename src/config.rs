@@ -79,10 +79,7 @@ pub struct TesterConfig {
 
     /// A count of packets which the program will send using only one syscall.
     /// After the operation completed, a test summary will have been
-    /// printed.
-    ///
-    /// It is not recommended to set this option to a low value for some
-    /// performance reasons.
+    /// printed
     #[structopt(
         long = "packets-per-syscall",
         takes_value = true,
@@ -101,11 +98,8 @@ pub struct SocketsConfig {
     /// A receiver of generated traffic, specified as an IP-address and a port
     /// number, separated by a colon.
     ///
-    /// This option can be specified several times to test multiple receivers in
-    /// parallel mode.
-    ///
-    /// All receivers will be tested identically. Run multiple instances of this
-    /// program to describe specific characteristics for each receiver.
+    /// This option can be specified several times to identically test multiple
+    /// receivers in parallel mode.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -176,10 +170,7 @@ pub struct LoggingConfig {
     pub verbosity: i32,
 
     /// A format for displaying local date and time in log messages. Type `man
-    /// strftime` to see the format specification.
-    ///
-    /// Specifying a different format with days of weeks might be helpful when
-    /// you want to test a server more than one day.
+    /// strftime` to see the format specification
     #[structopt(
         long = "date-time-format",
         takes_value = true,
