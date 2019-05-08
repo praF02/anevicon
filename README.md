@@ -58,6 +58,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Target platform](https://github.com/Gymmasssorla/anevicon#target-platform)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
+ - [Project links](https://github.com/Gymmasssorla/anevicon#project-links)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
 
 ----------
@@ -305,6 +306,17 @@ Like most of pentesting utilities, this project is developed, tested, and mainta
 
 ## Legal disclaimer
 Anevicon was developed as a means of testing stress resistance of web servers, and not for hacking, that is, the author of the project **IS NOT RESPONSIBLE** for any damage caused by your use of his program.
+
+----------
+
+## Project links
+ - https://www.producthunt.com/posts/anevicon
+ - https://www.kitploit.com/2019/04/anevicon-high-performant-udp-based-load.html
+ - http://www.sectechno.com/anevicon-udp-based-stress-testing-tool/
+ - https://www.reddit.com/r/rust/comments/arwi3v/anevicon_the_most_powerful_udpbased_load/
+ - https://www.reddit.com/r/hacking/comments/atld1y/anevicon_a_highperformance_udp_traffic_generator/
+ - https://www.reddit.com/r/rust/comments/b4tt3c/generating_hundreds_of_thousands_heavy_udp/
+ - https://www.reddit.com/r/hacking/comments/bha4le/anevicon_a_highperformant_udp_traffic_generator/
 
 ----------
 
