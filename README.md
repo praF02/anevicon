@@ -56,6 +56,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
    - [Being verbose](https://github.com/Gymmasssorla/anevicon#being-verbose)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
+ - [Target platform](https://github.com/Gymmasssorla/anevicon#target-platform)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
 
@@ -298,6 +299,11 @@ This is how you are able to build your own stress-testing bot. Now you can follo
 
 ## Contributing
 You are always welcome for any contribution to this project! But before you start, you should read [the appropriate document](https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md) to know about the preferred development process and the basic communication rules.
+
+----------
+
+## Target platform
+Like most of pentesting utilities, this project is developed, tested, and maintained for only Linux-based systems. If you are a Windows user, you probably need a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine) or another computer with GNU/Linux.
 
 ----------
 
