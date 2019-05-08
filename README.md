@@ -91,7 +91,7 @@ $ cargo build --release
 ```
 
 ### Pre-compiled binaries
-The easiest way to run Finshir on your system is to download the pre-compiled binaries from the [existing releases](https://github.com/Gymmasssorla/finshir/releases), which doesn't require any external software (unlike the two previous approaches).
+The easiest way to run Anevicon on your system is to download the pre-compiled binaries from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches).
 
 ----------
 
