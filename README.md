@@ -48,6 +48,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Connections count](https://github.com/Gymmasssorla/anevicon#connections-count)
    - [Custom data portions](https://github.com/Gymmasssorla/anevicon#custom-data-portions)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
@@ -219,6 +220,14 @@ Note that the command above might not work on your system due to the security re
 ```bash
 # Test the 80 port of the example.com site with the two limit options
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+```
+
+### Network interfaces
+There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
+
+```bash
+# Test example.com with a custom network interface using `--select-if`
+$ anevicon --receiver=93.184.216.34:80 --select-if
 ```
 
 ### Logging options
