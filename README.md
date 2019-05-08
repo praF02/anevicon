@@ -53,7 +53,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
    - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
    - [Being verbose](https://github.com/Gymmasssorla/anevicon#being-verbose)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
