@@ -42,6 +42,13 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
  - [Getting started](https://github.com/Gymmasssorla/anevicon#getting-started)
  - [Options](https://github.com/Gymmasssorla/anevicon#options)
+ - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
+   - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
+   - [Using the Tor network](https://github.com/Gymmasssorla/anevicon#using-the-tor-network)
+   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
+   - [Connections count](https://github.com/Gymmasssorla/anevicon#connections-count)
+   - [Custom data portions](https://github.com/Gymmasssorla/anevicon#custom-data-portions)
+   - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
    - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
@@ -58,7 +65,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 
  - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
  
- - **Written in Rust.** How you can see, all the logic is written completely in [Rust](https://www.rust-lang.org/), which means that it leverages bare-metal performance and high-level safety.
+ - **Written in Rust.** How you can see, all the logic is written completely in [Rust](https://www.rust-lang.org/), which means that it leverages bare-metal performance and high-level safety (no SIGSEGV, SIGILL, and other "funny" stuff).
 
 ----------
 
@@ -88,14 +95,6 @@ $ chmod a+x anevicon-x86_64-linux
 $ ./anevicon-x86_64-linux
 ```
 
-----------
-
-## Getting started
-The minimal command below will transmit an endless amount of datagrams to http://example.com/. Note that this example uses a single-threaded model, see the next section for advanced options.
-
-```bash
-$ anevicon --receiver=93.184.216.34:80
-```
 ----------
 
 ## Options
@@ -182,6 +181,61 @@ OPTIONS:
             of an erroneous (unwanted) test [default: 5secs]
 
 For more information see <https://github.com/Gymmasssorla/anevicon>.
+```
+
+----------
+
+## Overview
+
+### Minimal command
+All you need is to provide the testing server address, which consists of an IP address and a port number, separated by the colon character. By default, all sending sockets will have your local address:
+
+```bash
+# Test the 80 port of the example.com site using your local address
+$ anevicon --receiver=93.184.216.34:80
+```
+
+### Custom message
+By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
+
+```bash
+# Test the 80 port of example.com with the custom file 'message.txt'
+$ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
+
+# Test the 80 port of example.com with the custom text message
+$ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
+```
+
+### Multiple receivers
+Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
+
+```bash
+# Test the 80 port of example.com and the 13 port of google.com in parallel
+$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
+```
+
+### Test intensity
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+
+```bash
+# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
+$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
+```
+
+### End conditions
+Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
+
+```bash
+# Test the 80 port of the example.com site with the two limit options
+$ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+```
+
+### Logging options
+Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is done by the `--verbosity` option. There is also the `--date-time-format` option which tells Anevicon to use your custom date-time format.
+
+```bash
+# Use a custom date-time format and the last verbosity level
+$ anevicon --receiver=64.233.165.113:80 --date-time-format="%F" --verbosity=5
 ```
 
 ----------
