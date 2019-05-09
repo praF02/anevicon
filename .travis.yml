@@ -2,6 +2,6 @@ language: rust
 
 script:
 # Turn on the 'nightly' channel to use unstable library features
-  - rustup override set nightly
+  - rustup override set nightly-2019-04-11
   - cargo build --verbose --all
   - cargo test --verbose --all
