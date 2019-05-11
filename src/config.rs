@@ -19,8 +19,6 @@
 //! A module containing command-line configurations such as receivers, date-time
 //! format and so on.
 
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
 use std::net::SocketAddr;
 use std::num::{NonZeroUsize, ParseIntError};
 use std::path::PathBuf;
@@ -160,12 +158,7 @@ pub struct LoggingConfig {
         takes_value = true,
         value_name = "LEVEL",
         default_value = "3",
-        possible_value = "0",
-        possible_value = "1",
-        possible_value = "2",
-        possible_value = "3",
-        possible_value = "4",
-        possible_value = "5"
+        raw(possible_values = r#"&["0", "1", "2", "3", "4", "5"]"#)
     )]
     pub verbosity: i32,
 
@@ -275,37 +268,18 @@ impl ArgsConfig {
 
 fn parse_time_format(format: &str) -> Result<String, ParseError> {
     // If this call succeeds, then the format is also correctly
-    time::strftime(format, &time::now())?;
-    Ok(String::from(format))
+    time::strftime(format, &time::now()).map(|_| format.to_string())
 }
 
-fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, NonZeroUsizeError> {
-    NonZeroUsize::new(number.parse().map_err(NonZeroUsizeError::InvalidFormat)?)
-        .ok_or(NonZeroUsizeError::ZeroValue)
+fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, ParseIntError> {
+    number.parse()
 }
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum NonZeroUsizeError {
-    InvalidFormat(ParseIntError),
-    ZeroValue,
-}
-
-impl Display for NonZeroUsizeError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            NonZeroUsizeError::InvalidFormat(error) => write!(fmt, "{}", error),
-            NonZeroUsizeError::ZeroValue => write!(fmt, "The value equals to zero"),
-        }
-    }
-}
-
-impl Error for NonZeroUsizeError {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    /// Checks that ordinary formats are passed correctly.
+    // Check that ordinary formats are passed correctly
     #[test]
     fn parses_valid_time_format() {
         let check = |format| {
@@ -322,7 +296,7 @@ mod tests {
         check("flower %d");
     }
 
-    /// Invalid formats must produce the invalid format error.
+    // Invalid formats must produce the invalid format error
     #[test]
     fn parses_invalid_time_format() {
         let check = |format| {
@@ -337,7 +311,7 @@ mod tests {
         check("sf%jhei9%990");
     }
 
-    /// Checks that ordinary values are parsed correctly.
+    // Check that ordinary values are parsed correctly
     #[test]
     fn parses_valid_non_zero_usize() {
         let check = |num| {
@@ -354,7 +328,7 @@ mod tests {
         check("+75");
     }
 
-    /// Invalid numbers must produce the invalid format error.
+    // Invalid numbers must produce the invalid format error
     #[test]
     fn parses_invalid_non_zero_usize() {
         let check = |num| {
@@ -369,7 +343,5 @@ mod tests {
         check("6485&02hde");
         check("-565642");
         check(&"2178".repeat(50));
-
-        assert_eq!(parse_non_zero_usize("0"), Err(NonZeroUsizeError::ZeroValue));
     }
 }
