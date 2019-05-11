@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/license-GPLv3-blue.svg">
   </a>
   <a href="https://crates.io/crates/anevicon">
-    <img src="https://img.shields.io/badge/crates.io-v5.0.3-orange.svg">
+    <img src="https://img.shields.io/badge/crates.io-v5.1.0-orange.svg">
   </a>
   <a href="https://semver.org">
     <img src="https://img.shields.io/badge/semver-follows-green.svg">
@@ -98,7 +98,7 @@ The easiest way to run Anevicon on your system is to download the pre-compiled b
 
 ## Options
 ```
-anevicon 5.0.3
+anevicon 5.1.0
 Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 A high-performant UDP-based load generator, written in Rust.
 
