@@ -29,8 +29,14 @@ the standard library). If you are just interested in one single program, please 
 ----------
 
 ## Usage
-This example demonstrates sending a couple of messages to the `example.com` domain (just for an example, you should enter here your server):
 
+### Cargo.toml
+```toml
+[dependencies]
+anevicon_core = "*"
+```
+
+### src/main.rs
 ([`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs))
 ```rust
 #![feature(iovec)]
@@ -65,4 +71,4 @@ fn main() {
 }
 ```
 
-This is how you are able to build your own stress-testing bot. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
+This program simply sends four packets to http://example.com/. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
