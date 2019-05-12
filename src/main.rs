@@ -18,7 +18,6 @@
 
 //! The main entry of this program, you already know this :)
 
-#![feature(ip)]
 #![feature(iovec)]
 
 #[macro_use]
