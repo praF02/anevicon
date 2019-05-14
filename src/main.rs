@@ -19,6 +19,7 @@
 //! The main entry of this program, you already know this :)
 
 #![feature(iovec)]
+#![feature(ip)]
 
 #[macro_use]
 extern crate lazy_static;
