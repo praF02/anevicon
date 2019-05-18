@@ -250,7 +250,7 @@ impl ArgsConfig {
             ]))
             .get_matches();
 
-        let mut args_config = ArgsConfig::from_clap(&matches);
+        let mut config = ArgsConfig::from_clap(&matches);
 
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
@@ -258,11 +258,11 @@ impl ArgsConfig {
             && !matches.is_present("send_message")
             && !matches.is_present("packet_length")
         {
-            args_config.packet_config.packet_length =
+            config.packet_config.packet_length =
                 Some(unsafe { NonZeroUsize::new_unchecked(32768) });
         }
 
-        args_config
+        config
     }
 }
 

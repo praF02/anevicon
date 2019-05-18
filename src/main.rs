@@ -48,7 +48,7 @@ fn main() {
 
 fn setup_ctrlc_handler() {
     ctrlc::set_handler(move || {
-        info!("Cancellation from the user has been received. Exiting the program...");
+        info!("Cancellation has been received. Exiting the program...");
         std::process::exit(0);
     })
     .expect("Error while setting the Ctrl-C handler");
