@@ -21,7 +21,7 @@ fern = { version = "0.5.7", features = ["colored"] }
 log = "0.4.6"
 time = "0.1.42"
 humantime = "1.2.0"
-colored = "1.7.0"
+termion = "1.5.2"
 structopt = "0.2.15"
 rand = "0.6.5"
 anevicon_core = "0.4.9"

@@ -26,7 +26,6 @@ use std::io;
 use std::num::NonZeroUsize;
 use std::path::Path;
 
-use colored::{ColoredString, Colorize as _};
 use rand::{thread_rng, RngCore};
 
 use crate::config::PacketConfig;
@@ -89,13 +88,6 @@ impl Display for ReadPacketError {
 }
 
 impl Error for ReadPacketError {}
-
-/// Formats the given value as cyan-colored string. This function is often used
-/// to display values (1000 packets, 5s 264ms 125us, etc).
-#[inline]
-pub fn cyan<S: ToString>(value: S) -> ColoredString {
-    value.to_string().cyan()
-}
 
 #[cfg(test)]
 mod tests {

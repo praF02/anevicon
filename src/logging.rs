@@ -21,10 +21,10 @@
 
 use std::io;
 
-use colored::Colorize as _;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
+use termion::{color, style};
 use time;
 
 use super::config::LoggingConfig;
@@ -45,12 +45,14 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         // and the program name
         .format(move |out, message, record| {
             out.finish(format_args!(
-                "[{level}] [{time}]: {message}",
-                level = colors.color(record.level()).to_string().underline(),
-                time = time::strftime(&date_time_format, &time::now())
-                    .unwrap()
-                    .magenta(),
+                "[{underline}{level}{reset_style}] [{magenta}{time}{reset_color}]: {message}",
+                level = colors.color(record.level()),
+                time = time::strftime(&date_time_format, &time::now()).unwrap(),
                 message = message,
+                magenta = color::Fg(color::Magenta),
+                reset_color = color::Fg(color::Reset),
+                underline = style::Underline,
+                reset_style = style::Reset,
             ));
         })
         // If the debug mode is on, then allow printing all debugging messages and

@@ -27,8 +27,8 @@ use std::thread;
 use std::time::Duration;
 
 use anevicon_core::{self, Portion, TestSummary, Tester};
-use colored::{ColoredString, Colorize};
 use humantime::format_duration;
+use termion::color;
 
 use crate::config::ArgsConfig;
 
@@ -36,7 +36,7 @@ mod helpers;
 mod sockets;
 
 // A receiver name for this thread.
-thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined".cyan()));
+thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Undefined")));
 
 /// This is the key function which accepts a whole `ArgsConfig` and returns an
 /// exit code (either 1 on failure or 0 on success).
@@ -77,7 +77,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         let tester_config = tester_config.clone();
 
         thread::spawn(move || {
-            init_receiver(socket.receiver().clone());
+            init_receiver(String::from(socket.receiver()));
 
             let (mut ordinary, mut remaining) = (
                 generate_portions(tester_config.packets_per_syscall, &packet),
@@ -138,20 +138,22 @@ pub fn run(config: ArgsConfig) -> i32 {
 }
 
 /// Initializes the `RECEIVER` thread-local variable with the given value.
-fn init_receiver(value: ColoredString) {
+fn init_receiver(value: String) {
     RECEIVER.with(|receiver| *receiver.borrow_mut() = value);
 }
 
 /// Returns the thread-local value of a current receiver.
 #[inline]
-fn current_receiver() -> ColoredString {
+fn current_receiver() -> String {
     RECEIVER.with(|string| string.borrow().clone())
 }
 
 fn wait(duration: Duration) {
     warn!(
-        "waiting {time} and then starting to execute the tests...",
-        time = helpers::cyan(format_duration(duration))
+        "waiting {cyan}{time}{reset} and then starting to execute the tests...",
+        time = format_duration(duration),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
     thread::sleep(duration);
 }
@@ -171,9 +173,12 @@ fn resend_packets(
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
-        "trying to resend {count} packets to the {receiver} that weren't sent yet...",
-        count = helpers::cyan(count.get()),
-        receiver = current_receiver()
+        "trying to resend {cyan}{count}{reset} packets to the {cyan}{receiver}{reset} that \
+         weren't sent yet...",
+        count = count.get(),
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 
     for _ in 0..count.get() {
@@ -196,9 +201,11 @@ fn resend_packets(
     }
 
     info!(
-        "{count} packets have been resent to the {receiver}.",
-        count = helpers::cyan(count.get()),
-        receiver = current_receiver()
+        "{cyan}{count}{reset} packets have been resent to the {cyan}{receiver}{reset}.",
+        count = count.get(),
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 
     ResendPacketsResult::Completed
@@ -223,20 +230,22 @@ fn display_packets_sent() {
 #[inline]
 fn display_summary(summary: &TestSummary) {
     info!(
-        "stats for {receiver}:\n\tData Sent:     {data_sent}\n\tAverage Speed: \
-         {average_speed}\n\tTime Passed:   {time_passed}",
+        "stats for {cyan}{receiver}{reset}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage \
+         Speed: {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
         receiver = current_receiver(),
-        data_sent = helpers::cyan(format!(
+        data_sent = format!(
             "{packets} packets ({megabytes} MB)",
             packets = summary.packets_sent(),
             megabytes = summary.megabytes_sent(),
-        )),
-        average_speed = helpers::cyan(format!(
+        ),
+        average_speed = format!(
             "{packets_per_sec} packets/sec ({mbps} Mbps)",
             packets_per_sec = summary.packets_per_sec(),
             mbps = summary.megabites_per_sec(),
-        )),
-        time_passed = helpers::cyan(format_duration(summary.time_passed())),
+        ),
+        time_passed = format_duration(summary.time_passed()),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 }
 

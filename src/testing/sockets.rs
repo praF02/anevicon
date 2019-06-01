@@ -21,8 +21,8 @@
 use std::io::{self, Write};
 use std::net::{SocketAddr, UdpSocket};
 
-use colored::{ColoredString, Colorize};
 use ifaces::Interface;
+use termion::{color, style};
 
 use crate::config::SocketsConfig;
 
@@ -31,7 +31,7 @@ use super::helpers;
 /// Represents a UDP socket with its colored receiver name.
 pub struct AneviconSocket {
     socket: UdpSocket,
-    receiver: ColoredString,
+    receiver: String,
 }
 
 impl AneviconSocket {
@@ -41,7 +41,7 @@ impl AneviconSocket {
     }
 
     #[inline]
-    pub fn receiver(&self) -> &ColoredString {
+    pub fn receiver(&self) -> &str {
         &self.receiver
     }
 }
@@ -52,8 +52,10 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
         debug!(
-            "bind all future sockets to the {} network interface.",
-            helpers::cyan(if_addr)
+            "bind all future sockets to the {cyan}{}{reset} network interface.",
+            if_addr,
+            cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset),
         );
         Some(if_addr)
     } else {
@@ -86,10 +88,12 @@ fn init_one_socket(
         socket.set_ttl(val)?;
     }
 
-    let receiver = helpers::cyan(config.receivers[receiver]);
+    let receiver = config.receivers[receiver].to_string();
     debug!(
-        "a new socket has been initialized to the {receiver}.",
-        receiver = receiver,
+        "a new socket has been initialized to the {cyan}{}{reset}.",
+        receiver,
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 
     Ok(AneviconSocket { socket, receiver })
@@ -102,7 +106,11 @@ fn select_if() -> SocketAddr {
 
     let mut stdout = io::stdout();
 
-    print!("select a network interface {}", ">>>#".yellow());
+    print!(
+        "select a network interface {yellow}>>>#{reset}",
+        yellow = color::Fg(color::Yellow),
+        reset = color::Fg(color::Reset),
+    );
     stdout.flush().unwrap();
 
     loop {
@@ -115,7 +123,11 @@ fn select_if() -> SocketAddr {
         let choice = match choice.parse::<usize>() {
             Ok(num) => num,
             Err(_) => {
-                print!("This is not a number {}", ">>>#".yellow());
+                print!(
+                    "This is not a number {yellow}>>>#{reset}",
+                    yellow = color::Fg(color::Yellow),
+                    reset = color::Fg(color::Reset),
+                );
                 stdout.flush().unwrap();
                 continue;
             }
@@ -124,7 +136,11 @@ fn select_if() -> SocketAddr {
         let addr = match addrs.get(choice) {
             Some(interface) => interface,
             None => {
-                print!("The number is out of range {}", ">>>#".yellow());
+                print!(
+                    "The number is out of range {yellow}>>>#{reset}",
+                    yellow = color::Fg(color::Yellow),
+                    reset = color::Fg(color::Reset),
+                );
                 stdout.flush().unwrap();
                 continue;
             }
@@ -133,7 +149,11 @@ fn select_if() -> SocketAddr {
         return match addr.addr {
             Some(addr) => addr,
             None => {
-                print!("Cannot get an address {}", ">>>#".yellow());
+                print!(
+                    "Cannot get an address {yellow}>>>#{reset}",
+                    yellow = color::Fg(color::Yellow),
+                    reset = color::Fg(color::Reset),
+                );
                 stdout.flush().unwrap();
                 continue;
             }
@@ -145,18 +165,21 @@ fn select_if() -> SocketAddr {
 fn print_ifs(if_addrs: &[Interface]) {
     for i in 0..if_addrs.len() {
         info!(
-            "found a network interface {number}:\n\tName:    {name}\n\tAddress: {ip}\n\tNetmask: \
-             {mask}",
-            number = helpers::cyan(format!("#{}", i)),
-            name = helpers::cyan(&if_addrs[i].name).italic(),
-            ip = if_addrs[i].addr.map_or_else(
-                || helpers::cyan("none"),
-                |val| helpers::cyan(val.to_string()),
-            ),
-            mask = if_addrs[i].mask.map_or_else(
-                || helpers::cyan("none"),
-                |val| helpers::cyan(val.to_string()),
-            )
+            "found a network interface {cyan}#{number}{reset_color}:\n\tName:    \
+             {italic}{cyan}{name}{reset_color}{reset_style}\n\tAddress: \
+             {cyan}{ip}{reset_color}\n\tNetmask: {cyan}{mask}{reset_color}",
+            number = i,
+            name = if_addrs[i].name,
+            ip = if_addrs[i]
+                .addr
+                .map_or_else(|| String::from("none"), |val| val.to_string(),),
+            mask = if_addrs[i]
+                .mask
+                .map_or_else(|| String::from("none"), |val| val.to_string(),),
+            cyan = color::Fg(color::Cyan),
+            reset_color = color::Fg(color::Reset),
+            italic = style::Italic,
+            reset_style = style::Reset,
         );
     }
 

@@ -24,8 +24,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-use colored::Colorize;
-
 use config::ArgsConfig;
 
 mod config;
@@ -54,37 +52,4 @@ fn setup_ctrlc_handler() {
     trace!("the Ctrl-C handler has been configured.");
 }
 
-fn title() {
-    println!(
-        "         {}",
-        r"                        _                 ".cyan()
-    );
-    println!(
-        "         {}",
-        r"  __ _ _ __   _____   _(_) ___ ___  _ __  ".cyan()
-    );
-    println!(
-        "         {}",
-        r" / _` | '_ \ / _ \ \ / / |/ __/ _ \| '_ \ ".cyan()
-    );
-    println!(
-        "         {}",
-        r"| (_| | | | |  __/\ V /| | (_| (_) | | | |".cyan()
-    );
-    println!(
-        "         {}",
-        r" \__,_|_| |_|\___| \_/ |_|\___\___/|_| |_|".cyan()
-    );
-    println!(
-        "                       {}",
-        format!("version {}", structopt::clap::crate_version!())
-            .red()
-            .bold()
-    );
-    println!(
-        "{}\n",
-        "A high-performant UDP-based load generator, written in Rust"
-            .green()
-            .underline()
-    );
-}
+fn title() {}
