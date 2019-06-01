@@ -43,7 +43,7 @@ thread_local!(static RECEIVER: RefCell<ColoredString> = RefCell::new("Undefined"
 pub fn run(config: ArgsConfig) -> i32 {
     let packet = match helpers::construct_packet(&config.packet_config) {
         Err(err) => {
-            error!("Constructing a packet failed >>> {}!", err);
+            error!("constructing a packet failed >>> {}!", err);
             return 1;
         }
         Ok(packet) => packet,
@@ -51,7 +51,7 @@ pub fn run(config: ArgsConfig) -> i32 {
 
     let sockets = match sockets::init_sockets(&config.sockets_config) {
         Err(err) => {
-            error!("Sockets initialization failed >>> {}!", err);
+            error!("sockets initialization failed >>> {}!", err);
             return 1;
         }
         Ok(sockets) => sockets,
@@ -150,7 +150,7 @@ fn current_receiver() -> ColoredString {
 
 fn wait(duration: Duration) {
     warn!(
-        "Waiting {time} and then starting to execute the tests...",
+        "waiting {time} and then starting to execute the tests...",
         time = helpers::cyan(format_duration(duration))
     );
     thread::sleep(duration);
@@ -171,7 +171,7 @@ fn resend_packets(
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
-        "Trying to resend {count} packets to the {receiver} that weren't sent yet...",
+        "trying to resend {count} packets to the {receiver} that weren't sent yet...",
         count = helpers::cyan(count.get()),
         receiver = current_receiver()
     );
@@ -184,7 +184,7 @@ fn resend_packets(
         loop {
             if let Err(error) = tester.send_one(IoVec::new(packet)) {
                 error!(
-                    "Sending a packet to the {receiver} failed >>> {error}! Retrying the \
+                    "sending a packet to the {receiver} failed >>> {error}! Retrying the \
                      operation...",
                     receiver = current_receiver(),
                     error = error
@@ -207,7 +207,7 @@ fn resend_packets(
 #[inline]
 fn display_expired_time() {
     info!(
-        "The allotted time has passed for the {receiver}.",
+        "the allotted time has passed for the {receiver}.",
         receiver = current_receiver()
     );
 }
@@ -215,7 +215,7 @@ fn display_expired_time() {
 #[inline]
 fn display_packets_sent() {
     info!(
-        "All the packets were sent for the {receiver}.",
+        "all the packets were sent for the {receiver}.",
         receiver = current_receiver()
     );
 }
@@ -223,7 +223,7 @@ fn display_packets_sent() {
 #[inline]
 fn display_summary(summary: &TestSummary) {
     info!(
-        "Stats for {receiver}:\n\tData Sent:     {data_sent}\n\tAverage Speed: \
+        "stats for {receiver}:\n\tData Sent:     {data_sent}\n\tAverage Speed: \
          {average_speed}\n\tTime Passed:   {time_passed}",
         receiver = current_receiver(),
         data_sent = helpers::cyan(format!(
@@ -243,7 +243,7 @@ fn display_summary(summary: &TestSummary) {
 #[inline]
 fn send_multiple_error<E: Display>(error: E) {
     error!(
-        "Sending packets to the {receiver} failed >>> {error}!",
+        "sending packets to the {receiver} failed >>> {error}!",
         receiver = current_receiver(),
         error = error
     );

@@ -52,7 +52,7 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
         debug!(
-            "Bind all future sockets to the {} network interface.",
+            "bind all future sockets to the {} network interface.",
             helpers::cyan(if_addr)
         );
         Some(if_addr)
@@ -88,7 +88,7 @@ fn init_one_socket(
 
     let receiver = helpers::cyan(config.receivers[receiver]);
     debug!(
-        "A new socket has been initialized to the {receiver}.",
+        "a new socket has been initialized to the {receiver}.",
         receiver = receiver,
     );
 
@@ -102,7 +102,7 @@ fn select_if() -> SocketAddr {
 
     let mut stdout = io::stdout();
 
-    print!("Select a network interface {}", ">>>#".yellow());
+    print!("select a network interface {}", ">>>#".yellow());
     stdout.flush().unwrap();
 
     loop {
@@ -145,7 +145,7 @@ fn select_if() -> SocketAddr {
 fn print_ifs(if_addrs: &[Interface]) {
     for i in 0..if_addrs.len() {
         info!(
-            "Found a network interface {number}:\n\tName:    {name}\n\tAddress: {ip}\n\tNetmask: \
+            "found a network interface {number}:\n\tName:    {name}\n\tAddress: {ip}\n\tNetmask: \
              {mask}",
             number = helpers::cyan(format!("#{}", i)),
             name = helpers::cyan(&if_addrs[i].name).italic(),
