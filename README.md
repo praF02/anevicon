@@ -92,7 +92,10 @@ $ cargo build --release
 ```
 
 ### Pre-compiled binaries
-The easiest way to run Anevicon on your system is to download the pre-compiled binaries from the [existing releases](https://github.com/Gymmasssorla/anevicon/releases), which doesn't require any external software (unlike the two previous approaches).
+```bash
+$ wget https://github.com/Gymmasssorla/anevicon/releases/download/vX.X.X/anevicon-x86_64-linux
+$ chmod a+x anevicon-x86_64-linux
+```
 
 ----------
 
