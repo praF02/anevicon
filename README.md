@@ -236,6 +236,17 @@ Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is
 $ anevicon --receiver=64.233.165.113:80 --date-time-format="%F" --verbosity=5
 ```
 
+Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
+
+| | Errors | Warnings | Notifications | Debugs | Traces |
+|-|--------|----------|---------------|--------|--------|
+| Zero (0) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| First (1) | ✔ | ❌ | ❌ | ❌ | ❌ |
+| Second (2) | ✔ | ✔ | ❌ | ❌ | ❌ |
+| Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
+| Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
+| Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
+
 ----------
 
 ## Using as a library
