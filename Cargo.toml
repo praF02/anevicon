@@ -27,7 +27,6 @@ rand = "0.6.5"
 anevicon_core = "0.4.9"
 
 [profile.release]
-opt-level = 3
 lto = true
 
 [workspace]
