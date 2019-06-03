@@ -52,8 +52,6 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
-   - [Cargo.toml](https://github.com/Gymmasssorla/anevicon#cargotoml)
-   - [src/main.rs](https://github.com/Gymmasssorla/anevicon#srcmainrs)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -241,14 +239,8 @@ $ anevicon --receiver=64.233.165.113:80 --date-time-format="%F" --verbosity=5
 ----------
 
 ## Using as a library
+This program simply sends four packets to http://example.com/. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
 
-### Cargo.toml
-```toml
-[dependencies]
-anevicon_core = "*"
-```
-
-### src/main.rs
 ([`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs))
 ```rust
 #![feature(iovec)]
@@ -282,8 +274,6 @@ fn main() {
     );
 }
 ```
-
-This program simply sends four packets to http://example.com/. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
 
 ----------
 
