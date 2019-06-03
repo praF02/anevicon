@@ -36,7 +36,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 
 ## Contents
  - [Advantages](https://github.com/Gymmasssorla/anevicon#advantages)
- - [Disdvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
+ - [Disadvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
  - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
    - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
    - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
