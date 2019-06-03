@@ -23,7 +23,6 @@ A high-performant traffic generator, designed to be as convenient and reliable a
 numerous UDP packets to a server, thereby simulating an activity that can be produced by your end users or a
 group of hackers.
 
-This tool can be also used as a bot to build a botnet for simulating [UDP flood attacks](https://en.wikipedia.org/wiki/UDP_flood_attack) (but only for educational and pentesting purposes). This is achieved by the [Anevicon Core Library](https://crates.io/crates/anevicon_core) with which this program depends on.
   <h4>
     <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
     <a href="https://github.com/Gymmasssorla/anevicon/stargazers">Stargazers</a> &middot;
@@ -61,7 +60,7 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 ## Advantages
  - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
- - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
+ - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, and even the [API](https://crates.io/crates/anevicon_core) are supported.
  
  - **Written in Rust.** How you can see, all the logic is written completely in [Rust](https://www.rust-lang.org/), which means that it leverages bare-metal performance and high-level safety (no SIGSEGV, SIGILL, and other "funny" stuff).
 
