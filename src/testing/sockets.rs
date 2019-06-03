@@ -26,8 +26,6 @@ use termion::{color, style};
 
 use crate::config::SocketsConfig;
 
-use super::helpers;
-
 /// Represents a UDP socket with its colored receiver name.
 pub struct AneviconSocket {
     socket: UdpSocket,
@@ -215,6 +213,6 @@ mod tests {
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
         assert_eq!(socket.ttl().unwrap(), config.ip_ttl.unwrap());
 
-        assert_eq!(res.receiver, helpers::cyan(config.receivers[1]));
+        assert_eq!(res.receiver, config.receivers[1].to_string());
     }
 }
