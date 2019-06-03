@@ -35,7 +35,8 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
 ----------
 
 ## Contents
- - [Features](https://github.com/Gymmasssorla/anevicon#features)
+ - [Advantages](https://github.com/Gymmasssorla/anevicon#advantages)
+ - [Disdvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
  - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
    - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
    - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
@@ -54,18 +55,22 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
    - [Cargo.toml](https://github.com/Gymmasssorla/anevicon#cargotoml)
    - [src/main.rs](https://github.com/Gymmasssorla/anevicon#srcmainrs)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
- - [Target platform](https://github.com/Gymmasssorla/anevicon#target-platform)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
 
 ----------
 
-## Features
+## Advantages
  - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
  - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, IP spoofing and many more are supported.
  
  - **Written in Rust.** How you can see, all the logic is written completely in [Rust](https://www.rust-lang.org/), which means that it leverages bare-metal performance and high-level safety (no SIGSEGV, SIGILL, and other "funny" stuff).
+
+----------
+
+## Disadvantages
+ - **Platform-dependend.** Like most of pentesting utilities, this project is developed for only Linux-based systems. If you are a Windows user, you probably need a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine) or another computer with Linux.
 
 ----------
 
@@ -284,11 +289,6 @@ This program simply sends four packets to http://example.com/. Now you can follo
 
 ## Contributing
 You are always welcome for any contribution to this project! But before you start, you should read [the appropriate document](https://github.com/Gymmasssorla/anevicon/blob/master/CONTRIBUTING.md) to know about the preferred development process and the basic communication rules.
-
-----------
-
-## Target platform
-Like most of pentesting utilities, this project is developed, tested, and maintained for only Linux-based systems. If you are a Windows user, you probably need a [virtual machine](https://en.wikipedia.org/wiki/Virtual_machine) or another computer with GNU/Linux.
 
 ----------
 
