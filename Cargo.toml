@@ -2,7 +2,7 @@
 name = "anevicon"
 description = "A high-performant UDP-based load generator, written in Rust"
 repository = "https://github.com/Gymmasssorla/anevicon"
-version = "5.1.0"
+version = "5.1.1"
 authors = ["Temirkhan Myrzamadi <gymmasssorla@gmail.com>"]
 keywords = ["anevicon", "ddos-attacks", "load-generator", "stress-testing", "pentest-tool"]
 categories = ["command-line-utilities", "simulation", "network-programming"]
