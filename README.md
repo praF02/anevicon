@@ -40,7 +40,9 @@ group of hackers.
    - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
    - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
    - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
- - [Options](https://github.com/Gymmasssorla/anevicon#options)
+ - [Usage](https://github.com/Gymmasssorla/anevicon#usage)
+   - [Flags](https://github.com/Gymmasssorla/anevicon#flags)
+   - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
@@ -97,82 +99,33 @@ $ chmod a+x anevicon-x86_64-linux
 
 ----------
 
-## Options
-```
-anevicon 5.1.0
-Temirkhan Myrzamadi <gymmasssorla@gmail.com>
-A high-performant UDP-based load generator, written in Rust.
+## Usage
 
-USAGE:
-    anevicon [FLAGS] [OPTIONS] --receiver <SOCKET-ADDRESS>...
+### Flags
+Name | Explanation
+-----|------------
+`-b, --allow-broadcast`| Allow sockets to send packets to a broadcast address specified using the `--receiver` option
+`-h, --help` | Prints help information
+`--select-if` | Displays an interactive menu of network interfaces to use. If unset, a default one will be used
+`-V, --version` | Prints version information
 
-FLAGS:
-    -b, --allow-broadcast    Allow sockets to send packets to a broadcast
-                             address
-    -h, --help               Prints help information
-        --select-if          Displays an interactive menu of network interfaces
-                             to use. If unset, a default one will be used.
-                             
-                             This option conflicts with the `--sender` because
-                             it will automatically bind an appropriate
-                             interface's IP.
-    -V, --version            Prints version information
-
-OPTIONS:
-        --date-time-format <STRING>
-            A format for displaying local date and time in log messages. Type
-            `man strftime` to see the format specification [default: %X]
-        --ip-ttl <UNSIGNED-INTEGER>
-            Specifies the IP_TTL value for all future sockets. Usually this
-            value equals a number of routers that a packet can go through
-    -l, --packet-length <POSITIVE-INTEGER>
-            Repeatedly send a random-generated packet with a specified bytes
-            length. The default is 32768
-    -p, --packets-count <POSITIVE-INTEGER>
-            A count of packets for sending. When this limit is reached, then the
-            program will exit [default: 18446744073709551615]
-        --packets-per-syscall <POSITIVE-INTEGER>
-            A count of packets which the program will send using only one
-            syscall. After the operation completed, a test summary will have
-            been printed [default: 600]
-    -r, --receiver <SOCKET-ADDRESS>...
-            A receiver of generated traffic, specified as an IP-address and a
-            port number, separated by a colon.
-            
-            This option can be specified several times to identically test
-            multiple receivers in parallel mode.
-    -f, --send-file <FILENAME>
-            Interpret the specified file content as a single packet and
-            repeatedly send it to each receiver
-    -m, --send-message <STRING>
-            Interpret the specified UTF-8 encoded text message as a single
-            packet and repeatedly send it to each receiver
-        --send-periodicity <TIME-SPAN>
-            A time interval between sendmmsg syscalls. This option can be used
-            to decrease test intensity [default: 0secs]
-    -t, --send-timeout <TIME-SPAN>
-            A timeout of sending every single packet. If a timeout is reached,
-            then a packet will be sent later [default: 10secs]
-    -s, --sender <SOCKET-ADDRESS>
-            A sender of generated traffic, specified as an IP-address and a port
-            number, separated by a colon [default: 0.0.0.0:0]
-    -d, --test-duration <TIME-SPAN>
-            A whole test duration. When this limit is reached, then the program
-            will exit.
-            
-            Exit might occur a few seconds later because of long sendmmsg
-            syscalls. For more precision, decrease the `--packets-per-syscall`
-            value. [default: 64years 64hours 64secs]
-    -v, --verbosity <LEVEL>
-            Enable one of the possible verbosity levels. The zero level doesn't
-            print anything, and the last level prints everything [default: 3]
-            [possible values: 0, 1, 2, 3, 4, 5]
-    -w, --wait <TIME-SPAN>
-            A waiting time span before a test execution used to prevent a launch
-            of an erroneous (unwanted) test [default: 5secs]
-
-For more information see <https://github.com/Gymmasssorla/anevicon>.
-```
+### Options
+Name | Value | Default | Explanation
+-----|-------|---------|------------
+`--date-time-format` | String | `%X` | A format for displaying local date and time in log messages. Type `man strftime` to see the format specification
+`--ip-ttl` | Unsigned integer | None | Specifies the IP_TTL value for all future sockets. Usually this value equals a number of routers that a packet can go through
+`-l, --packet-length` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
+`-p, --packets-count` | Positive integer | `18446744073709551615` | A count of packets for sending. When this limit is reached, then the program will exit
+`--packets-per-syscall` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
+`-r, --receiver` | Socket address | None | A receiver of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>This option can be specified several times to identically test multiple receivers in parallel mode.
+`-f, --send-file` | Filename | None | Interpret the specified file content as a single packet and repeatedly send it to each receiver
+`-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
+`--send-periodicity` | Time span | `0secs` | A time interval between sendmmsg system calls. This option can be used to modify test intensity
+`-t, --send-timeout` | Time span | `10secs` | A timeout of sending every single packet. If a timeout is reached, then a packet will be sent later
+`-s, --sender` | Socket address | `0.0.0.0:0` | A sender of generated traffic, specified as an IP-address and a port number, separated by a colon
+`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long sendmmsg system calls. For more precision, decrease the `--packets-per-syscall` value.
+`-v, --verbosity` | From 0 to 5 | `3` | Enable one of the possible verbosity levels. The zero level doesn't print anything, and the last level prints everything.<br><br>Note that specifying the 4 and 5 verbosity levels might decrease performance, do it only for debugging.
+`-w, --wait` | Time span | `5secs` | A waiting time span before a test execution used to prevent a launch of an erroneous (unwanted) test
 
 ----------
 
