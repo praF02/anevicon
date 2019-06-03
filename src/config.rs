@@ -34,7 +34,7 @@ use time::ParseError;
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
     about = "A high-performant UDP-based load generator, written in Rust.",
     after_help = "For more information see <https://github.com/Gymmasssorla/anevicon>.",
-    set_term_width = 80
+    set_term_width = 100
 )]
 pub struct ArgsConfig {
     /// A waiting time span before a test execution used to prevent a
@@ -119,10 +119,7 @@ pub struct SocketsConfig {
     pub sender: SocketAddr,
 
     /// Displays an interactive menu of network interfaces to use. If unset, a
-    /// default one will be used.
-    ///
-    /// This option conflicts with the `--sender` because it will automatically
-    /// bind an appropriate interface's IP.
+    /// default one will be used
     #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
     pub select_if: bool,
 
