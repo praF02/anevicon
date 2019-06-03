@@ -34,7 +34,7 @@ use time::ParseError;
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
     about = "A high-performant UDP-based load generator, written in Rust.",
     after_help = "For more information see <https://github.com/Gymmasssorla/anevicon>.",
-    set_term_width = 100
+    set_term_width = 90
 )]
 pub struct ArgsConfig {
     /// A waiting time span before a test execution used to prevent a
@@ -64,8 +64,8 @@ pub struct ArgsConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct TesterConfig {
-    /// A time interval between sendmmsg syscalls. This option can be used to
-    /// decrease test intensity
+    /// A time interval between sendmmsg system calls. This option can be used
+    /// to modify test intensity
     #[structopt(
         long = "send-periodicity",
         takes_value = true,
@@ -75,8 +75,8 @@ pub struct TesterConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets which the program will send using only one syscall.
-    /// After the operation completed, a test summary will have been
+    /// A count of packets which the program will send using only one system
+    /// call. After the operation completed, a test summary will have been
     /// printed
     #[structopt(
         long = "packets-per-syscall",
@@ -140,7 +140,8 @@ pub struct SocketsConfig {
     #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
     pub ip_ttl: Option<u32>,
 
-    /// Allow sockets to send packets to a broadcast address
+    /// Allow sockets to send packets to a broadcast address specified using the
+    /// `--receiver` option
     #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
     pub broadcast: bool,
 }
@@ -148,7 +149,10 @@ pub struct SocketsConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct LoggingConfig {
     /// Enable one of the possible verbosity levels. The zero level doesn't
-    /// print anything, and the last level prints everything
+    /// print anything, and the last level prints everything.
+    ///
+    /// Note that specifying the 4 and 5 verbosity levels might decrease
+    /// performance, do it only for debugging.
     #[structopt(
         short = "v",
         long = "verbosity",
@@ -188,8 +192,9 @@ pub struct ExitConfig {
     /// A whole test duration. When this limit is reached, then the program will
     /// exit.
     ///
-    /// Exit might occur a few seconds later because of long sendmmsg syscalls.
-    /// For more precision, decrease the `--packets-per-syscall` value.
+    /// Exit might occur a few seconds later because of long sendmmsg system
+    /// calls. For more precision, decrease the `--packets-per-syscall`
+    /// value.
     #[structopt(
         short = "d",
         long = "test-duration",
