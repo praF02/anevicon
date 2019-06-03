@@ -33,7 +33,9 @@ use time::ParseError;
 #[structopt(
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
     about = "A high-performant UDP-based load generator, written in Rust.",
-    after_help = "For more information see <https://github.com/Gymmasssorla/anevicon>.",
+    after_help = "Some options accept time spans. If you want to read the specification, see \
+                  <https://docs.rs/humantime/1.2.0/humantime/fn.parse_duration.html>.\n\nFor more \
+                  information see <https://github.com/Gymmasssorla/anevicon>.",
     set_term_width = 90
 )]
 pub struct ArgsConfig {
