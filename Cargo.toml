@@ -10,9 +10,6 @@ readme = "README.md"
 license = "GPL-3.0-only"
 edition = "2018"
 
-[badges]
-travis-ci = { repository = "Gymmasssorla/anevicon", branch = "master" }
-
 [dependencies]
 ctrlc = "3.1.2"
 ifaces = "0.1.0"
@@ -25,6 +22,10 @@ termion = "1.5.2"
 structopt = "0.2.15"
 rand = "0.6.5"
 anevicon_core = "0.4.9"
+
+[badges]
+travis-ci = { repository = "Gymmasssorla/anevicon", branch = "master" }
+maintenance = { status = "passively-maintained" }
 
 [profile.release]
 lto = true
