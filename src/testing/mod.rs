@@ -32,7 +32,7 @@ use termion::color;
 
 use crate::config::ArgsConfig;
 
-mod helpers;
+mod packets;
 mod sockets;
 
 // A receiver name for this thread.
@@ -41,7 +41,7 @@ thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Unde
 /// This is the key function which accepts a whole `ArgsConfig` and returns an
 /// exit code (either 1 on failure or 0 on success).
 pub fn run(config: ArgsConfig) -> i32 {
-    let packet = match helpers::construct_packet(&config.packet_config) {
+    let packet = match packets::construct_packet(&config.packet_config) {
         Err(err) => {
             error!("constructing a packet failed >>> {}!", err);
             return 1;
