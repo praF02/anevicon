@@ -24,6 +24,10 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
+use std::convert::TryInto;
+
+use termion::{color, style, terminal_size};
+
 use config::ArgsConfig;
 
 mod config;
@@ -52,4 +56,46 @@ fn setup_ctrlc_handler() {
     trace!("the Ctrl-C handler has been configured.");
 }
 
-fn title() {}
+fn title() {
+    let tab = " ".repeat(
+        ((terminal_size().expect("Failed to get the terminal size").0 - 66) / 2)
+            .try_into()
+            .unwrap(),
+    );
+
+    #[rustfmt::skip]
+    println!(
+        "{cyan}{}{reset}",
+        format!("
+{tab}+----------------------------------------------------------------+\n\
+{tab}|        \\\\\\  ///     wWw    wWwwW  Ww   c  c     .-.   \\\\\\  /// |\n\
+{tab}|    /)  ((O)(O)) wWw (O)    (O)(O)(O)   (OO)   c(O_O)c ((O)(O)) |\n\
+{tab}|  (o)(O) | \\ ||  (O)_( \\    / ) (..)  ,'.--.) ,'.---.`, | \\ ||  |\n\
+{tab}|   //\\\\  ||\\\\|| .' __)\\ \\  / /   ||  / //_|_\\/ /|_|_|\\ \\||\\\\||  |\n\
+{tab}|  |(__)| || \\ |(  _)  /  \\/  \\  _||_ | \\___  | \\_____/ ||| \\ |  |\n\
+{tab}|  /,-. | ||  || `.__) \\ `--' / (_/\\_)'.    ) '. `---' .`||  ||  |\n\
+{tab}| -'   ''(_/  \\_)       `-..-'          `-.'    `-...-' (_/  \\_) |\n\
+{tab}+----------------------------------------------------------------+", tab = tab),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset));
+
+    println!(
+        "                          {tab}{red}{bold}version {version}{reset_color}{reset_style}",
+        version = structopt::clap::crate_version!(),
+        tab = tab,
+        bold = style::Bold,
+        red = color::Fg(color::Red),
+        reset_style = style::Reset,
+        reset_color = color::Fg(color::Reset),
+    );
+
+    println!(
+        "           {tab}{underline}{green}A high-performant UDP-based load \
+         generator{reset_style}{reset_color}\n",
+        tab = tab,
+        underline = style::Underline,
+        green = color::Fg(color::Green),
+        reset_style = style::Reset,
+        reset_color = color::Fg(color::Reset),
+    );
+}
