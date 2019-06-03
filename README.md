@@ -33,7 +33,7 @@ group of hackers.
 
 ----------
 
-## Contents
+## Table of contents
  - [Advantages](https://github.com/Gymmasssorla/anevicon#advantages)
  - [Disadvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
  - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
