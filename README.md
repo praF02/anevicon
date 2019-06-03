@@ -53,10 +53,6 @@ This tool can be also used as a bot to build a botnet for simulating [UDP flood 
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
    - [Cargo.toml](https://github.com/Gymmasssorla/anevicon#cargotoml)
    - [src/main.rs](https://github.com/Gymmasssorla/anevicon#srcmainrs)
- - [Gallery](https://github.com/Gymmasssorla/anevicon#gallery)
-   - [Statistics](https://github.com/Gymmasssorla/anevicon#statistics)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces-1)
-   - [Being verbose](https://github.com/Gymmasssorla/anevicon#being-verbose)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Target platform](https://github.com/Gymmasssorla/anevicon#target-platform)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -283,21 +279,6 @@ fn main() {
 ```
 
 This program simply sends four packets to http://example.com/. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
-
-----------
-
-## Gallery
-
-<div align="center">
-  <h3>Statistics</h3>
-  <img src="media/STATS.png">
-  
-  <h3>Network interfaces</h3>
-  <img src="media/INTERFACES.png">
-  
-  <h3>Being verbose</h3>
-  <img src="media/VERBOSE.png">
-</div>
 
 ----------
 
