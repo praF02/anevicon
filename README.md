@@ -40,7 +40,6 @@ group of hackers.
    - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
    - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
    - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
- - [Getting started](https://github.com/Gymmasssorla/anevicon#getting-started)
  - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
