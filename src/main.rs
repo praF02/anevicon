@@ -80,7 +80,7 @@ fn title() {
         reset = color::Fg(color::Reset));
 
     println!(
-        "                          {tab}{red}{bold}version {version}{reset_color}{reset_style}",
+        "                           {tab}{red}{bold}version {version}{reset_color}{reset_style}",
         version = structopt::clap::crate_version!(),
         tab = tab,
         bold = style::Bold,
@@ -90,7 +90,7 @@ fn title() {
     );
 
     println!(
-        "           {tab}{underline}{green}A high-performant UDP-based load \
+        "            {tab}{underline}{green}A high-performant UDP-based load \
          generator{reset_style}{reset_color}\n",
         tab = tab,
         underline = style::Underline,
