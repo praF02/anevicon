@@ -45,7 +45,7 @@ group of hackers.
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
@@ -134,7 +134,7 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver=93.184.216.34:80
 ```
 
-### Custom message
+### Custom data message
 By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
