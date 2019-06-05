@@ -1,9 +1,6 @@
 // This example demonstrates sending a couple of messages to the example.com
 // domain (just for an example, you should enter here your server):
 
-#![feature(iovec)]
-
-use std::io::IoVec;
 use std::net::UdpSocket;
 
 use anevicon_core::{TestSummary, Tester};
@@ -15,10 +12,10 @@ fn main() {
 
     // Setup all the I/O vectors (messages) we want to send
     let payload = &mut [
-        (0, IoVec::new(b"Generals gathered in their masses")),
-        (0, IoVec::new(b"Just like witches at black masses")),
-        (0, IoVec::new(b"Evil minds that plot destruction")),
-        (0, IoVec::new(b"Sorcerers of death's construction")),
+        (0, "Generals gathered in their masses".as_bytes()),
+        (0, "Just like witches at black masses".as_bytes()),
+        (0, "Evil minds that plot destruction".as_bytes()),
+        (0, "Sorcerers of death's construction".as_bytes()),
     ];
 
     // Send all the created messages using only one system call

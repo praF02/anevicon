@@ -231,8 +231,9 @@ impl SummaryPortion {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::thread::sleep;
+
+    use super::*;
 
     #[test]
     fn is_nondecreasing_clock() {

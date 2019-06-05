@@ -18,13 +18,14 @@
 
 //! The test abstractions to easily describe and execute your own tests.
 
-use std::io::{self, IoVec};
+use std::io;
 use std::net::UdpSocket;
 
-use super::summary::TestSummary;
+use sendmmsg::{Portion, SendMMsg};
 
 use crate::summary::SummaryPortion;
-use sendmmsg::{Portion, SendMMsg};
+
+use super::summary::TestSummary;
 
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
@@ -48,7 +49,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// It returns an associated `SummaryPortion` if an operation succeeds,
     /// otherwise, returns an I/O error.
     #[inline]
-    pub fn send_one(&mut self, packet: IoVec) -> io::Result<SummaryPortion> {
+    pub fn send_one(&mut self, packet: &[u8]) -> io::Result<SummaryPortion> {
         match self.socket.send(&packet) {
             Err(error) => Err(error),
             Ok(bytes) => {
@@ -100,9 +101,9 @@ impl<'a, 'b> Tester<'a, 'b> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     use lazy_static::lazy_static;
+
+    use super::*;
 
     lazy_static! {
         static ref UDP_SOCKET: UdpSocket = {
@@ -117,10 +118,10 @@ mod tests {
     #[test]
     fn test_send_multiple() {
         let messages = &mut [
-            (0, IoVec::new(b"Generals gathered in their masses")),
-            (0, IoVec::new(b"Just like witches at black masses")),
-            (0, IoVec::new(b"Evil minds that plot destruction")),
-            (0, IoVec::new(b"Sorcerers of death's construction")),
+            (0, "Generals gathered in their masses".as_bytes()),
+            (0, "Just like witches at black masses".as_bytes()),
+            (0, "Evil minds that plot destruction".as_bytes()),
+            (0, "Sorcerers of death's construction".as_bytes()),
         ];
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
@@ -136,7 +137,7 @@ mod tests {
         let message = b"Generals gathered in their masses";
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
-            .send_one(IoVec::new(message))
+            .send_one(message)
             .expect("tester.send_once() has failed");
 
         assert_eq!(result.packets_sent(), 1);

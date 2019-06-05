@@ -11,7 +11,7 @@ license = "GPL-3.0-only"
 edition = "2018"
 
 [dependencies]
-sendmmsg = "0.3.4"
+sendmmsg = "0.3.5"
 lazy_static = "1.3.0"
 
 [profile.release]
@@ -20,3 +20,4 @@ lto = true
 
 [badges]
 travis-ci = { repository = "Gymmasssorla/anevicon", branch = "master" }
+maintenance = { status = "actively-developed" }

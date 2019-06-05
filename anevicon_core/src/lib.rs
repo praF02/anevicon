@@ -30,9 +30,6 @@
 //!
 //! ([`examples/minimal.rs`])
 //! ```rust,no_run
-//! #![feature(iovec)]
-//!
-//! use std::io::IoVec;
 //! use std::net::UdpSocket;
 //!
 //! use anevicon_core::{TestSummary, Tester};
@@ -44,10 +41,10 @@
 //!
 //!    // Setup all the I/O vectors (messages) we want to send
 //!    let payload = &mut [
-//!        (0, IoVec::new(b"Generals gathered in their masses")),
-//!        (0, IoVec::new(b"Just like witches at black masses")),
-//!        (0, IoVec::new(b"Evil minds that plot destruction")),
-//!        (0, IoVec::new(b"Sorcerers of death's construction")),
+//!        (0, "Generals gathered in their masses".as_bytes()),
+//!        (0, "Just like witches at black masses".as_bytes()),
+//!        (0, "Evil minds that plot destruction".as_bytes()),
+//!        (0, "Sorcerers of death's construction".as_bytes()),
 //!    ];
 //!
 //!    // Send all the created messages using only one system call
@@ -69,11 +66,10 @@
 //! [here]: https://github.com/Gymmasssorla/anevicon/blob/master/src/main.rs
 //! [`examples/minimal.rs`]: https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs
 
-#![feature(iovec)]
+pub use sendmmsg::Portion;
+
+pub use summary::{SummaryPortion, TestSummary};
+pub use tester::Tester;
 
 pub mod summary;
 pub mod tester;
-
-pub use sendmmsg::Portion;
-pub use summary::{SummaryPortion, TestSummary};
-pub use tester::Tester;
