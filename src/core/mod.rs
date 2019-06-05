@@ -189,10 +189,12 @@ fn resend_packets(
         loop {
             if let Err(error) = tester.send_one(IoVec::new(packet)) {
                 error!(
-                    "sending a packet to the {receiver} failed >>> {error}! Retrying the \
+                    "failed to send a packet to {cyan}{receiver}{reset} >>> {error}! Retrying the \
                      operation...",
                     receiver = current_receiver(),
-                    error = error
+                    error = error,
+                    cyan = color::Fg(color::Cyan),
+                    reset = color::Fg(color::Reset),
                 );
             } else {
                 break;
@@ -214,16 +216,20 @@ fn resend_packets(
 #[inline]
 fn display_expired_time() {
     info!(
-        "the allotted time has passed for the {receiver}.",
-        receiver = current_receiver()
+        "the allotted time has passed for the {cyan}{receiver}{reset}.",
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 }
 
 #[inline]
 fn display_packets_sent() {
     info!(
-        "all the packets were sent for the {receiver}.",
-        receiver = current_receiver()
+        "all the packets were sent for the {cyan}{receiver}{reset}.",
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 }
 
@@ -252,9 +258,11 @@ fn display_summary(summary: &TestSummary) {
 #[inline]
 fn send_multiple_error<E: Display>(error: E) {
     error!(
-        "sending packets to the {receiver} failed >>> {error}!",
+        "failed to send packets to {cyan}{receiver}{reset} >>> {error}!",
         receiver = current_receiver(),
-        error = error
+        error = error,
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 }
 
