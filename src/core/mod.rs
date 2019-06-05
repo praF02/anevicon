@@ -43,7 +43,7 @@ thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Unde
 pub fn run(config: ArgsConfig) -> i32 {
     let packet = match packets::construct_packet(&config.packet_config) {
         Err(err) => {
-            error!("constructing a packet failed >>> {}!", err);
+            error!("failed to construct a packet >>> {}!", err);
             return 1;
         }
         Ok(packet) => packet,
@@ -51,7 +51,7 @@ pub fn run(config: ArgsConfig) -> i32 {
 
     let sockets = match sockets::init_sockets(&config.sockets_config) {
         Err(err) => {
-            error!("sockets initialization failed >>> {}!", err);
+            error!("failed to initialize sockets >>> {}!", err);
             return 1;
         }
         Ok(sockets) => sockets,
@@ -173,8 +173,8 @@ fn resend_packets(
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
-        "trying to resend {cyan}{count}{reset} packets to the {cyan}{receiver}{reset} that \
-         weren't sent yet...",
+        "trying to resend {cyan}{count}{reset} packets to {cyan}{receiver}{reset} that weren't \
+         sent yet...",
         count = count.get(),
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
@@ -203,7 +203,7 @@ fn resend_packets(
     }
 
     info!(
-        "{cyan}{count}{reset} packets have been resent to the {cyan}{receiver}{reset}.",
+        "{cyan}{count}{reset} packets have been resent to {cyan}{receiver}{reset}.",
         count = count.get(),
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
@@ -216,7 +216,7 @@ fn resend_packets(
 #[inline]
 fn display_expired_time() {
     info!(
-        "the allotted time has passed for the {cyan}{receiver}{reset}.",
+        "the allotted time has passed for {cyan}{receiver}{reset}.",
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
@@ -226,7 +226,7 @@ fn display_expired_time() {
 #[inline]
 fn display_packets_sent() {
     info!(
-        "all the packets were sent for the {cyan}{receiver}{reset}.",
+        "all the packets were sent for {cyan}{receiver}{reset}.",
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),

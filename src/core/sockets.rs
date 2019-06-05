@@ -88,8 +88,8 @@ fn init_one_socket(
 
     let receiver = config.receivers[receiver].to_string();
     debug!(
-        "a new socket has been initialized to the {cyan}{}{reset}.",
-        receiver,
+        "a new socket has been initialized to {cyan}{receiver}{reset}.",
+        receiver = receiver,
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
