@@ -47,8 +47,8 @@ group of hackers.
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
@@ -153,20 +153,20 @@ Anevicon also has the functionality to test multiple receivers in parallel mode,
 $ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
-### Network interfaces
-There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
-
-```bash
-# Test example.com with a custom network interface using `--select-if`
-$ anevicon --receiver=93.184.216.34:80 --select-if
-```
-
 ### Test intensity
 In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
 # Test the example.com waiting for 270 microseconds after each sendmmsg syscall
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
+```
+
+### Network interfaces
+There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
+
+```bash
+# Test example.com with a custom network interface using `--select-if`
+$ anevicon --receiver=93.184.216.34:80 --select-if
 ```
 
 ### Exit conditions
