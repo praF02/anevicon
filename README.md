@@ -47,8 +47,8 @@ group of hackers.
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
-   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
+   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
@@ -153,20 +153,20 @@ $ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 $ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
 ```
 
-### Test intensity
-In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
-
-```bash
-# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
-$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
-```
-
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
 # Test the 80 port of the example.com site with the two limit options
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+```
+
+### Test intensity
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+
+```bash
+# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
+$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
 ### Logging options
