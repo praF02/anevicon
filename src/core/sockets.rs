@@ -105,7 +105,7 @@ fn select_if() -> SocketAddr {
     let mut stdout = io::stdout();
 
     print!(
-        "select a network interface {yellow}>>>#{reset}",
+        "Select a network interface {yellow}>>>#{reset}",
         yellow = color::Fg(color::Yellow),
         reset = color::Fg(color::Reset),
     );
