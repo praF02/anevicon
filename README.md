@@ -177,35 +177,6 @@ There is also an ability to bind all future sockets to a specific network interf
 $ anevicon --receiver=93.184.216.34:80 --select-if
 ```
 
-The program will display all detected network interfaces of your system with unspecified ports (equal to zero). You just need to enter an index of a network interface to a terminal.
-
-```
-[INFO] [23:51:50]: found a network interface #0:
-	Name:    lo
-	Address: none
-	Netmask: none
-[INFO] [23:51:50]: found a network interface #1:
-	Name:    enp0s31f6
-	Address: none
-	Netmask: none
-[INFO] [23:51:50]: found a network interface #2:
-	Name:    lo
-	Address: 127.0.0.1:0
-	Netmask: 255.0.0.0:0
-[INFO] [23:51:50]: found a network interface #3:
-	Name:    enp0s31f6
-	Address: 192.168.1.43:0
-	Netmask: 255.255.255.0:0
-[INFO] [23:51:50]: found a network interface #4:
-	Name:    lo
-	Address: [::1]:0
-	Netmask: [ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff]:0
-[INFO] [23:51:50]: found a network interface #5:
-	Name:    enp0s31f6
-	Address: [fe80::90bb:4d51:17c1:eb9b]:0
-	Netmask: [ffff:ffff:ffff:ffff::]:0
-```
-
 ### Logging options
 Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is done by the `--verbosity` option. There is also the `--date-time-format` option which tells Anevicon to use your custom date-time format.
 
