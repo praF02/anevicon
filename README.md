@@ -49,7 +49,6 @@ group of hackers.
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
-   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
