@@ -45,8 +45,8 @@ group of hackers.
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
+   - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
@@ -134,6 +134,14 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver=93.184.216.34:80
 ```
 
+### Multiple receivers
+Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
+
+```bash
+# Test the 80 port of example.com and the 13 port of google.com in parallel
+$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
+```
+
 ### Custom data message
 By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
@@ -143,14 +151,6 @@ $ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 
 # Test the 80 port of example.com with the custom text message
 $ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
-```
-
-### Multiple receivers
-Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
-
-```bash
-# Test the 80 port of example.com and the 13 port of google.com in parallel
-$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
 ### Test intensity
