@@ -133,7 +133,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         .expect("A child thread has panicked")
     }
 
-    return 0;
+    0
 }
 
 /// Initializes the `RECEIVER` thread-local variable with the given value.
@@ -184,20 +184,15 @@ fn resend_packets(
         if tester.summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
-
-        loop {
-            if let Err(error) = tester.send_one(packet) {
-                error!(
-                    "failed to send a packet to {cyan}{receiver}{reset} >>> {error}! Retrying the \
-                     operation...",
-                    receiver = current_receiver(),
-                    error = error,
-                    cyan = color::Fg(color::Cyan),
-                    reset = color::Fg(color::Reset),
-                );
-            } else {
-                break;
-            }
+        while let Err(error) = tester.send_one(packet) {
+            error!(
+                "failed to send a packet to {cyan}{receiver}{reset} >>> {error}! Retrying the \
+                 operation...",
+                receiver = current_receiver(),
+                error = error,
+                cyan = color::Fg(color::Cyan),
+                reset = color::Fg(color::Reset),
+            );
         }
     }
 

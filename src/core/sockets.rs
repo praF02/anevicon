@@ -161,17 +161,17 @@ fn select_if() -> SocketAddr {
 
 /// Prints all the given network interfaces to a user.
 fn print_ifs(if_addrs: &[Interface]) {
-    for i in 0..if_addrs.len() {
+    for (i, item) in if_addrs.iter().enumerate() {
         info!(
             "found a network interface {cyan}#{number}{reset_color}:\n\tName:    \
              {italic}{cyan}{name}{reset_color}{reset_style}\n\tAddress: \
              {cyan}{ip}{reset_color}\n\tNetmask: {cyan}{mask}{reset_color}",
             number = i,
-            name = if_addrs[i].name,
-            ip = if_addrs[i]
+            name = item.name,
+            ip = item
                 .addr
                 .map_or_else(|| String::from("none"), |val| val.to_string(),),
-            mask = if_addrs[i]
+            mask = item
                 .mask
                 .map_or_else(|| String::from("none"), |val| val.to_string(),),
             cyan = color::Fg(color::Cyan),
