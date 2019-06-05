@@ -186,6 +186,7 @@ fn print_ifs(if_addrs: &[Interface]) {
 
 #[cfg(test)]
 mod tests {
+    use std::net::IpAddr;
     use std::time::Duration;
 
     use super::*;
@@ -208,7 +209,15 @@ mod tests {
         let res = init_one_socket(&config, 1, None).expect("init_one_socket() has failed");
         let socket = res.socket;
 
-        assert_eq!(socket.local_addr().unwrap().ip().is_global(), false);
+        match socket.local_addr().unwrap().ip() {
+            IpAddr::V4(addr) => {
+                assert!(addr.is_private());
+            }
+            IpAddr::V6(_) => {
+                panic!("This address must be Ipv4, not Ipv6");
+            }
+        }
+
         assert_eq!(socket.write_timeout().unwrap(), Some(config.send_timeout));
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
         assert_eq!(socket.ttl().unwrap(), config.ip_ttl.unwrap());

@@ -16,9 +16,6 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-#![feature(iovec)]
-#![feature(ip)]
-
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
