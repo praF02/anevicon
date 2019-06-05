@@ -48,9 +48,10 @@ group of hackers.
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -161,14 +162,6 @@ In some situations, you don't need to transmit the maximum possible amount of pa
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
-### Network interfaces
-There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
-
-```bash
-# Test example.com with a custom network interface using `--select-if`
-$ anevicon --receiver=93.184.216.34:80 --select-if
-```
-
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
@@ -195,6 +188,14 @@ Different verbosity levels print different logging types. As you can see in the 
 | Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+### Network interfaces
+There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
+
+```bash
+# Test example.com with a custom network interface using `--select-if`
+$ anevicon --receiver=93.184.216.34:80 --select-if
+```
 
 ----------
 
