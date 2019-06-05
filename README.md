@@ -48,7 +48,7 @@ group of hackers.
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
-   - [End conditions](https://github.com/Gymmasssorla/anevicon#end-conditions)
+   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
@@ -161,7 +161,7 @@ In some situations, you don't need to transmit the maximum possible amount of pa
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
-### End conditions
+### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
