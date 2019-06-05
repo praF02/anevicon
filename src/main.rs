@@ -31,8 +31,8 @@ use termion::{color, style, terminal_size};
 use config::ArgsConfig;
 
 mod config;
+mod core;
 mod logging;
-mod testing;
 
 fn main() {
     setup_ctrlc_handler();
@@ -43,7 +43,7 @@ fn main() {
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
-    std::process::exit(testing::run(config));
+    std::process::exit(core::run(config));
 }
 
 fn setup_ctrlc_handler() {
