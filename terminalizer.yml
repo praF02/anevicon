@@ -111,65 +111,51 @@ config:
   
 # Records, feel free to edit them
 records:
-  - delay: 850
+  - delay: 865
     content: "\e]0;gymmasssorla@gymmasssorla-desktop:/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e]7;file://gymmasssorla-desktop/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e]0;gymmasssorla@gymmasssorla-desktop: /media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e[01;32mgymmasssorla@gymmasssorla-desktop\e[00m:\e[01;34m/media/gymmasssorla/772CF8924BEBB279/Documents/\r/rust/anevicon\e[00m$ "
-  - delay: 379
-    content: "cargo run --quiet -- --receiver=46.51.179.90:80 --wait=0secs --pa\rackets-per-syscall=50"
-  - delay: 329
+  - delay: 318
+    content: "cargo run --quiet -- --receiver=79.125.105.113:80 --wait=0secs --\r-packets-per-syscall=100"
+  - delay: 256
     content: "\r\n"
-  - delay: 89
-    content: "\e[38;5;6m\r\n       +----------------------------------------------------------------+\r\n       |        \\\\\\  ///     wWw    wWwwW  Ww   c  c     .-.   \\\\\\  /// |\r\n       |    /)  ((O)(O)) wWw (O)    (O)(O)(O)   (OO)   c(O_O)c ((O)(O)) |\r\n       |  (o)(O) | \\ ||  (O)_( \\    / ) (..)  ,'.--.) ,'.---.`, | \\ ||  |\r\n       |   //\\\\  ||\\\\|| .' __)\\ \\  / /   ||  / //_|_\\/ /|_|_|\\ \\||\\\\||  |\r\n       |  |(__)| || \\ |(  _)  /  \\/  \\  _||_ | \\___  | \\_____/ ||| \\ |  |\r\n       |  /,-. | ||  || `.__) \\ `--' / (_/\\_)'.    ) '. `---' .`||  ||  |\r\n       | -'   ''(_/  \\_)       `-..-'          `-.'    `-...-' (_/  \\_) |\r\n       +----------------------------------------------------------------+\e[39m\r\n                                  \e[38;5;1m\e[1mversion 5.1.1\e[39m\e[m\r\n                   \e[4m\e[38;5;2mA high-performant UDP-based load generator\e[m\e[39m\r\n\r\n[\e[4m\e[33mWARN\e[0m\e[m] [\e[38;5;5m20:18:10\e[39m]: waiting \e[38;5;6m0s\e[39m and then starting to execute the tests...\r\n"
-  - delay: 124
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:10\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m50 packets (1 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m123ms 222us 936ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:10\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m100 packets (3 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m262ms 516us 534ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:10\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m150 packets (4 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m402ms 134us 217ns\e[39m\r\n"
-  - delay: 132
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m200 packets (6 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m533ms 636us 766ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m250 packets (7 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m673ms 152us 318ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m300 packets (9 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m812ms 555us 947ns\e[39m\r\n"
-  - delay: 131
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m350 packets (10 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m943ms 879us 594ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m400 packets (12 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (96 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 83ms 589us 527ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m450 packets (14 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m450 packets/sec (112 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 223ms 51us 661ns\e[39m\r\n"
-  - delay: 132
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:11\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m500 packets (15 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m500 packets/sec (120 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 354ms 371us 762ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m550 packets (17 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m550 packets/sec (136 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 493ms 969us 923ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m600 packets (18 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m600 packets/sec (144 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 633ms 541us 326ns\e[39m\r\n"
-  - delay: 131
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m650 packets (20 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m650 packets/sec (160 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 764ms 800us 2ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m700 packets (21 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m700 packets/sec (168 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 904ms 677us 413ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m750 packets (23 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m375 packets/sec (92 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 44ms 300us 580ns\e[39m\r\n"
-  - delay: 131
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m800 packets (25 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (100 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 175ms 619us 431ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m850 packets (26 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m425 packets/sec (104 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 315ms 311us 560ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:12\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m900 packets (28 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m450 packets/sec (112 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 454ms 730us 1ns\e[39m\r\n"
-  - delay: 132
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m950 packets (29 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m475 packets/sec (116 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 586ms 248us 590ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1000 packets (31 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m500 packets/sec (124 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 725ms 742us 553ns\e[39m\r\n"
-  - delay: 140
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1050 packets (32 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m525 packets/sec (128 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 865ms 266us 367ns\e[39m\r\n"
-  - delay: 131
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1100 packets (34 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m550 packets/sec (136 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 996ms 560us 377ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1150 packets (35 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m383 packets/sec (93 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m3s 136ms 196us 862ns\e[39m\r\n"
-  - delay: 139
-    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: stats for \e[38;5;6m46.51.179.90:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1200 packets (37 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (98 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m3s 275ms 561us 497ns\e[39m\r\n"
-  - delay: 123
-    content: "^C[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m20:18:13\e[39m]: cancellation has been received. Exiting the program...\r\n"
-  - delay: 6
+  - delay: 125
+    content: "\e[38;5;6m\r\n       +----------------------------------------------------------------+\r\n       |        \\\\\\  ///     wWw    wWwwW  Ww   c  c     .-.   \\\\\\  /// |\r\n       |    /)  ((O)(O)) wWw (O)    (O)(O)(O)   (OO)   c(O_O)c ((O)(O)) |\r\n       |  (o)(O) | \\ ||  (O)_( \\    / ) (..)  ,'.--.) ,'.---.`, | \\ ||  |\r\n       |   //\\\\  ||\\\\|| .' __)\\ \\  / /   ||  / //_|_\\/ /|_|_|\\ \\||\\\\||  |\r\n       |  |(__)| || \\ |(  _)  /  \\/  \\  _||_ | \\___  | \\_____/ ||| \\ |  |\r\n       |  /,-. | ||  || `.__) \\ `--' / (_/\\_)'.    ) '. `---' .`||  ||  |\r\n       | -'   ''(_/  \\_)       `-..-'          `-.'    `-...-' (_/  \\_) |\r\n       +----------------------------------------------------------------+\e[39m\r\n                                  \e[38;5;1m\e[1mversion 5.1.1\e[39m\e[m\r\n                   \e[4m\e[38;5;2mA high-performant UDP-based load generator\e[m\e[39m\r\n\r\n[\e[4m\e[33mWARN\e[0m\e[m] [\e[38;5;5m00:23:28\e[39m]: waiting \e[38;5;6m0s\e[39m and then starting to execute the tests...\r\n"
+  - delay: 263
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:29\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m100 packets (3 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m262ms 683us 520ns\e[39m\r\n"
+  - delay: 270
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:29\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m200 packets (6 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m533ms 469us 207ns\e[39m\r\n"
+  - delay: 280
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:29\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m300 packets (9 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m0 packets/sec (0 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m812ms 607us 884ns\e[39m\r\n"
+  - delay: 270
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:29\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m400 packets (12 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (96 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 83ms 545us 655ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:30\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m500 packets (15 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m500 packets/sec (120 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 354ms 298us 289ns\e[39m\r\n"
+  - delay: 279
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:30\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m600 packets (18 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m600 packets/sec (144 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 633ms 276us 26ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:30\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m700 packets (21 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m700 packets/sec (168 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m1s 904ms 298us 247ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:31\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m800 packets (25 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (100 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 175ms 234us 622ns\e[39m\r\n"
+  - delay: 279
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:31\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m900 packets (28 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m450 packets/sec (112 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 454ms 102us 671ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:31\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1000 packets (31 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m500 packets/sec (124 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 724ms 988us 801ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:31\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1100 packets (34 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m550 packets/sec (136 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m2s 996ms 41us 793ns\e[39m\r\n"
+  - delay: 279
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:32\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1200 packets (37 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (98 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m3s 274ms 984us 653ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:32\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1300 packets (40 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m433 packets/sec (106 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m3s 545ms 947us 574ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:32\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1400 packets (43 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m466 packets/sec (114 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m3s 816ms 858us 328ns\e[39m\r\n"
+  - delay: 279
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:32\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1500 packets (46 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m375 packets/sec (92 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m4s 95ms 836us 878ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:33\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1600 packets (50 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m400 packets/sec (100 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m4s 366ms 683us 73ns\e[39m\r\n"
+  - delay: 271
+    content: "[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:33\e[39m]: stats for \e[38;5;6m79.125.105.113:80\e[39m:\r\n\tData Sent:     \e[38;5;6m1700 packets (53 MB)\e[39m\r\n\tAverage Speed: \e[38;5;6m425 packets/sec (106 Mbps)\e[39m\r\n\tTime Passed:   \e[38;5;6m4s 637ms 841us 773ns\e[39m\r\n"
+  - delay: 53
+    content: "^C[\e[4m\e[32mINFO\e[0m\e[m] [\e[38;5;5m00:23:33\e[39m]: cancellation has been received. Exiting the program...\r\n"
+  - delay: 7
     content: "\e]0;gymmasssorla@gymmasssorla-desktop:/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e]7;file://gymmasssorla-desktop/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e]0;gymmasssorla@gymmasssorla-desktop: /media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon\a\e[01;32mgymmasssorla@gymmasssorla-desktop\e[00m:\e[01;34m/media/gymmasssorla/772CF8924BEBB279/Documents/\r/rust/anevicon\e[00m$ "
-  - delay: 510
+  - delay: 429
     content: "logout\r\n"
