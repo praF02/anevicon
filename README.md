@@ -113,7 +113,7 @@ Name | Explanation
 Name | Value | Default | Explanation
 -----|-------|---------|------------
 `--date-time-format` | String | `%X` | A format for displaying local date and time in log messages. Type `man strftime` to see the format specification
-`--ip-ttl` | Unsigned integer | None | Specifies the IP_TTL value for all future sockets. Usually this value equals a number of routers that a packet can go through
+`--ip-ttl` | Unsigned integer | None | Specifies the `IP_TTL` value for all future sockets. Usually this value equals a number of routers that a packet can go through
 `-l, --packet-length` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
 `-p, --packets-count` | Positive integer | `18446744073709551615` | A count of packets for sending. When this limit is reached, then the program will exit
 `--packets-per-syscall` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
