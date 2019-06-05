@@ -20,7 +20,6 @@
 
 use std::cell::RefCell;
 use std::fmt::Display;
-use std::io::IoVec;
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 use std::thread;
@@ -187,7 +186,7 @@ fn resend_packets(
         }
 
         loop {
-            if let Err(error) = tester.send_one(IoVec::new(packet)) {
+            if let Err(error) = tester.send_one(packet) {
                 error!(
                     "failed to send a packet to {cyan}{receiver}{reset} >>> {error}! Retrying the \
                      operation...",
@@ -272,7 +271,7 @@ fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
     let mut portions = Vec::with_capacity(length.get());
 
     for _ in 0..length.get() {
-        portions.push((0, IoVec::new(packet)));
+        portions.push((0, packet));
     }
 
     portions

@@ -1,8 +1,11 @@
 language: rust
 
+channel:
+  - stable
+  - beta
+  - nightly
+
 script:
-# Turn on the 'nightly' channel to use unstable library features
-  - rustup override set nightly-2019-04-11
   - cargo test --verbose --all
 
 env:
