@@ -51,7 +51,7 @@ group of hackers.
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Select network interfaces](https://github.com/Gymmasssorla/anevicon#select-network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -189,7 +189,7 @@ Different verbosity levels print different logging types. As you can see in the 
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
 
-### Network interfaces
+### Select network interfaces
 There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
 
 ```bash
