@@ -49,8 +49,8 @@ group of hackers.
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -169,14 +169,6 @@ Note that the command above might not work on your system due to the security re
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 ```
 
-### Network interfaces
-There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
-
-```bash
-# Test example.com with a custom network interface using `--select-if`
-$ anevicon --receiver=93.184.216.34:80 --select-if
-```
-
 ### Logging options
 Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is done by the `--verbosity` option. There is also the `--date-time-format` option which tells Anevicon to use your custom date-time format.
 
@@ -195,6 +187,14 @@ Different verbosity levels print different logging types. As you can see in the 
 | Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+### Network interfaces
+There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
+
+```bash
+# Test example.com with a custom network interface using `--select-if`
+$ anevicon --receiver=93.184.216.34:80 --select-if
+```
 
 ----------
 
