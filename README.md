@@ -47,7 +47,7 @@ group of hackers.
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
-   - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
+   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
@@ -150,7 +150,7 @@ Anevicon also has the functionality to test multiple receivers in parallel mode,
 $ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
-### Custom data message
+### Custom message
 By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
