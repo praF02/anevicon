@@ -48,6 +48,7 @@ group of hackers.
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
