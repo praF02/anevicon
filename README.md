@@ -45,11 +45,11 @@ group of hackers.
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
-   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
+   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Select network interfaces](https://github.com/Gymmasssorla/anevicon#select-network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
@@ -135,22 +135,6 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver=93.184.216.34:80
 ```
 
-### Test intensity
-In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
-
-```bash
-# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
-$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
-```
-
-### Multiple receivers
-Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
-
-```bash
-# Test the 80 port of example.com and the 13 port of google.com in parallel
-$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
-```
-
 ### Custom message
 By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
@@ -162,12 +146,42 @@ $ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 $ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
 ```
 
+### Test intensity
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+
+```bash
+# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
+$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
+```
+
+### Multiple messages
+[v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
+
+```bash
+# Test the 80 port of example.com with these messages:
+#   1) Custom file "file.txt";
+#   2) Text message "Hello, Pitty!";
+#   3) Text message "Hello, Scott!";
+#   4) A random packet of 5355 bytes;
+#   5) A random packet of 2222 bytes.
+$ anevicon --receiver=93.184.216.34:80 --send-file="file.txt" --send-message "Hello, Pitty!" \
+  --send-message "Hello, Scott!" --packet-length=5355 --packet-length=2222
+```
+
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
 # Test the 80 port of the example.com site with the two limit options
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+```
+
+### Multiple receivers
+Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
+
+```bash
+# Test the 80 port of example.com and the 13 port of google.com in parallel
+$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
 ### Logging options
