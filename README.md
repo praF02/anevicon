@@ -33,32 +33,6 @@ group of hackers.
 
 ----------
 
-## Table of contents
- - [Advantages](https://github.com/Gymmasssorla/anevicon#advantages)
- - [Disadvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
- - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
-   - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
-   - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
-   - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
- - [Usage](https://github.com/Gymmasssorla/anevicon#usage)
-   - [Flags](https://github.com/Gymmasssorla/anevicon#flags)
-   - [Options](https://github.com/Gymmasssorla/anevicon#options)
- - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
-   - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
-   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
-   - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
-   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
-   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
-   - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
- - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
- - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
- - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
- - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
-
-----------
-
 ## Advantages
  - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
