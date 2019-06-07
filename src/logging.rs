@@ -27,18 +27,18 @@ use log::{Level, LevelFilter};
 use termion::{color, style};
 use time;
 
-use super::config::LoggingConfig;
+use crate::config::ArgsConfig;
 
 /// Setups the logging system from `LoggingConfig`. Before this function,
 /// neither of log's macros such as `info!` won't work.
-pub fn setup_logging(logging_config: &LoggingConfig) {
+pub fn setup_logging(config: &ArgsConfig) {
     let colors = ColoredLevelConfig::new()
         .info(Color::Green)
         .warn(Color::Yellow)
         .error(Color::Red)
         .debug(Color::Magenta)
         .trace(Color::Cyan);
-    let date_time_format = logging_config.date_time_format.clone();
+    let date_time_format = config.date_time_format.clone();
 
     Dispatch::new()
         // Print fancy colored output to a terminal without a record date
@@ -75,7 +75,7 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
                 })
                 .chain(io::stdout()),
         )
-        .level(associated_level(logging_config.verbosity))
+        .level(associated_level(config.verbosity))
         .apply()
         .expect("Applying the fern::Dispatch has failed");
 }

@@ -25,13 +25,17 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use anevicon_core::{self, Portion, TestSummary, Tester};
+use anevicon_core::{self, TestSummary, Tester};
 use humantime::format_duration;
 use termion::color;
+
+use packets_buffer::PacketsBuffer;
+use packets_buffer::SupplyResult;
 
 use crate::config::ArgsConfig;
 
 mod packets;
+mod packets_buffer;
 mod sockets;
 
 // A receiver name for this thread.
@@ -40,7 +44,7 @@ thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Unde
 /// This is the key function which accepts a whole `ArgsConfig` and returns an
 /// exit code (either 1 on failure or 0 on success).
 pub fn run(config: ArgsConfig) -> i32 {
-    let packet = match packets::construct_packet(&config.packet_config) {
+    let packets = match packets::construct_packets(&config) {
         Err(err) => {
             error!("failed to construct a packet >>> {}!", err);
             return 1;
@@ -48,7 +52,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         Ok(packet) => packet,
     };
 
-    let sockets = match sockets::init_sockets(&config.sockets_config) {
+    let sockets = match sockets::init_sockets(&config) {
         Err(err) => {
             error!("failed to initialize sockets >>> {}!", err);
             return 1;
@@ -58,53 +62,42 @@ pub fn run(config: ArgsConfig) -> i32 {
 
     wait(config.wait);
 
-    let remaining_packets = unsafe {
-        NonZeroUsize::new_unchecked(
-            config.tester_config.exit_config.packets_count.get()
-                % config.tester_config.packets_per_syscall.get(),
-        )
-    };
-    let sendings_count = (config.tester_config.exit_config.packets_count.get()
-        - remaining_packets.get())
-        / config.tester_config.packets_per_syscall.get();
+    let packets = Arc::new(packets);
+    let config = Arc::new(config);
 
-    let tester_config = Arc::new(config.tester_config);
-    let packet = Arc::new(packet);
-
-    for socket in sockets {
-        let packet = packet.clone();
-        let tester_config = tester_config.clone();
+    for (receiver, socket) in sockets {
+        let packets = packets.clone();
+        let config = config.clone();
 
         thread::spawn(move || {
-            init_receiver(String::from(socket.receiver()));
-
-            let (mut ordinary, mut remaining) = (
-                generate_portions(tester_config.packets_per_syscall, &packet),
-                generate_portions(remaining_packets, &packet),
-            );
+            init_receiver(receiver);
 
             let mut summary = TestSummary::default();
-            let mut tester = Tester::new(socket.socket(), &mut summary);
+            let mut tester = Tester::new(&socket, &mut summary);
+            let mut buffer = PacketsBuffer::new(config.packets_per_syscall);
 
             // Run the main cycle for the current worker, and exit if the allotted time
             // expires
-            for _ in 0..sendings_count {
-                if let Err(error) = tester.send_multiple(&mut ordinary) {
-                    send_multiple_error(error);
+            for (packet, _) in packets.iter().cycle().zip(0..config.packets_count.get()) {
+                match buffer.supply(&mut tester, (0, packet.as_slice())) {
+                    Err(err) => send_multiple_error(err),
+                    Ok(res) => {
+                        if res == SupplyResult::Flushed {
+                            display_summary(tester.summary);
+                        }
+                    }
                 }
 
-                display_summary(tester.summary);
-
-                if tester.summary.time_passed() >= tester_config.exit_config.test_duration {
+                if tester.summary.time_passed() >= config.test_duration {
                     display_expired_time();
                     return;
                 }
 
-                thread::sleep(tester_config.send_periodicity);
+                thread::sleep(config.send_periodicity);
             }
 
-            if let Err(error) = tester.send_multiple(&mut remaining) {
-                send_multiple_error(error);
+            if let Err(err) = buffer.complete(&mut tester) {
+                send_multiple_error(err);
             }
 
             // We might have a situation when not all the required packets are sent, so fix
@@ -118,9 +111,12 @@ pub fn run(config: ArgsConfig) -> i32 {
             if unsent.get() != 0 {
                 match resend_packets(
                     &mut tester,
-                    &packet,
-                    unsent,
-                    tester_config.exit_config.test_duration,
+                    &packets
+                        .iter()
+                        .take(unsent.get())
+                        .map(|packet| packet.as_slice())
+                        .collect::<Vec<&[u8]>>(),
+                    config.test_duration,
                 ) {
                     ResendPacketsResult::Completed => display_packets_sent(),
                     ResendPacketsResult::TimeExpired => display_expired_time(),
@@ -165,25 +161,21 @@ enum ResendPacketsResult {
 
 /// Resends `count` packets using the given `tester`. If the `limit` is reached,
 /// it will return `TimeExpired`, otherwise, `Completed`.
-fn resend_packets(
-    tester: &mut Tester,
-    packet: &[u8],
-    count: NonZeroUsize,
-    limit: Duration,
-) -> ResendPacketsResult {
+fn resend_packets(tester: &mut Tester, packets: &[&[u8]], limit: Duration) -> ResendPacketsResult {
     info!(
         "trying to resend {cyan}{count}{reset} packets to {cyan}{receiver}{reset} that weren't \
          sent yet...",
-        count = count.get(),
+        count = packets.len(),
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
 
-    for _ in 0..count.get() {
+    for &packet in packets {
         if tester.summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
+
         while let Err(error) = tester.send_one(packet) {
             error!(
                 "failed to send a packet to {cyan}{receiver}{reset} >>> {error}! Retrying the \
@@ -198,7 +190,7 @@ fn resend_packets(
 
     info!(
         "{cyan}{count}{reset} packets have been resent to {cyan}{receiver}{reset}.",
-        count = count.get(),
+        count = packets.len(),
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
@@ -260,18 +252,6 @@ fn send_multiple_error<E: Display>(error: E) {
     );
 }
 
-/// Generates exactly `length` portions referring to a `packet`. They will be
-/// sent to all receivers later.
-fn generate_portions(length: NonZeroUsize, packet: &[u8]) -> Vec<Portion> {
-    let mut portions = Vec::with_capacity(length.get());
-
-    for _ in 0..length.get() {
-        portions.push((0, packet));
-    }
-
-    portions
-}
-
 #[cfg(test)]
 mod tests {
     use std::net::UdpSocket;
@@ -286,17 +266,6 @@ mod tests {
             .connect(socket.local_addr().unwrap())
             .expect("Cannot connect the socket to itself");
         socket
-    }
-
-    #[test]
-    fn test_generate_portions() {
-        let portion: &[u8] = b"Something very very useful for all of us";
-
-        for (bytes, vec) in generate_portions(NonZeroUsize::new(5).unwrap(), portion) {
-            // This value must be always zero for future use of sendmmsg
-            assert_eq!(bytes, 0);
-            assert_eq!(portion, vec.as_ref());
-        }
     }
 
     #[test]

@@ -28,24 +28,28 @@ use std::path::Path;
 
 use rand::{thread_rng, RngCore};
 
-use crate::config::PacketConfig;
+use crate::config::ArgsConfig;
 
-/// Constructs a bytes packet from `PacketConfig`. Then it must be sent to all
+/// Constructs a bytes packets from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
-pub fn construct_packet(config: &PacketConfig) -> Result<Vec<u8>, ReadPacketError> {
-    // If a file was specified, use its content as a packet
-    if let Some(ref filename) = config.send_file {
-        read_packet(filename)
+pub fn construct_packets(config: &ArgsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
+    let mut packets = Vec::with_capacity(
+        config.send_messages.len() + config.send_files.len() + config.packets_lengths.len(),
+    );
 
-    // If a message was specified, use it as a packet
-    } else if let Some(ref message) = config.send_message {
-        Ok(message.bytes().collect())
-
-    // If both file and message were not specified, at least packet length must
-    // be already specified
-    } else {
-        Ok(random_packet(config.packet_length.unwrap()))
+    for message in &config.send_messages {
+        packets.push(message.as_bytes().to_owned());
     }
+
+    for file in &config.send_files {
+        packets.push(read_packet(file)?);
+    }
+
+    for length in &config.packets_lengths {
+        packets.push(random_packet(*length));
+    }
+
+    Ok(packets)
 }
 
 fn random_packet(length: NonZeroUsize) -> Vec<u8> {

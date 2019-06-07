@@ -24,29 +24,11 @@ use std::net::{SocketAddr, UdpSocket};
 use ifaces::Interface;
 use termion::{color, style};
 
-use crate::config::SocketsConfig;
-
-/// Represents a UDP socket with its colored receiver name.
-pub struct AneviconSocket {
-    socket: UdpSocket,
-    receiver: String,
-}
-
-impl AneviconSocket {
-    #[inline]
-    pub fn socket(&self) -> &UdpSocket {
-        &self.socket
-    }
-
-    #[inline]
-    pub fn receiver(&self) -> &str {
-        &self.receiver
-    }
-}
+use crate::config::ArgsConfig;
 
 /// Returns a vector of sockets connected to certain receivers or `io::Error`
 /// because initializations might fail.
-pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
+pub fn init_sockets(config: &ArgsConfig) -> io::Result<Vec<(String, UdpSocket)>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
         debug!(
@@ -71,10 +53,10 @@ pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<AneviconSocket>> {
 /// Initializes **ONLY ONE** socket connected to `config.receivers[receiver]`.
 /// If `if_addr` is any, it will bind a socket to it.
 fn init_one_socket(
-    config: &SocketsConfig,
+    config: &ArgsConfig,
     receiver: usize,
     if_addr: Option<SocketAddr>,
-) -> io::Result<AneviconSocket> {
+) -> io::Result<(String, UdpSocket)> {
     let local_addr = if_addr.unwrap_or(config.sender);
 
     let socket = UdpSocket::bind(local_addr)?;
@@ -94,7 +76,7 @@ fn init_one_socket(
         reset = color::Fg(color::Reset),
     );
 
-    Ok(AneviconSocket { socket, receiver })
+    Ok((receiver, socket))
 }
 
 /// Displays an interactive menu of network interfaces to a user.
