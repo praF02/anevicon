@@ -55,7 +55,7 @@ fn setup_ctrlc_handler() {
 
 fn title() {
     let tab = " ".repeat(
-        ((terminal_size().expect("Failed to get the terminal size").0 - 66) / 2)
+        ((terminal_size().expect("Failed to get the terminal size").0 - 54) / 2)
             .try_into()
             .unwrap(),
     );
@@ -63,21 +63,19 @@ fn title() {
     #[rustfmt::skip]
     println!(
         "{cyan}{}{reset}",
-        format!("
-{tab}+----------------------------------------------------------------+\n\
-{tab}|        \\\\\\  ///     wWw    wWwwW  Ww   c  c     .-.   \\\\\\  /// |\n\
-{tab}|    /)  ((O)(O)) wWw (O)    (O)(O)(O)   (OO)   c(O_O)c ((O)(O)) |\n\
-{tab}|  (o)(O) | \\ ||  (O)_( \\    / ) (..)  ,'.--.) ,'.---.`, | \\ ||  |\n\
-{tab}|   //\\\\  ||\\\\|| .' __)\\ \\  / /   ||  / //_|_\\/ /|_|_|\\ \\||\\\\||  |\n\
-{tab}|  |(__)| || \\ |(  _)  /  \\/  \\  _||_ | \\___  | \\_____/ ||| \\ |  |\n\
-{tab}|  /,-. | ||  || `.__) \\ `--' / (_/\\_)'.    ) '. `---' .`||  ||  |\n\
-{tab}| -'   ''(_/  \\_)       `-..-'          `-.'    `-...-' (_/  \\_) |\n\
-{tab}+----------------------------------------------------------------+", tab = tab),
+        format!("\
+{tab}+----------------------------------------------------+\n\
+{tab}|                            .-.                     |
+{tab}|  .-.  .  .-.   .-.  )   .-.`-'.-.  .-._..  .-.     |
+{tab}| (  |   )/   )./.-'_(   /  /  (    (   )  )/   )    |
+{tab}|  `-'-''/   ( (__.'  \\_/_.(__. `---'`-'  '/   (     |
+{tab}|             `-                                `-   |
+{tab}+----------------------------------------------------+", tab = tab),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset));
 
     println!(
-        "                           {tab}{red}{bold}version {version}{reset_color}{reset_style}",
+        "                      {tab}{red}{bold}version {version}{reset_color}{reset_style}",
         version = structopt::clap::crate_version!(),
         tab = tab,
         bold = style::Bold,
@@ -87,7 +85,7 @@ fn title() {
     );
 
     println!(
-        "            {tab}{underline}{green}A high-performant UDP-based load \
+        "      {tab}{underline}{green}A high-performant UDP-based load \
          generator{reset_style}{reset_color}\n",
         tab = tab,
         underline = style::Underline,
