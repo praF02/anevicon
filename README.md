@@ -45,12 +45,13 @@ group of hackers.
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
-   - [Custom data message](https://github.com/Gymmasssorla/anevicon#custom-data-message)
-   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
+   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
+   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
+   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Select network interfaces](https://github.com/Gymmasssorla/anevicon#select-network-interfaces)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -134,6 +135,14 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver=93.184.216.34:80
 ```
 
+### Test intensity
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+
+```bash
+# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
+$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
+```
+
 ### Multiple receivers
 Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
 
@@ -142,7 +151,7 @@ Anevicon also has the functionality to test multiple receivers in parallel mode,
 $ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
-### Custom data message
+### Custom message
 By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
@@ -159,14 +168,6 @@ Note that the command above might not work on your system due to the security re
 ```bash
 # Test the 80 port of the example.com site with the two limit options
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
-```
-
-### Test intensity
-In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
-
-```bash
-# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
-$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
 ### Logging options
@@ -188,7 +189,7 @@ Different verbosity levels print different logging types. As you can see in the 
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
 
-### Network interfaces
+### Select network interfaces
 There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
 
 ```bash
