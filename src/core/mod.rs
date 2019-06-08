@@ -64,12 +64,13 @@ pub fn run(config: ArgsConfig) -> i32 {
 
     let packets = Arc::new(packets);
     let config = Arc::new(config);
+    let mut workers = Vec::with_capacity(config.sockets_config.receivers.len());
 
     for (receiver, socket) in sockets {
         let packets = packets.clone();
         let config = config.clone();
 
-        thread::spawn(move || {
+        workers.push(thread::spawn(move || {
             init_receiver(receiver);
 
             let mut summary = TestSummary::default();
@@ -128,11 +129,12 @@ pub fn run(config: ArgsConfig) -> i32 {
             } else {
                 display_packets_sent();
             }
-        })
-        .join()
-        .expect("A child thread has panicked")
+        }));
     }
 
+    workers
+        .into_iter()
+        .for_each(|worker| worker.join().expect("A child thread has panicked"));
     0
 }
 
