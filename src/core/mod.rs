@@ -44,7 +44,7 @@ thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Unde
 /// This is the key function which accepts a whole `ArgsConfig` and returns an
 /// exit code (either 1 on failure or 0 on success).
 pub fn run(config: ArgsConfig) -> i32 {
-    let packets = match packets::construct_packets(&config) {
+    let packets = match packets::construct_packets(&config.packet_config) {
         Err(err) => {
             error!("failed to construct a packet >>> {}!", err);
             return 1;
@@ -52,7 +52,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         Ok(packet) => packet,
     };
 
-    let sockets = match sockets::init_sockets(&config) {
+    let sockets = match sockets::init_sockets(&config.sockets_config) {
         Err(err) => {
             error!("failed to initialize sockets >>> {}!", err);
             return 1;
@@ -74,11 +74,15 @@ pub fn run(config: ArgsConfig) -> i32 {
 
             let mut summary = TestSummary::default();
             let mut tester = Tester::new(&socket, &mut summary);
-            let mut buffer = PacketsBuffer::new(config.packets_per_syscall);
+            let mut buffer = PacketsBuffer::new(config.tester_config.packets_per_syscall);
 
             // Run the main cycle for the current worker, and exit if the allotted time
             // expires
-            for (packet, _) in packets.iter().cycle().zip(0..config.packets_count.get()) {
+            for (packet, _) in packets
+                .iter()
+                .cycle()
+                .zip(0..config.tester_config.exit_config.packets_count.get())
+            {
                 match buffer.supply(&mut tester, (0, packet.as_slice())) {
                     Err(err) => send_multiple_error(err),
                     Ok(res) => {
@@ -88,12 +92,12 @@ pub fn run(config: ArgsConfig) -> i32 {
                     }
                 }
 
-                if tester.summary.time_passed() >= config.test_duration {
+                if tester.summary.time_passed() >= config.tester_config.exit_config.test_duration {
                     display_expired_time();
                     return;
                 }
 
-                thread::sleep(config.send_periodicity);
+                thread::sleep(config.tester_config.send_periodicity);
             }
 
             if let Err(err) = buffer.complete(&mut tester) {
@@ -116,7 +120,7 @@ pub fn run(config: ArgsConfig) -> i32 {
                         .take(unsent.get())
                         .map(|packet| packet.as_slice())
                         .collect::<Vec<&[u8]>>(),
-                    config.test_duration,
+                    config.tester_config.exit_config.test_duration,
                 ) {
                     ResendPacketsResult::Completed => display_packets_sent(),
                     ResendPacketsResult::TimeExpired => display_expired_time(),
@@ -274,17 +278,12 @@ mod tests {
         let socket = loopback_socket();
         let mut tester = Tester::new(&socket, &mut summary);
 
-        let message = b"Trying to resend packets which weren't sent yet";
+        let message = "Trying to resend packets which weren't sent yet".as_bytes();
 
         // All the packets will be sent because the allotted time is too long to be
         // expired
         assert_eq!(
-            resend_packets(
-                &mut tester,
-                message,
-                NonZeroUsize::new(12).unwrap(),
-                Duration::from_secs(3656),
-            ),
+            resend_packets(&mut tester, &vec![message; 12], Duration::from_secs(3656),),
             ResendPacketsResult::Completed
         );
 
@@ -294,12 +293,7 @@ mod tests {
         // Now the allotted time eventually expires, so check that resend_packets
         // returns TimeExpired
         assert_eq!(
-            resend_packets(
-                &mut tester,
-                message,
-                NonZeroUsize::new(12).unwrap(),
-                Duration::from_nanos(1),
-            ),
+            resend_packets(&mut tester, &vec![message; 12], Duration::from_nanos(1),),
             ResendPacketsResult::TimeExpired
         );
     }

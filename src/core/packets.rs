@@ -28,11 +28,11 @@ use std::path::Path;
 
 use rand::{thread_rng, RngCore};
 
-use crate::config::ArgsConfig;
+use crate::config::PacketConfig;
 
 /// Constructs a bytes packets from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
-pub fn construct_packets(config: &ArgsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
+pub fn construct_packets(config: &PacketConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.packets_lengths.len(),
     );
@@ -97,6 +97,8 @@ impl Error for ReadPacketError {}
 mod tests {
     use std::path::PathBuf;
 
+    use crate::config::PacketConfig;
+
     use super::*;
 
     lazy_static! {
@@ -130,48 +132,46 @@ mod tests {
     #[test]
     fn test_choose_random_packet() {
         let packet_length = NonZeroUsize::new(24550).unwrap();
+        let packets = construct_packets(&PacketConfig {
+            send_files: Vec::new(),
+            packets_lengths: vec![packet_length],
+            send_messages: Vec::new(),
+        })
+        .expect("Cannot construct a packet");
+        assert_eq!(packets.len(), 1);
 
         // The function must generate a random set of bytes as a packet
-        assert_eq!(
-            construct_packet(&PacketConfig {
-                send_file: None,
-                packet_length: Some(packet_length),
-                send_message: None,
-            })
-            .expect("Cannot construct a packet")
-            .len(),
-            packet_length.get()
-        );
+        assert_eq!(packets[0].len(), packet_length.get());
     }
 
     #[test]
     fn test_choose_file_packet() {
+        let packets = construct_packets(&PacketConfig {
+            send_files: vec![PACKET_FILE.clone()],
+            packets_lengths: Vec::new(),
+            send_messages: Vec::new(),
+        })
+        .expect("Cannot construct a packet");
+        assert_eq!(packets.len(), 1);
+
         // The function must return a valid file content that we have
         // already written
-        assert_eq!(
-            &construct_packet(&PacketConfig {
-                send_file: Some(PACKET_FILE.clone()),
-                packet_length: None,
-                send_message: None,
-            })
-            .expect("Cannot construct a packet"),
-            &PACKET_CONTENT.as_slice(),
-        );
+        assert_eq!(&packets[0], &PACKET_CONTENT.as_slice(),);
     }
 
     #[test]
     fn test_choose_text_message() {
         let message = String::from("Generals gathered in their masses");
 
+        let packets = construct_packets(&PacketConfig {
+            send_files: Vec::new(),
+            packets_lengths: Vec::new(),
+            send_messages: vec![message.clone()],
+        })
+        .expect("Cannot construct a packet");
+        assert_eq!(packets.len(), 1);
+
         // The function must return the message that we specified above
-        assert_eq!(
-            construct_packet(&PacketConfig {
-                send_file: None,
-                packet_length: None,
-                send_message: Some(message.clone()),
-            })
-            .expect("Cannot construct a packet"),
-            message.into_bytes(),
-        );
+        assert_eq!(packets[0], message.into_bytes(),);
     }
 }

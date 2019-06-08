@@ -37,7 +37,7 @@ fn main() {
     let config = ArgsConfig::setup();
     title();
 
-    logging::setup_logging(&config);
+    logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
     std::process::exit(core::run(config));

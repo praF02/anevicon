@@ -24,11 +24,11 @@ use std::net::{SocketAddr, UdpSocket};
 use ifaces::Interface;
 use termion::{color, style};
 
-use crate::config::ArgsConfig;
+use crate::config::SocketsConfig;
 
 /// Returns a vector of sockets connected to certain receivers or `io::Error`
 /// because initializations might fail.
-pub fn init_sockets(config: &ArgsConfig) -> io::Result<Vec<(String, UdpSocket)>> {
+pub fn init_sockets(config: &SocketsConfig) -> io::Result<Vec<(String, UdpSocket)>> {
     let if_addr = if config.select_if {
         let if_addr = select_if();
         debug!(
@@ -53,7 +53,7 @@ pub fn init_sockets(config: &ArgsConfig) -> io::Result<Vec<(String, UdpSocket)>>
 /// Initializes **ONLY ONE** socket connected to `config.receivers[receiver]`.
 /// If `if_addr` is any, it will bind a socket to it.
 fn init_one_socket(
-    config: &ArgsConfig,
+    config: &SocketsConfig,
     receiver: usize,
     if_addr: Option<SocketAddr>,
 ) -> io::Result<(String, UdpSocket)> {
@@ -189,7 +189,7 @@ mod tests {
         };
 
         let res = init_one_socket(&config, 1, None).expect("init_one_socket() has failed");
-        let socket = res.socket;
+        let socket = res.1;
 
         match socket.local_addr().unwrap().ip() {
             IpAddr::V4(addr) => {
@@ -204,6 +204,6 @@ mod tests {
         assert_eq!(socket.broadcast().unwrap(), config.broadcast);
         assert_eq!(socket.ttl().unwrap(), config.ip_ttl.unwrap());
 
-        assert_eq!(res.receiver, config.receivers[1].to_string());
+        assert_eq!(res.0, config.receivers[1].to_string());
     }
 }

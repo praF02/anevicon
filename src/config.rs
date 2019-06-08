@@ -53,32 +53,21 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// Enable one of the possible verbosity levels. The zero level doesn't
-    /// print anything, and the last level prints everything.
-    ///
-    /// Note that specifying the 4 and 5 verbosity levels might decrease
-    /// performance, do it only for debugging.
-    #[structopt(
-        short = "v",
-        long = "verbosity",
-        takes_value = true,
-        value_name = "LEVEL",
-        default_value = "3",
-        raw(possible_values = r#"&["0", "1", "2", "3", "4", "5"]"#)
-    )]
-    pub verbosity: i32,
+    #[structopt(flatten)]
+    pub logging_config: LoggingConfig,
 
-    /// A format for displaying local date and time in log messages. Type `man
-    /// strftime` to see the format specification
-    #[structopt(
-        long = "date-time-format",
-        takes_value = true,
-        value_name = "STRING",
-        default_value = "%X",
-        parse(try_from_str = "parse_time_format")
-    )]
-    pub date_time_format: String,
+    #[structopt(flatten)]
+    pub tester_config: TesterConfig,
 
+    #[structopt(flatten)]
+    pub packet_config: PacketConfig,
+
+    #[structopt(flatten)]
+    pub sockets_config: SocketsConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct TesterConfig {
     /// A time interval between sendmmsg system calls. This option can be used
     /// to modify test intensity
     #[structopt(
@@ -102,65 +91,12 @@ pub struct ArgsConfig {
     )]
     pub packets_per_syscall: NonZeroUsize,
 
-    /// A count of packets for sending. When this limit is reached, then the
-    /// program will exit
-    #[structopt(
-        short = "p",
-        long = "packets-count",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        default_value = "18446744073709551615",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub packets_count: NonZeroUsize,
+    #[structopt(flatten)]
+    pub exit_config: ExitConfig,
+}
 
-    /// A whole test duration. When this limit is reached, then the program will
-    /// exit.
-    ///
-    /// Exit might occur a few seconds later because of long sendmmsg system
-    /// calls. For more precision, decrease the `--packets-per-syscall`
-    /// value.
-    #[structopt(
-        short = "d",
-        long = "test-duration",
-        takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "64years 64hours 64secs",
-        parse(try_from_str = "parse_duration")
-    )]
-    pub test_duration: Duration,
-
-    /// Repeatedly send a random-generated packet with a specified bytes length.
-    /// The default is 32768
-    #[structopt(
-        short = "l",
-        long = "packet-length",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        parse(try_from_str = "parse_non_zero_usize")
-    )]
-    pub packets_lengths: Vec<NonZeroUsize>,
-
-    /// Interpret the specified file content as a single packet and repeatedly
-    /// send it to each receiver
-    #[structopt(
-        short = "f",
-        long = "send-file",
-        takes_value = true,
-        value_name = "FILENAME"
-    )]
-    pub send_files: Vec<PathBuf>,
-
-    /// Interpret the specified UTF-8 encoded text message as a single packet
-    /// and repeatedly send it to each receiver
-    #[structopt(
-        short = "m",
-        long = "send-message",
-        takes_value = true,
-        value_name = "STRING"
-    )]
-    pub send_messages: Vec<String>,
-
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct SocketsConfig {
     /// A receiver of generated traffic, specified as an IP-address and a port
     /// number, separated by a colon.
     ///
@@ -214,6 +150,100 @@ pub struct ArgsConfig {
     pub broadcast: bool,
 }
 
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct LoggingConfig {
+    /// Enable one of the possible verbosity levels. The zero level doesn't
+    /// print anything, and the last level prints everything.
+    ///
+    /// Note that specifying the 4 and 5 verbosity levels might decrease
+    /// performance, do it only for debugging.
+    #[structopt(
+        short = "v",
+        long = "verbosity",
+        takes_value = true,
+        value_name = "LEVEL",
+        default_value = "3",
+        raw(possible_values = r#"&["0", "1", "2", "3", "4", "5"]"#)
+    )]
+    pub verbosity: i32,
+
+    /// A format for displaying local date and time in log messages. Type `man
+    /// strftime` to see the format specification
+    #[structopt(
+        long = "date-time-format",
+        takes_value = true,
+        value_name = "STRING",
+        default_value = "%X",
+        parse(try_from_str = "parse_time_format")
+    )]
+    pub date_time_format: String,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct ExitConfig {
+    /// A count of packets for sending. When this limit is reached, then the
+    /// program will exit
+    #[structopt(
+        short = "p",
+        long = "packets-count",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "18446744073709551615",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packets_count: NonZeroUsize,
+
+    /// A whole test duration. When this limit is reached, then the program will
+    /// exit.
+    ///
+    /// Exit might occur a few seconds later because of long sendmmsg system
+    /// calls. For more precision, decrease the `--packets-per-syscall`
+    /// value.
+    #[structopt(
+        short = "d",
+        long = "test-duration",
+        takes_value = true,
+        value_name = "TIME-SPAN",
+        default_value = "64years 64hours 64secs",
+        parse(try_from_str = "parse_duration")
+    )]
+    pub test_duration: Duration,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct PacketConfig {
+    /// Repeatedly send a random-generated packet with a specified bytes length.
+    /// The default is 32768
+    #[structopt(
+        short = "l",
+        long = "packet-length",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub packets_lengths: Vec<NonZeroUsize>,
+
+    /// Interpret the specified file content as a single packet and repeatedly
+    /// send it to each receiver
+    #[structopt(
+        short = "f",
+        long = "send-file",
+        takes_value = true,
+        value_name = "FILENAME"
+    )]
+    pub send_files: Vec<PathBuf>,
+
+    /// Interpret the specified UTF-8 encoded text message as a single packet
+    /// and repeatedly send it to each receiver
+    #[structopt(
+        short = "m",
+        long = "send-message",
+        takes_value = true,
+        value_name = "STRING"
+    )]
+    pub send_messages: Vec<String>,
+}
+
 impl ArgsConfig {
     /// Use it to setup the current structure. It does special additional stuff
     /// unlike the typical `StructOpt::from_args()`.
@@ -222,11 +252,12 @@ impl ArgsConfig {
 
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
-        if matches.send_files.is_empty()
-            && matches.packets_lengths.is_empty()
-            && matches.send_messages.is_empty()
+        if matches.packet_config.send_files.is_empty()
+            && matches.packet_config.packets_lengths.is_empty()
+            && matches.packet_config.send_messages.is_empty()
         {
-            matches.packets_lengths = vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
+            matches.packet_config.packets_lengths =
+                vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
         }
 
         matches
