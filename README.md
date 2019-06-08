@@ -33,6 +33,32 @@ group of hackers.
 
 ----------
 
+## Table of contents
+ - [Advantages](https://github.com/Gymmasssorla/anevicon#advantages)
+ - [Disadvantages](https://github.com/Gymmasssorla/anevicon#disadvantages)
+ - [Installation](https://github.com/Gymmasssorla/anevicon#installation)
+   - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
+   - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
+   - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
+ - [Usage](https://github.com/Gymmasssorla/anevicon#usage)
+   - [Flags](https://github.com/Gymmasssorla/anevicon#flags)
+   - [Options](https://github.com/Gymmasssorla/anevicon#options)
+ - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
+   - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
+   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
+   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
+   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
+   - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
+   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
+   - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
+ - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
+ - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
+ - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
+ - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
+
+----------
+
 ## Advantages
  - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
@@ -109,51 +135,12 @@ All you need is to provide the testing server address, which consists of an IP a
 $ anevicon --receiver=93.184.216.34:80
 ```
 
-### Custom message
-By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
-
-```bash
-# Test the 80 port of example.com with the custom file 'message.txt'
-$ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
-
-# Test the 80 port of example.com with the custom text message
-$ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
-```
-
 ### Test intensity
 In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
 # Test the example.com waiting for 270 microseconds after each sendmmsg syscall
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
-```
-
-### Multiple messages
-[v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
-
-```bash
-# Test the 80 port of example.com with these messages:
-#   1) A custom file "file.txt";
-#   2) A text message "Hello, Pitty! You're my worst friend.";
-#   3) A text message "Hello, Scott! This is just a test.";
-#   4) A text message "Goodbye, Albret! You're my best friend.";
-#   5) A random packet of 5355 bytes;
-#   6) A random packet of 2222 bytes.
-$ anevicon --receiver=93.184.216.34:80 \
---send-file="file.txt" \
---send-message "Hello, Pitty! You're my worst friend." \
---send-message "Hello, Scott! This is just a test." \
---send-message "Goodbye, Albert! You're my best friend." \
---packet-length=5355 \
---packet-length=2222
-```
-
-### Exit conditions
-Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
-
-```bash
-# Test the 80 port of the example.com site with the two limit options
-$ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 ```
 
 ### Multiple receivers
@@ -170,6 +157,25 @@ There is also an ability to bind all future sockets to a specific network interf
 ```bash
 # Test example.com with a custom network interface using `--select-if`
 $ anevicon --receiver=93.184.216.34:80 --select-if
+```
+
+### Exit conditions
+Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
+
+```bash
+# Test the 80 port of the example.com site with the two limit options
+$ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+```
+
+### Custom message
+By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
+
+```bash
+# Test the 80 port of example.com with the custom file 'message.txt'
+$ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
+
+# Test the 80 port of example.com with the custom text message
+$ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
 ```
 
 ### Logging options
@@ -190,6 +196,27 @@ Different verbosity levels print different logging types. As you can see in the 
 | Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
+
+
+### Multiple messages
+[v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
+
+```bash
+# Test the 80 port of example.com with these messages:
+#   1) A custom file "file.txt";
+#   2) A text message "Hello, Pitty! You're my worst friend.";
+#   3) A text message "Hello, Scott! This is just a test.";
+#   4) A text message "Goodbye, Albret! You're my best friend.";
+#   5) A random packet of 5355 bytes;
+#   6) A random packet of 2222 bytes.
+$ anevicon --receiver=93.184.216.34:80 \
+--send-file="file.txt" \
+--send-message "Hello, Pitty! You're my worst friend." \
+--send-message "Hello, Scott! This is just a test." \
+--send-message "Goodbye, Albert! You're my best friend." \
+--packet-length=5355 \
+--packet-length=2222
+```
 
 ----------
 
