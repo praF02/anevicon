@@ -118,6 +118,7 @@ pub fn run(config: ArgsConfig) -> i32 {
                     &mut tester,
                     &packets
                         .iter()
+                        .cycle()
                         .take(unsent.get())
                         .map(|packet| packet.as_slice())
                         .collect::<Vec<&[u8]>>(),
