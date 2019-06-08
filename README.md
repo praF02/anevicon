@@ -136,16 +136,16 @@ $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 #   1) A custom file "file.txt";
 #   2) A text message "Hello, Pitty! You're my worst friend.";
 #   3) A text message "Hello, Scott! This is just a test.";
-#   4) A random packet of 5355 bytes;
-#   5) A random packet of 2222 bytes;
-#   6) A text message "Goodbye, Albret! You're my best friend.".
+#   4) A text message "Goodbye, Albret! You're my best friend.";
+#   5) A random packet of 5355 bytes;
+#   6) A random packet of 2222 bytes.
 $ anevicon --receiver=93.184.216.34:80 \
 --send-file="file.txt" \
 --send-message "Hello, Pitty! You're my worst friend." \
 --send-message "Hello, Scott! This is just a test." \
+--send-message "Goodbye, Albert! You're my best friend." \
 --packet-length=5355 \
---packet-length=2222 \
---send-message "Goodbye, Albert! You're my best friend."
+--packet-length=2222
 ```
 
 ### Exit conditions
