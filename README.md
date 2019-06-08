@@ -133,13 +133,15 @@ $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 
 ```bash
 # Test the 80 port of example.com with these messages:
-#   1) Custom file "file.txt";
-#   2) Text message "Hello, Pitty!";
-#   3) Text message "Hello, Scott!";
+#   1) A custom file "file.txt";
+#   2) A text message "Hello, Pitty!";
+#   3) A text message "Hello, Scott!";
 #   4) A random packet of 5355 bytes;
-#   5) A random packet of 2222 bytes.
-$ anevicon --receiver=93.184.216.34:80 --send-file="file.txt" --send-message "Hello, Pitty!" \
-  --send-message "Hello, Scott!" --packet-length=5355 --packet-length=2222
+#   5) A random packet of 2222 bytes;
+#   6) A text message "Goodbye, Albret!".
+$ anevicon --receiver=93.184.216.34:80 --send-file="file.txt" \
+--send-message "Hello, Pitty!" --send-message "Hello, Scott!" \
+--packet-length=5355 --packet-length=2222 --send-message "Goodbye, Albert!"
 ```
 
 ### Exit conditions
