@@ -103,9 +103,12 @@ mod tests {
 
     lazy_static! {
         static ref PACKET_FILE: PathBuf = PathBuf::from("files/packet.txt");
+        static ref SECOND_PACKET_FILE: PathBuf = PathBuf::from("files/second_packet.txt");
         static ref ZERO_FILE: PathBuf = PathBuf::from("files/zero.txt");
         static ref PACKET_CONTENT: Vec<u8> =
             fs::read("files/packet.txt").expect("fs::read(...) failed");
+        static ref SECOND_PACKET_CONTENT: Vec<u8> =
+            fs::read("files/second_packet.txt").expect("fs::read(...) failed");
     }
 
     #[test]
@@ -156,7 +159,7 @@ mod tests {
 
         // The function must return a valid file content that we have
         // already written
-        assert_eq!(&packets[0], &PACKET_CONTENT.as_slice(),);
+        assert_eq!(&packets[0], &PACKET_CONTENT.as_slice());
     }
 
     #[test]
@@ -173,5 +176,34 @@ mod tests {
 
         // The function must return the message that we specified above
         assert_eq!(packets[0], message.into_bytes(),);
+    }
+
+    /// The `construct_packets` function must generate multiple packets if they
+    /// were specified
+    #[test]
+    fn test_multiple_packets() {
+        let first_message = String::from("First message");
+        let second_message = String::from("Second message");
+
+        let random_first = NonZeroUsize::new(3566).unwrap();
+        let random_second = NonZeroUsize::new(9385).unwrap();
+
+        let packets = construct_packets(&PacketConfig {
+            send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
+            packets_lengths: vec![random_first, random_second],
+            send_messages: vec![first_message.clone(), second_message.clone()],
+        })
+        .expect("Cannot construct multiple packets");
+
+        assert_eq!(packets.len(), 6);
+
+        assert_eq!(packets[0], first_message.into_bytes());
+        assert_eq!(packets[1], second_message.into_bytes());
+
+        assert_eq!(&packets[2], &PACKET_CONTENT.as_slice());
+        assert_eq!(&packets[3], &SECOND_PACKET_CONTENT.as_slice());
+
+        assert_eq!(packets[4].len(), random_first.get());
+        assert_eq!(packets[5].len(), random_second.get());
     }
 }
