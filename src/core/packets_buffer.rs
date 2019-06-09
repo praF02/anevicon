@@ -94,41 +94,46 @@ mod tests {
 
         let mut buffer = PacketsBuffer::new(NonZeroUsize::new(4).unwrap());
 
-        let check_capacity = |buffer: &PacketsBuffer| {
+        let check = |buffer: &PacketsBuffer| {
             assert_eq!(buffer.buffer.capacity(), 4);
+            assert_eq!(buffer.buffer.last().unwrap().1, "Our packet".as_bytes());
         };
 
         let mut supply = |buffer: &mut PacketsBuffer| {
             buffer
                 .supply(&mut tester, (0, "Our packet".as_bytes()))
-                .expect("buffer.supply() panicked");
+                .expect("buffer.supply() failed");
         };
 
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 1);
-        check_capacity(&buffer);
+        check(&buffer);
 
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 2);
-        check_capacity(&buffer);
+        check(&buffer);
 
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 3);
-        check_capacity(&buffer);
+        check(&buffer);
 
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 4);
-        check_capacity(&buffer);
+        check(&buffer);
 
         // At this moment our buffer must flush itself
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 1);
-        check_capacity(&buffer);
+        check(&buffer);
 
         supply(&mut buffer);
         assert_eq!(buffer.buffer.len(), 2);
-        check_capacity(&buffer);
+        check(&buffer);
 
-        // And so on ...
+        buffer
+            .complete(&mut tester)
+            .expect("buffer.complete() failed");
+        assert_eq!(buffer.buffer.len(), 0);
+        assert_eq!(buffer.buffer.capacity(), 4);
     }
 }
