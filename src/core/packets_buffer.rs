@@ -69,3 +69,66 @@ impl<'a> PacketsBuffer<'a> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use anevicon_core::TestSummary;
+
+    use super::super::test_utils::loopback_socket;
+    use super::*;
+
+    #[test]
+    fn constructs_buffer_correctly() {
+        let buffer = PacketsBuffer::new(NonZeroUsize::new(354).unwrap());
+
+        assert_eq!(buffer.buffer.capacity(), 354);
+        assert_eq!(buffer.buffer.len(), 0);
+    }
+
+    #[test]
+    fn test_packets_buffer() {
+        // Initialise random stuff for PacketsBuffer
+        let socket = loopback_socket();
+        let mut summary = TestSummary::default();
+        let mut tester = Tester::new(&socket, &mut summary);
+
+        let mut buffer = PacketsBuffer::new(NonZeroUsize::new(4).unwrap());
+
+        let check_capacity = |buffer: &PacketsBuffer| {
+            assert_eq!(buffer.buffer.capacity(), 4);
+        };
+
+        let mut supply = |buffer: &mut PacketsBuffer| {
+            buffer
+                .supply(&mut tester, (0, "Our packet".as_bytes()))
+                .expect("buffer.supply() panicked");
+        };
+
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 1);
+        check_capacity(&buffer);
+
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 2);
+        check_capacity(&buffer);
+
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 3);
+        check_capacity(&buffer);
+
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 4);
+        check_capacity(&buffer);
+
+        // At this moment our buffer must flush itself
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 1);
+        check_capacity(&buffer);
+
+        supply(&mut buffer);
+        assert_eq!(buffer.buffer.len(), 2);
+        check_capacity(&buffer);
+
+        // And so on ...
+    }
+}

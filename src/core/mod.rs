@@ -37,6 +37,7 @@ use crate::config::ArgsConfig;
 mod packets;
 mod packets_buffer;
 mod sockets;
+mod test_utils;
 
 // A receiver name for this thread.
 thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Undefined")));
@@ -261,19 +262,11 @@ fn send_multiple_error<E: Display>(error: E) {
 
 #[cfg(test)]
 mod tests {
-    use std::net::UdpSocket;
     use std::time::Duration;
 
-    use super::*;
+    use test_utils::loopback_socket;
 
-    /// Returns a `UdpSocket` connected to itself for testing reasons.
-    fn loopback_socket() -> UdpSocket {
-        let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
-        socket
-            .connect(socket.local_addr().unwrap())
-            .expect("Cannot connect the socket to itself");
-        socket
-    }
+    use super::*;
 
     #[test]
     fn resends_all_packets() {
