@@ -20,6 +20,7 @@
 
 use std::cell::RefCell;
 use std::fmt::Display;
+use std::net::UdpSocket;
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 use std::thread;
@@ -73,64 +74,7 @@ pub fn run(config: ArgsConfig) -> i32 {
 
         workers.push(thread::spawn(move || {
             init_receiver(receiver);
-
-            let mut summary = TestSummary::default();
-            let mut tester = Tester::new(&socket, &mut summary);
-            let mut buffer = PacketsBuffer::new(config.tester_config.packets_per_syscall);
-
-            // Run the main cycle for the current worker, and exit if the allotted time
-            // expires
-            for (packet, _) in packets
-                .iter()
-                .cycle()
-                .zip(0..config.tester_config.exit_config.packets_count.get())
-            {
-                match buffer.supply(&mut tester, (0, packet.as_slice())) {
-                    Err(err) => send_multiple_error(err),
-                    Ok(res) => {
-                        if res == SupplyResult::Flushed {
-                            display_summary(tester.summary);
-                        }
-                    }
-                }
-
-                if tester.summary.time_passed() >= config.tester_config.exit_config.test_duration {
-                    display_expired_time();
-                    return;
-                }
-
-                thread::sleep(config.tester_config.send_periodicity);
-            }
-
-            if let Err(err) = buffer.complete(&mut tester) {
-                send_multiple_error(err);
-            }
-
-            // We might have a situation when not all the required packets are sent, so fix
-            // it
-            let unsent = unsafe {
-                NonZeroUsize::new_unchecked(
-                    tester.summary.packets_expected() - tester.summary.packets_sent(),
-                )
-            };
-
-            if unsent.get() != 0 {
-                match resend_packets(
-                    &mut tester,
-                    &packets
-                        .iter()
-                        .cycle()
-                        .take(unsent.get())
-                        .map(|packet| packet.as_slice())
-                        .collect::<Vec<&[u8]>>(),
-                    config.tester_config.exit_config.test_duration,
-                ) {
-                    ResendPacketsResult::Completed => display_packets_sent(),
-                    ResendPacketsResult::TimeExpired => display_expired_time(),
-                }
-            } else {
-                display_packets_sent();
-            }
+            run_tester(config, packets, socket);
         }));
     }
 
@@ -138,6 +82,72 @@ pub fn run(config: ArgsConfig) -> i32 {
         .into_iter()
         .for_each(|worker| worker.join().expect("A child thread has panicked"));
     0
+}
+
+fn run_tester(
+    config: Arc<ArgsConfig>,
+    packets: Arc<Vec<Vec<u8>>>,
+    socket: UdpSocket,
+) -> TestSummary {
+    let mut summary = TestSummary::default();
+    let mut tester = Tester::new(&socket, &mut summary);
+    let mut buffer = PacketsBuffer::new(config.tester_config.packets_per_syscall);
+
+    // Run the main cycle for the current worker, and exit if the allotted time
+    // expires
+    for (packet, _) in packets
+        .iter()
+        .cycle()
+        .zip(0..config.tester_config.exit_config.packets_count.get())
+    {
+        match buffer.supply(&mut tester, (0, packet.as_slice())) {
+            Err(err) => send_multiple_error(err),
+            Ok(res) => {
+                if res == SupplyResult::Flushed {
+                    display_summary(tester.summary);
+                }
+            }
+        }
+
+        if tester.summary.time_passed() >= config.tester_config.exit_config.test_duration {
+            display_expired_time();
+            return summary;
+        }
+
+        thread::sleep(config.tester_config.send_periodicity);
+    }
+
+    if let Err(err) = buffer.complete(&mut tester) {
+        send_multiple_error(err);
+    }
+
+    // We might have a situation when not all the required packets are sent, so fix
+    // it
+    let unsent = unsafe {
+        NonZeroUsize::new_unchecked(
+            tester.summary.packets_expected() - tester.summary.packets_sent(),
+        )
+    };
+
+    if unsent.get() != 0 {
+        match resend_packets(
+            &mut tester,
+            &packets
+                .iter()
+                .cycle()
+                .take(unsent.get())
+                .map(|packet| packet.as_slice())
+                .collect::<Vec<&[u8]>>(),
+            config.tester_config.exit_config.test_duration,
+        ) {
+            ResendPacketsResult::Completed => display_packets_sent(),
+            ResendPacketsResult::TimeExpired => display_expired_time(),
+        }
+    } else {
+        display_packets_sent();
+    }
+
+    summary
 }
 
 /// Initializes the `RECEIVER` thread-local variable with the given value.
@@ -264,7 +274,11 @@ fn send_multiple_error<E: Display>(error: E) {
 mod tests {
     use std::time::Duration;
 
+    use structopt::StructOpt;
+
     use test_utils::loopback_socket;
+
+    use crate::core::packets::construct_packets;
 
     use super::*;
 
@@ -292,5 +306,38 @@ mod tests {
             resend_packets(&mut tester, &vec![message; 12], Duration::from_nanos(1),),
             ResendPacketsResult::TimeExpired
         );
+    }
+
+    #[test]
+    fn test_run_tester() {
+        let socket = loopback_socket();
+
+        let config = ArgsConfig::from_iter(&[
+            "anevicon",
+            "--receiver",
+            &format!("{}", socket.local_addr().unwrap()),
+            "--packets-count",
+            "100",
+            "--send-message",
+            "My first message",
+            "--send-message",
+            "My second message",
+            "--send-message",
+            "My third message",
+            "--send-file",
+            "files/packet.txt",
+            "--packet-length",
+            "3000",
+            "--wait",
+            "0secs",
+        ]);
+
+        let packets = construct_packets(&config.packet_config).expect("Cannot construct packets");
+        assert_eq!(packets.len(), 5);
+
+        let summary = run_tester(Arc::new(config), Arc::new(packets), socket);
+
+        assert_eq!(summary.packets_expected(), 100);
+        assert_eq!(summary.packets_sent(), 100);
     }
 }
