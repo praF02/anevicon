@@ -332,7 +332,7 @@ mod tests {
             "0secs",
         ]);
 
-        let packets = construct_packets(&config.packet_config).expect("Cannot construct packets");
+        let packets = construct_packets(&config.packets_config).expect("Cannot construct packets");
         assert_eq!(packets.len(), 5);
 
         let summary = run_tester(Arc::new(config), Arc::new(packets), socket);

@@ -252,11 +252,11 @@ impl ArgsConfig {
 
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
-        if matches.packet_config.send_files.is_empty()
-            && matches.packet_config.packets_lengths.is_empty()
-            && matches.packet_config.send_messages.is_empty()
+        if matches.packets_config.send_files.is_empty()
+            && matches.packets_config.packets_lengths.is_empty()
+            && matches.packets_config.send_messages.is_empty()
         {
-            matches.packet_config.packets_lengths =
+            matches.packets_config.packets_lengths =
                 vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
         }
 
