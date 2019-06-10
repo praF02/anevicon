@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/packets.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/sockets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/sockets.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/test_utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/test_utils.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
@@ -45,6 +45,7 @@
       <find>pub</find>
       <find>select</find>
       <find>current_receiver</find>
+      <find>packet_config</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -79,7 +80,6 @@
         <option value="$PROJECT_DIR$/terminalizer.yml" />
         <option value="$PROJECT_DIR$/src/logging.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
-        <option value="$PROJECT_DIR$/src/config.rs" />
         <option value="$PROJECT_DIR$/src/core/sockets.rs" />
         <option value="$PROJECT_DIR$/files/second_packet.txt" />
         <option value="$PROJECT_DIR$/src/core/packets.rs" />
@@ -88,6 +88,7 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/src/core/mod.rs" />
+        <option value="$PROJECT_DIR$/src/config.rs" />
       </list>
     </option>
   </component>
@@ -109,17 +110,6 @@
             <path>
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
               <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
-              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
-              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -383,7 +373,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1782284" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1782284" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -395,13 +385,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969433" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.30349344" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.30349344" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.05021834" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.3558952" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32969433" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -696,13 +686,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="653">
-          <caret line="243" column="21" selection-start-line="243" selection-start-column="21" selection-end-line="243" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="653">
@@ -784,6 +767,13 @@
             <element signature="e#4911#4912#0" expanded="true" />
             <element signature="e#4965#4966#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="61" column="25" lean-forward="true" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
         </state>
       </provider>
     </entry>

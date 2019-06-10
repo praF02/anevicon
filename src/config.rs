@@ -60,7 +60,7 @@ pub struct ArgsConfig {
     pub tester_config: TesterConfig,
 
     #[structopt(flatten)]
-    pub packet_config: PacketConfig,
+    pub packets_config: PacketsConfig,
 
     #[structopt(flatten)]
     pub sockets_config: SocketsConfig,
@@ -211,7 +211,7 @@ pub struct ExitConfig {
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct PacketConfig {
+pub struct PacketsConfig {
     /// Repeatedly send a random-generated packet with a specified bytes length.
     /// The default is 32768
     #[structopt(

@@ -46,7 +46,7 @@ thread_local!(static RECEIVER: RefCell<String> = RefCell::new(String::from("Unde
 /// This is the key function which accepts a whole `ArgsConfig` and returns an
 /// exit code (either 1 on failure or 0 on success).
 pub fn run(config: ArgsConfig) -> i32 {
-    let packets = match packets::construct_packets(&config.packet_config) {
+    let packets = match packets::construct_packets(&config.packets_config) {
         Err(err) => {
             error!("failed to construct a packet >>> {}!", err);
             return 1;

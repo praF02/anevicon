@@ -28,11 +28,11 @@ use std::path::Path;
 
 use rand::{thread_rng, RngCore};
 
-use crate::config::PacketConfig;
+use crate::config::PacketsConfig;
 
 /// Constructs a bytes packets from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
-pub fn construct_packets(config: &PacketConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
+pub fn construct_packets(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.packets_lengths.len(),
     );
@@ -97,7 +97,7 @@ impl Error for ReadPacketError {}
 mod tests {
     use std::path::PathBuf;
 
-    use crate::config::PacketConfig;
+    use crate::config::PacketsConfig;
 
     use super::*;
 
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn test_choose_random_packet() {
         let packet_length = NonZeroUsize::new(24550).unwrap();
-        let packets = construct_packets(&PacketConfig {
+        let packets = construct_packets(&PacketsConfig {
             send_files: Vec::new(),
             packets_lengths: vec![packet_length],
             send_messages: Vec::new(),
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_choose_file_packet() {
-        let packets = construct_packets(&PacketConfig {
+        let packets = construct_packets(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone()],
             packets_lengths: Vec::new(),
             send_messages: Vec::new(),
@@ -166,7 +166,7 @@ mod tests {
     fn test_choose_text_message() {
         let message = String::from("Generals gathered in their masses");
 
-        let packets = construct_packets(&PacketConfig {
+        let packets = construct_packets(&PacketsConfig {
             send_files: Vec::new(),
             packets_lengths: Vec::new(),
             send_messages: vec![message.clone()],
@@ -188,7 +188,7 @@ mod tests {
         let random_first = NonZeroUsize::new(3566).unwrap();
         let random_second = NonZeroUsize::new(9385).unwrap();
 
-        let packets = construct_packets(&PacketConfig {
+        let packets = construct_packets(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
             packets_lengths: vec![random_first, random_second],
             send_messages: vec![first_message.clone(), second_message.clone()],
