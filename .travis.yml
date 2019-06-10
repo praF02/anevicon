@@ -1,12 +1,12 @@
 language: rust
 
-channel:
-  - stable
-  - beta
+rust:
   - nightly
-
-script:
-  - cargo test --verbose --all
+  - beta
+  - stable
 
 env:
   - RUST_BACKTRACE=1
+
+script:
+  - cargo test --verbose --all
