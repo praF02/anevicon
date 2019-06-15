@@ -270,14 +270,10 @@ fn main() {
 ----------
 
 ## Compiling for a native CPU
-You can compile Anevicon for your native CPU architecture, thereby making the program faster (at least not slower). Just define a `RUSTFLAGS="-C target_cpu=native"` environmental variable when compiling the sources:
+You can compile Anevicon for your native CPU architecture, thereby making the program faster (at least not slower). Just define a `RUSTFLAGS="-C target_cpu=native"` environmental variable before compiling the sources:
 
 ```bash
-# Within the repository root
-$ RUSTFLAGS="-C target_cpu=native" cargo build --release
-
-# Or when installing from crates.io
-$ RUSTFLAGS="-C target_cpu=native" cargo install anevicon
+export RUSTFLAGS="-C target_cpu=native"
 ```
 
 ----------
