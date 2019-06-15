@@ -52,6 +52,7 @@ group of hackers.
    - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
+ - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -60,7 +61,7 @@ group of hackers.
 ----------
 
 ## Advantages
- - **Linux-accelerated.** Anevicon uses the [sendmmsg](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
+ - **Linux-accelerated.** Anevicon uses the [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call which is specific to Linux. It simply sends large data sets with the single kernel call, thereby reducing CPU load.
 
  - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, and even the [API](https://crates.io/crates/anevicon_core) are supported.
  
@@ -116,10 +117,10 @@ Name | Value | Default | Explanation
 `-r, --receiver` | Socket address | None | A receiver of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>This option can be specified several times to identically test multiple receivers in parallel mode.
 `-f, --send-file` | Filename | None | Interpret the specified file content as a single packet and repeatedly send it to each receiver
 `-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
-`--send-periodicity` | Time span | `0secs` | A time interval between sendmmsg system calls. This option can be used to modify test intensity
+`--send-periodicity` | Time span | `0secs` | A time interval between `sendmmsg` system calls. This option can be used to modify test intensity
 `-t, --send-timeout` | Time span | `10secs` | A timeout of sending every single packet. If a timeout is reached, then a packet will be sent later
 `-s, --sender` | Socket address | `0.0.0.0:0` | A sender of generated traffic, specified as an IP-address and a port number, separated by a colon
-`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long sendmmsg system calls. For more precision, decrease the `--packets-per-syscall` value.
+`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long `sendmmsg` system calls. For more precision, decrease the `--packets-per-syscall` value.
 `-v, --verbosity` | From 0 to 5 | `3` | Enable one of the possible verbosity levels. The zero level doesn't print anything, and the last level prints everything.<br><br>Note that specifying the 4 and 5 verbosity levels might decrease performance, do it only for debugging.
 `-w, --wait` | Time span | `5secs` | A waiting time span before a test execution used to prevent a launch of an erroneous (unwanted) test
 
@@ -217,6 +218,15 @@ $ anevicon --receiver=93.184.216.34:80 \
 --packet-length=5355 \
 --packet-length=2222
 ```
+
+----------
+
+## Going deeper
+Well, it's time to understand the internals of Anevicon. First, it constructs an iterator of N messages (specified by both `--send-message`, `--send-file`, and `--packet-length`), where N is a number of packets specified by `--packets-count`. Each of these packets is accepted by an optimized sending buffer.
+
+An optimized sending buffer is a data structure representing a sending buffer which can contain M messages, where M is a number of packets transmitted per a [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call. When this buffer is full, it flushes all its messages by (surprise!) `sendmmsg`, thereby providing much better performance than an ordinary buffer.
+
+That is, Anevicon has been designed to minimize a number of system calls to your Linux kernel. Yes, we can instead use such libraries as [netmap](https://www.freebsd.org/cgi/man.cgi?query=netmap)/[PF_RING](https://www.ntop.org/products/packet-capture/pf_ring/)/[DPDK](https://www.dpdk.org/), but then users might be confused with running Anevicon on their systems. Anyway, I think that `sendmmsg` provides pretty well performance for all needs.
 
 ----------
 
