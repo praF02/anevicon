@@ -326,7 +326,7 @@ mod tests {
             "My third message",
             "--send-file",
             "files/packet.txt",
-            "--packet-length",
+            "--random-packet",
             "3000",
             "--wait",
             "0secs",

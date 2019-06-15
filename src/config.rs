@@ -32,7 +32,7 @@ use time::ParseError;
 #[structopt(
     author = "Temirkhan Myrzamadi <gymmasssorla@gmail.com>",
     about = "A high-performant UDP-based load generator, written in Rust.",
-    after_help = "The `--send-file`, `--packet-length`, and `--send-message` options can be \
+    after_help = "The `--send-file`, `--random-packet`, and `--send-message` options can be \
                   specified several times to send multiple messages to a server. But there are \
                   not guarantees about sending order because UDP is unreliable protocol.\n\nSome \
                   options accept time spans. If you want to read the specification, see \
@@ -216,12 +216,12 @@ pub struct PacketsConfig {
     /// The default is 32768
     #[structopt(
         short = "l",
-        long = "packet-length",
+        long = "random-packet",
         takes_value = true,
         value_name = "POSITIVE-INTEGER",
         parse(try_from_str = "parse_non_zero_usize")
     )]
-    pub packets_lengths: Vec<NonZeroUsize>,
+    pub random_packets: Vec<NonZeroUsize>,
 
     /// Interpret the specified file content as a single packet and repeatedly
     /// send it to each receiver
@@ -253,10 +253,10 @@ impl ArgsConfig {
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
         if matches.packets_config.send_files.is_empty()
-            && matches.packets_config.packets_lengths.is_empty()
+            && matches.packets_config.random_packets.is_empty()
             && matches.packets_config.send_messages.is_empty()
         {
-            matches.packets_config.packets_lengths =
+            matches.packets_config.random_packets =
                 vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
         }
 

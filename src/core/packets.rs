@@ -34,7 +34,7 @@ use crate::config::PacketsConfig;
 /// receivers multiple times.
 pub fn construct_packets(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
     let mut packets = Vec::with_capacity(
-        config.send_messages.len() + config.send_files.len() + config.packets_lengths.len(),
+        config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
 
     for message in &config.send_messages {
@@ -45,7 +45,7 @@ pub fn construct_packets(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPac
         packets.push(read_packet(file)?);
     }
 
-    for length in &config.packets_lengths {
+    for length in &config.random_packets {
         packets.push(random_packet(*length));
     }
 
@@ -137,7 +137,7 @@ mod tests {
         let packet_length = NonZeroUsize::new(24550).unwrap();
         let packets = construct_packets(&PacketsConfig {
             send_files: Vec::new(),
-            packets_lengths: vec![packet_length],
+            random_packets: vec![packet_length],
             send_messages: Vec::new(),
         })
         .expect("Cannot construct a packet");
@@ -151,7 +151,7 @@ mod tests {
     fn test_choose_file_packet() {
         let packets = construct_packets(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone()],
-            packets_lengths: Vec::new(),
+            random_packets: Vec::new(),
             send_messages: Vec::new(),
         })
         .expect("Cannot construct a packet");
@@ -168,7 +168,7 @@ mod tests {
 
         let packets = construct_packets(&PacketsConfig {
             send_files: Vec::new(),
-            packets_lengths: Vec::new(),
+            random_packets: Vec::new(),
             send_messages: vec![message.clone()],
         })
         .expect("Cannot construct a packet");
@@ -190,7 +190,7 @@ mod tests {
 
         let packets = construct_packets(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
-            packets_lengths: vec![random_first, random_second],
+            random_packets: vec![random_first, random_second],
             send_messages: vec![first_message.clone(), second_message.clone()],
         })
         .expect("Cannot construct multiple packets");

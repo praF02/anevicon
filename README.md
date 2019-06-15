@@ -111,7 +111,7 @@ Name | Value | Default | Explanation
 -----|-------|---------|------------
 `--date-time-format` | String | `%X` | A format for displaying local date and time in log messages. Type `man strftime` to see the format specification
 `--ip-ttl` | Unsigned integer | None | Specifies the `IP_TTL` value for all future sockets. Usually this value equals a number of routers that a packet can go through
-`-l, --packet-length` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
+`--random-packet` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
 `-p, --packets-count` | Positive integer | `18 '446 '744 '073 '709 '551 '615` | A count of packets for sending. When this limit is reached, then the program will exit
 `--packets-per-syscall` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
 `-r, --receiver` | Socket address | None | A receiver of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>This option can be specified several times to identically test multiple receivers in parallel mode.
@@ -215,14 +215,14 @@ $ anevicon --receiver=93.184.216.34:80 \
 --send-message "Hello, Pitty! You're my worst friend." \
 --send-message "Hello, Scott! This is just a test." \
 --send-message "Goodbye, Albert! You're my best friend." \
---packet-length=5355 \
---packet-length=2222
+--random-packet=5355 \
+--random-packet=2222
 ```
 
 ----------
 
 ## Going deeper
-Well, it's time to understand the internals of Anevicon. First, it constructs an iterator of N messages (specified by both `--send-message`, `--send-file`, and `--packet-length`), where N is a number of packets specified by `--packets-count`. Each of these packets is accepted by an optimized sending buffer.
+Well, it's time to understand the internals of Anevicon. First, it constructs an iterator of N messages (specified by both `--send-message`, `--send-file`, and `--random-packet`), where N is a number of packets specified by `--packets-count`. Each of these packets is accepted by an optimized sending buffer.
 
 An optimized sending buffer is a data structure representing a sending buffer which can contain M messages, where M is a number of packets transmitted per a [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call. When this buffer is full, it flushes all its messages by (surprise!) `sendmmsg`, thereby providing much better performance than an ordinary buffer.
 
