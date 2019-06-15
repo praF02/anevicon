@@ -54,6 +54,7 @@ group of hackers.
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
+ - [Compiling for a native CPU](https://github.com/Gymmasssorla/anevicon#compiling-for-a-native-cpu)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -262,6 +263,19 @@ fn main() {
         summary.time_passed().as_secs()
     );
 }
+```
+
+----------
+
+## Compiling for a native CPU
+You can compile Anevicon for your native CPU architecture, thereby making the program faster (at least not slower). Just define a `RUSTFLAGS="-C target_cpu=native"` environmental variable when compiling the sources:
+
+```bash
+# Within the repository root
+$ RUSTFLAGS="-C target_cpu=native" cargo build --release
+
+# Or when installing from crates.io
+$ RUSTFLAGS="-C target_cpu=native" cargo install anevicon
 ```
 
 ----------
