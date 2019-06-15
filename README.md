@@ -229,7 +229,7 @@ An optimized sending buffer is a data structure representing a sending buffer wh
 
 That is, Anevicon has been designed to minimize a number of system calls to your Linux kernel. Yes, we can instead use such libraries as [netmap](https://www.freebsd.org/cgi/man.cgi?query=netmap)/[PF_RING](https://www.ntop.org/products/packet-capture/pf_ring/)/[DPDK](https://www.dpdk.org/), but then users might be confused with running Anevicon on their systems. Anyway, I think that `sendmmsg` provides pretty well performance for all needs.
 
-Here is a visual demonstration of the described process. You enter `anevicon --receiver=93.184.216.34:80 --packets-count=10 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
+Here is a visual demonstration of the described process. You enter `anevicon --receiver=93.184.216.34:80 --packets-count=6 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
 
 ----------
 
