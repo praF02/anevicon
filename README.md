@@ -40,6 +40,7 @@ group of hackers.
    - [Building from crates.io](https://github.com/Gymmasssorla/anevicon#building-from-cratesio)
    - [Building from sources](https://github.com/Gymmasssorla/anevicon#building-from-sources)
    - [Pre-compiled binaries](https://github.com/Gymmasssorla/anevicon#pre-compiled-binaries)
+   - [Compiling for a native CPU](https://github.com/Gymmasssorla/anevicon#compiling-for-a-native-cpu)
  - [Usage](https://github.com/Gymmasssorla/anevicon#usage)
    - [Flags](https://github.com/Gymmasssorla/anevicon#flags)
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
@@ -54,7 +55,6 @@ group of hackers.
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Using as a library](https://github.com/Gymmasssorla/anevicon#using-as-a-library)
- - [Compiling for a native CPU](https://github.com/Gymmasssorla/anevicon#compiling-for-a-native-cpu)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -93,6 +93,13 @@ $ cargo build --release
 ```bash
 $ wget https://github.com/Gymmasssorla/anevicon/releases/download/vX.X.X/anevicon-x86_64-linux
 $ chmod a+x anevicon-x86_64-linux
+```
+
+### Compiling for a native CPU
+You can compile Anevicon for your native CPU architecture, thereby making the program faster (at least not slower). Just define a `RUSTFLAGS="-C target_cpu=native"` environmental variable before compiling the sources:
+
+```bash
+export RUSTFLAGS="-C target_cpu=native"
 ```
 
 ----------
@@ -265,15 +272,6 @@ fn main() {
         summary.time_passed().as_secs()
     );
 }
-```
-
-----------
-
-## Compiling for a native CPU
-You can compile Anevicon for your native CPU architecture, thereby making the program faster (at least not slower). Just define a `RUSTFLAGS="-C target_cpu=native"` environmental variable before compiling the sources:
-
-```bash
-export RUSTFLAGS="-C target_cpu=native"
 ```
 
 ----------
