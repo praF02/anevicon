@@ -62,7 +62,7 @@ pub fn run(config: ArgsConfig) -> i32 {
         Ok(sockets) => sockets,
     };
 
-    wait(config.wait);
+    wait(&config);
 
     let packets = Arc::new(packets);
     let config = Arc::new(config);
@@ -161,14 +161,18 @@ fn current_receiver() -> String {
     RECEIVER.with(|string| string.borrow().clone())
 }
 
-fn wait(duration: Duration) {
+fn wait(config: &ArgsConfig) {
     warn!(
-        "waiting {cyan}{time}{reset} and then starting to execute the tests...",
-        time = format_duration(duration),
+        "waiting {cyan}{time}{reset} and then starting to execute the tests until \
+         {cyan}{packets}{reset} packets will be sent or {cyan}{duration}{reset} duration will be \
+         passed...",
+        time = format_duration(config.wait),
+        packets = config.tester_config.exit_config.packets_count,
+        duration = format_duration(config.tester_config.exit_config.test_duration),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
-    thread::sleep(duration);
+    thread::sleep(config.wait);
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
