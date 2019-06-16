@@ -10,7 +10,7 @@ categories = ["command-line-utilities", "simulation", "network-programming"]
 readme = "README.md"
 license = "GPL-3.0-only"
 edition = "2018"
-exclude = ["DEMO.gif", "terminalizer.yml"]
+exclude = ["DEMO.png"]
 
 [dependencies]
 ctrlc = "3.1.2"
