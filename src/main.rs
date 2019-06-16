@@ -17,8 +17,6 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate log;
 
 use std::convert::TryInto;

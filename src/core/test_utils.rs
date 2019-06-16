@@ -19,6 +19,7 @@
 use std::net::UdpSocket;
 
 /// Returns a `UdpSocket` connected to itself for testing reasons.
+#[allow(dead_code)]
 pub fn loopback_socket() -> UdpSocket {
     let socket = UdpSocket::bind("0.0.0.0:0").expect("A socket error");
     socket
