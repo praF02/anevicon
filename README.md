@@ -230,6 +230,10 @@ That is, Anevicon has been designed to minimize a number of system calls to your
 
 Here is a visual demonstration of the described process. You enter `anevicon --receiver=93.184.216.34:80 --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
 
+<div align="center">
+  <img src="https://github.com/Gymmasssorla/anevicon/raw/master/media/PROCESS.png">
+</div>
+
 ----------
 
 ## Using as a library
