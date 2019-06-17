@@ -49,7 +49,7 @@ group of hackers.
    - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
    - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
-   - [Custom message](https://github.com/Gymmasssorla/anevicon#custom-message)
+   - [Custom messages](https://github.com/Gymmasssorla/anevicon#custom-messages)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
@@ -168,8 +168,8 @@ Note that the command above might not work on your system due to the security re
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 ```
 
-### Custom message
-By default, Anevicon will generate a random packet with a specified size. In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
+### Custom messages
+By default, Anevicon will generate a random packet with a default size (32768). In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
 # Test the 80 port of example.com with the custom file 'message.txt'
@@ -177,6 +177,13 @@ $ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 
 # Test the 80 port of example.com with the custom text message
 $ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
+```
+
+Also, you are able to specify one or more random packets with your own lengths using the `--random-packet` option. This example specifies two random-generated packets with the sizes 1454 and 29400:
+
+```bash
+# Test the 80 port of example.com with two random packets
+$ anevicon --receiver=93.184.216.34:80 --random-packet=1454 --random-packet=29400
 ```
 
 ### Logging options
