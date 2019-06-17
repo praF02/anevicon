@@ -185,8 +185,8 @@ enum ResendPacketsResult {
 /// it will return `TimeExpired`, otherwise, `Completed`.
 fn resend_packets(tester: &mut Tester, packets: &[&[u8]], limit: Duration) -> ResendPacketsResult {
     info!(
-        "trying to resend {cyan}{count}{reset} packets to {cyan}{receiver}{reset} that weren't \
-         sent yet...",
+        "trying to resend {cyan}{count}{reset} packets to {cyan}{receiver}{reset} that haven't \
+         been sent yet...",
         count = packets.len(),
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
@@ -234,7 +234,7 @@ fn display_expired_time() {
 #[inline]
 fn display_packets_sent() {
     info!(
-        "all the packets were sent for {cyan}{receiver}{reset}.",
+        "all the packets have been sent to {cyan}{receiver}{reset}.",
         receiver = current_receiver(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
