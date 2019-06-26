@@ -8,6 +8,9 @@ rust:
 env:
   - RUST_BACKTRACE=1
 
+before_script:
+  - rustup component add clippy
+
 script:
   - cargo build --all --verbose
   - cargo clippy --all
