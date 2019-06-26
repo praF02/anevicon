@@ -46,15 +46,13 @@ impl<'a> PacketsBuffer<'a> {
     }
 
     pub fn supply(&mut self, tester: &mut Tester, packet: Portion<'a>) -> io::Result<SupplyResult> {
-        let res;
-
-        if self.buffer.len() == self.buffer.capacity() {
+        let res = if self.buffer.len() == self.buffer.capacity() {
             tester.send_multiple(&mut self.buffer).map(|_| ())?;
             self.buffer.clear();
-            res = SupplyResult::Flushed;
+            SupplyResult::Flushed
         } else {
-            res = SupplyResult::NotFlushed;
-        }
+            SupplyResult::NotFlushed
+        };
 
         self.buffer.push(packet);
         Ok(res)

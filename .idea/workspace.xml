@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/anevicon_core/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anevicon_core/src/summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/summary.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/anevicon_core/src/tester.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/tester.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rustfmt.toml" beforeDir="false" afterPath="$PROJECT_DIR$/rustfmt.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/packets_buffer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/packets_buffer.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/sockets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/sockets.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/test_utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/test_utils.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
@@ -87,7 +85,6 @@
         <option value="$PROJECT_DIR$/src/logging.rs" />
         <option value="$PROJECT_DIR$/src/core/sockets.rs" />
         <option value="$PROJECT_DIR$/files/second_packet.txt" />
-        <option value="$PROJECT_DIR$/src/core/packets_buffer.rs" />
         <option value="$PROJECT_DIR$/src/config.rs" />
         <option value="$PROJECT_DIR$/src/core/test_utils.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
@@ -97,6 +94,7 @@
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/anevicon_core/Cargo.toml" />
         <option value="$PROJECT_DIR$/rustfmt.toml" />
+        <option value="$PROJECT_DIR$/src/core/packets_buffer.rs" />
       </list>
     </option>
   </component>
@@ -114,8 +112,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -349,9 +347,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_core__packets_buffer__tests__test_packets_buffer - 2019.06.09 at 10h 04m 31s.xml">
-      <configuration name="Test core::packets_buffer::tests::test_packets_buffer" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Cargo_Test - 2019.06.10 at 10h 53m 09s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -379,11 +374,14 @@
     <history-entry file="Cargo_Test - 2019.06.16 at 14h 20m 36s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.06.27 at 01h 40m 48s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2905368" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29385722" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -395,13 +393,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969433" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.29589632" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.25809935" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.24298055" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" visible="true" weight="0.24190065" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32937366" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -618,13 +616,6 @@
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/anevicon_core-0.5.0/src/tester.rs" />
-    <entry file="file://$PROJECT_DIR$/src/core/packets_buffer.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1513">
-          <caret line="89" column="48" lean-forward="true" selection-start-line="89" selection-start-column="48" selection-end-line="89" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/config.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="532">
@@ -700,6 +691,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" column="21" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/packets_buffer.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="158">
+          <caret line="51" column="33" lean-forward="true" selection-start-line="51" selection-start-column="33" selection-end-line="51" selection-end-column="33" />
         </state>
       </provider>
     </entry>
