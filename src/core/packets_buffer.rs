@@ -79,7 +79,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn constructs_buffer_correctly() {
+    fn constructs_buffer() {
         let buffer = PacketsBuffer::new(NonZeroUsize::new(354).unwrap());
 
         assert_eq!(buffer.buffer.capacity(), 354);

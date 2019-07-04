@@ -380,13 +380,13 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "bytes_sent cannot be higher than bytes_expected")]
-    fn summary_portion_panics_if_invalid_bytes() {
+    fn summary_portion_panics_bytes() {
         SummaryPortion::new(145, 2456, 544, 544);
     }
 
     #[test]
     #[should_panic(expected = "packets_sent cannot be higher than packets_expected")]
-    fn summary_portion_panics_if_invalid_packets() {
+    fn summary_portion_panics_packets() {
         SummaryPortion::new(457, 456, 8778, 10999);
     }
 }
