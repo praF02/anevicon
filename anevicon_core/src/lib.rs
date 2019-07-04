@@ -33,29 +33,30 @@
 //! use std::net::UdpSocket;
 //!
 //! use anevicon_core::{TestSummary, Tester};
+//! use std::io::IoSlice;
 //!
 //! fn main() {
-//!    // Setup the socket connected to the example.com domain
-//!    let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
-//!    socket.connect("93.184.216.34:80").unwrap();
+//!     // Setup the socket connected to the example.com domain
+//!     let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
+//!     socket.connect("93.184.216.34:80").unwrap();
 //!
-//!    // Setup all the I/O vectors (messages) we want to send
-//!    let payload = &mut [
-//!        (0, "Generals gathered in their masses".as_bytes()),
-//!        (0, "Just like witches at black masses".as_bytes()),
-//!        (0, "Evil minds that plot destruction".as_bytes()),
-//!        (0, "Sorcerers of death's construction".as_bytes()),
-//!    ];
+//!     // Setup all the I/O vectors (messages) we want to send
+//!     let payload = &mut [
+//!         (0, IoSlice::new(b"Generals gathered in their masses")),
+//!         (0, IoSlice::new(b"Just like witches at black masses")),
+//!         (0, IoSlice::new(b"Evil minds that plot destruction")),
+//!         (0, IoSlice::new(b"Sorcerers of death's construction")),
+//!     ];
 //!
-//!    // Send all the created messages using only one system call
-//!    let mut summary = TestSummary::default();
-//!    let mut tester = Tester::new(&socket, &mut summary);
+//!     // Send all the created messages using only one system call
+//!     let mut summary = TestSummary::default();
+//!     let mut tester = Tester::new(&socket, &mut summary);
 //!
-//!    println!(
-//!        "The total packets sent: {}, the total seconds passed: {}",
-//!        tester.send_multiple(payload).unwrap().packets_sent(),
-//!        summary.time_passed().as_secs()
-//!    );
+//!     println!(
+//!         "The total packets sent: {}, the total seconds passed: {}",
+//!         tester.send_multiple(payload).unwrap().packets_sent(),
+//!         summary.time_passed().as_secs()
+//!     );
 //! }
 //! ```
 //!
@@ -67,9 +68,9 @@
 //! [`examples/minimal.rs`]: https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs
 
 pub use sendmmsg::Portion;
-
 pub use summary::{SummaryPortion, TestSummary};
 pub use tester::Tester;
 
+mod sendmmsg;
 pub mod summary;
 pub mod tester;

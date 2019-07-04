@@ -5,16 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/anevicon_core/src/sendmmsg.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anevicon_core/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/anevicon_core/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/anevicon_core/src/summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/summary.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/anevicon_core/src/tester.rs" beforeDir="false" afterPath="$PROJECT_DIR$/anevicon_core/src/tester.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/sockets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/sockets.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/test_utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/test_utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,7 +23,7 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -78,9 +75,6 @@
         <option value="$PROJECT_DIR$/src/testing/helpers.rs" />
         <option value="$PROJECT_DIR$/src/testing/mod.rs" />
         <option value="$PROJECT_DIR$/src/testing/sockets.rs" />
-        <option value="$PROJECT_DIR$/anevicon_core/src/tester.rs" />
-        <option value="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" />
-        <option value="$PROJECT_DIR$/anevicon_core/src/lib.rs" />
         <option value="$PROJECT_DIR$/src/core/sender.rs" />
         <option value="$PROJECT_DIR$/terminalizer.yml" />
         <option value="$PROJECT_DIR$/src/logging.rs" />
@@ -95,20 +89,24 @@
         <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/src/core/mod.rs" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/anevicon_core/Cargo.toml" />
         <option value="$PROJECT_DIR$/anevicon_core/README.md" />
         <option value="$PROJECT_DIR$/Cargo.toml" />
+        <option value="$PROJECT_DIR$/anevicon_core/Cargo.toml" />
+        <option value="$PROJECT_DIR$/anevicon_core/src/tester.rs" />
+        <option value="$PROJECT_DIR$/anevicon_core/examples/minimal.rs" />
+        <option value="$PROJECT_DIR$/anevicon_core/src/lib.rs" />
+        <option value="$PROJECT_DIR$/anevicon_core/src/sendmmsg.rs" />
       </list>
     </option>
   </component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="OdtwNIyU" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="67" />
-    <option name="y" value="25" />
+    <option name="y" value="27" />
     <option name="width" value="927" />
-    <option name="height" value="1055" />
+    <option name="height" value="1053" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -116,7 +114,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -128,6 +125,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -154,7 +152,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Cargo Command.Cargo Check">
+  <component name="RunManager" selected="Cargo Command.Cargo Fmt">
     <configuration name="Cargo Build Release" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="build --release" />
@@ -350,24 +348,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Cargo_Test - 2019.06.10 at 10h 54m 22s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Cargo_Test - 2019.06.10 at 10h 57m 17s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Cargo_Test - 2019.06.10 at 10h 57m 50s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Cargo_Test - 2019.06.10 at 10h 58m 05s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Cargo_Test - 2019.06.10 at 10h 58m 46s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Cargo_Test - 2019.06.10 at 11h 05m 38s.xml">
-      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Cargo_Test - 2019.06.16 at 00h 45m 42s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -380,11 +360,29 @@
     <history-entry file="Cargo_Test - 2019.06.27 at 02h 32m 49s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 00h 15m 29s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 01h 54m 14s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 02h 07m 16s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 02h 07m 55s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 02h 14m 57s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.05 at 02h 17m 47s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="927" height="1055" extended-state="4" />
+    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3677639" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19037078" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -396,13 +394,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969433" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.36177105" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.32937366" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" visible="true" weight="0.3423326" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" visible="true" weight="0.33261338" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32937366" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -524,13 +522,6 @@
     <entry file="file://$PROJECT_DIR$/Cargo.lock">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/src/summary.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="24" column="3" lean-forward="true" selection-start-line="24" selection-start-column="3" selection-end-line="24" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/sendmmsg-0.3.4/src/lib.rs" />
     <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-2019-04-11-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/io/stdio.rs" />
     <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-2019-04-11-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/result.rs" />
@@ -544,27 +535,6 @@
             <caret line="5" column="3" lean-forward="true" selection-start-line="5" selection-start-column="3" selection-end-line="5" selection-end-column="3" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/src/tester.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="37" selection-start-line="4" selection-start-column="37" selection-end-line="4" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/src/lib.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="35" column="3" lean-forward="true" selection-start-line="35" selection-start-column="3" selection-end-line="35" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/examples/minimal.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="30" />
         </state>
       </provider>
     </entry>
@@ -680,13 +650,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="16" selection-start-line="4" selection-start-column="16" selection-end-line="4" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/anevicon_core/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -701,6 +664,48 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/src/summary.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="24" column="3" lean-forward="true" selection-start-line="24" selection-start-column="3" selection-end-line="24" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="47" lean-forward="true" selection-start-line="20" selection-start-column="47" selection-end-line="20" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/examples/minimal.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="42" column="63" lean-forward="true" selection-start-line="42" selection-start-column="63" selection-end-line="42" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/src/tester.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="381">
+          <caret line="124" column="67" selection-start-line="124" selection-start-column="67" selection-end-line="124" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/anevicon_core/src/sendmmsg.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
         </state>
       </provider>
     </entry>

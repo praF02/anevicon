@@ -10,11 +10,11 @@ readme = "README.md"
 license = "GPL-3.0-only"
 edition = "2018"
 
-[dependencies]
-sendmmsg = "0.3.5"
-
 [dev-dependencies]
 lazy_static = "1.3.0"
+
+[dependencies]
+libc = "0.2.58"
 
 [badges]
 travis-ci = { repository = "Gymmasssorla/anevicon", branch = "master" }

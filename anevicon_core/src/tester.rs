@@ -21,8 +21,7 @@
 use std::io;
 use std::net::UdpSocket;
 
-use sendmmsg::{Portion, SendMMsg};
-
+use crate::sendmmsg::{Portion, SendMMsg};
 use crate::summary::SummaryPortion;
 
 use super::summary::TestSummary;
@@ -101,6 +100,8 @@ impl<'a, 'b> Tester<'a, 'b> {
 
 #[cfg(test)]
 mod tests {
+    use std::io::IoSlice;
+
     use lazy_static::lazy_static;
 
     use super::*;
@@ -118,10 +119,10 @@ mod tests {
     #[test]
     fn test_send_multiple() {
         let messages = &mut [
-            (0, "Generals gathered in their masses".as_bytes()),
-            (0, "Just like witches at black masses".as_bytes()),
-            (0, "Evil minds that plot destruction".as_bytes()),
-            (0, "Sorcerers of death's construction".as_bytes()),
+            (0, IoSlice::new(b"Generals gathered in their masses")),
+            (0, IoSlice::new(b"Just like witches at black masses")),
+            (0, IoSlice::new(b"Evil minds that plot destruction")),
+            (0, IoSlice::new(b"Sorcerers of death's construction")),
         ];
 
         let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
