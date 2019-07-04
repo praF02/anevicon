@@ -29,7 +29,7 @@ pub enum SupplyResult {
 
 /// This is a structure which represents a buffer of UDP packets. The buffer
 /// capacity equals to a number of packets transmitted per a system call.
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug)]
 pub struct PacketsBuffer<'a> {
     buffer: Vec<Portion<'a>>,
 }
@@ -70,6 +70,9 @@ impl<'a> PacketsBuffer<'a> {
 
 #[cfg(test)]
 mod tests {
+    use std::io::IoSlice;
+    use std::ops::Deref;
+
     use anevicon_core::TestSummary;
 
     use super::super::test_utils::loopback_socket;
@@ -94,12 +97,12 @@ mod tests {
 
         let check = |buffer: &PacketsBuffer| {
             assert_eq!(buffer.buffer.capacity(), 4);
-            assert_eq!(buffer.buffer.last().unwrap().1, "Our packet".as_bytes());
+            assert_eq!(buffer.buffer.last().unwrap().1.deref(), b"Our packet");
         };
 
         let mut supply = |buffer: &mut PacketsBuffer| {
             buffer
-                .supply(&mut tester, (0, "Our packet".as_bytes()))
+                .supply(&mut tester, (0, IoSlice::new(b"Our packet")))
                 .expect("buffer.supply() failed");
         };
 

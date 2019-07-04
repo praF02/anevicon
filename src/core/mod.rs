@@ -20,6 +20,7 @@
 
 use std::cell::RefCell;
 use std::fmt::Display;
+use std::io::IoSlice;
 use std::net::UdpSocket;
 use std::num::NonZeroUsize;
 use std::sync::Arc;
@@ -100,7 +101,7 @@ fn run_tester(
         .cycle()
         .zip(0..config.tester_config.exit_config.packets_count.get())
     {
-        match buffer.supply(&mut tester, (0, packet.as_slice())) {
+        match buffer.supply(&mut tester, (0, IoSlice::new(packet))) {
             Err(err) => send_multiple_error(err),
             Ok(res) => {
                 if res == SupplyResult::Flushed {
