@@ -293,7 +293,7 @@ mod tests {
         let socket = loopback_socket();
         let mut tester = Tester::new(&socket, &mut summary);
 
-        let message = "Trying to resend packets which weren't sent yet".as_bytes();
+        let message = b"Trying to resend packets which weren't sent yet".as_ref();
 
         // All the packets will be sent because the allotted time is too long to be
         // expired

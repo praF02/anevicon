@@ -4,7 +4,7 @@ use std::mem;
 use std::net::UdpSocket;
 use std::os::unix::io::AsRawFd;
 
-use libc::{self, c_int, c_uint, mmsghdr, msghdr};
+use libc::{self, c_int, c_uint, iovec, mmsghdr, msghdr};
 
 pub type Portion<'a> = (usize, IoSlice<'a>);
 
@@ -61,12 +61,12 @@ fn sendmmsg_impl(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
 /// `mmsghdr` that is able to be transmitted by `libc::sendmmsg`
 fn prepare_messages(portions: &mut [Portion]) -> Vec<mmsghdr> {
     portions
-        .into_iter()
+        .iter_mut()
         .map(|(_, portion)| {
             mmsghdr {
                 msg_hdr: {
                     let mut message = unsafe { mem::zeroed::<msghdr>() };
-                    message.msg_iov = unsafe { mem::transmute(portion) };
+                    message.msg_iov = portion as *mut IoSlice as *mut iovec;
                     message.msg_iovlen = 1;
 
                     message
