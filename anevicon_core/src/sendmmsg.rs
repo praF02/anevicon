@@ -72,7 +72,7 @@ fn prepare_messages(portions: &mut [Portion]) -> Vec<mmsghdr> {
                     message
                 },
 
-                // This is a variable to which system `sendmmsg` will assign total bytes sent of a
+                // This is a variable to which `libc::sendmmsg` will assign total bytes sent of a
                 // particular packet
                 msg_len: 0,
             }
@@ -106,6 +106,27 @@ mod test {
 
         for portion in portions {
             assert_eq!(portion.0, portion.1.len());
+        }
+    }
+
+    #[test]
+    fn prepares_messages() {
+        let portions = &mut [
+            (0, IoSlice::new(b"Welcome to the jungle")),
+            (0, IoSlice::new(b"We got fun 'n' games")),
+            (0, IoSlice::new(b"We got everything you want")),
+        ];
+
+        let messages = prepare_messages(portions);
+
+        for (headers, (_, portion)) in messages.iter().zip(portions.iter()) {
+            assert_eq!(headers.msg_len, 0);
+
+            assert_eq!(
+                headers.msg_hdr.msg_iov as *const iovec,
+                portion as *const IoSlice as *const iovec
+            );
+            assert_eq!(headers.msg_hdr.msg_iovlen, 1);
         }
     }
 }
