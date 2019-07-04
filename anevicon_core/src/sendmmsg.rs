@@ -6,6 +6,8 @@ use std::os::unix::io::AsRawFd;
 
 use libc::{self, c_int, c_uint, iovec, mmsghdr, msghdr};
 
+/// A type alias that represents a portion to be sent, typically used in
+/// `Tester::send_multiple`.
 pub type Portion<'a> = (usize, IoSlice<'a>);
 
 pub trait SendMMsg {

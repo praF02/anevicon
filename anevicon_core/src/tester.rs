@@ -64,7 +64,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     ///
     /// `portions` is a slice consisting of a number of bytes sent of each
     /// packet (the function automatically assigns there values after a call)
-    /// and `IoVec` to send.
+    /// and `IoSlice` to send.
     ///
     /// # Returns
     /// This method returns an associated `SummaryPortion` instance consisting
