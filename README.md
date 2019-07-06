@@ -219,9 +219,9 @@ Different verbosity levels print different logging types. As you can see in the 
 #   6) A random packet of 2222 bytes.
 $ anevicon --receiver=93.184.216.34:80 \
 --send-file="file.txt" \
---send-message "Hello, Pitty! You're my worst friend." \
---send-message "Hello, Scott! This is just a test." \
---send-message "Goodbye, Albert! You're my best friend." \
+--send-message="Hello, Pitty! You're my worst friend." \
+--send-message="Hello, Scott! This is just a test." \
+--send-message="Goodbye, Albert! You're my best friend." \
 --random-packet=5355 \
 --random-packet=2222
 ```
