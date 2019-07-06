@@ -246,11 +246,19 @@ Here is a visual demonstration of the described process. You enter `anevicon --r
 ## Using as a library
 This program simply sends four packets to http://example.com/. Now you can follow [the official documentation](https://docs.rs/anevicon_core) to learn more about the `anevicon_core` abstractions.
 
+### Cargo.toml
+```toml
+[dependencies]
+anevicon_core = "*"
+```
+
+### src/main.rs
 ([`examples/minimal.rs`](https://github.com/Gymmasssorla/anevicon/blob/master/anevicon_core/examples/minimal.rs))
 ```rust
+use std::io::IoSlice;
 use std::net::UdpSocket;
 
-use anevicon_core::{Tester, TestSummary};
+use anevicon_core::{TestSummary, Tester};
 
 fn main() {
     // Setup the socket connected to the example.com domain
@@ -259,10 +267,10 @@ fn main() {
 
     // Setup all the I/O vectors (messages) we want to send
     let payload = &mut [
-        (0, "Generals gathered in their masses".as_bytes()),
-        (0, "Just like witches at black masses".as_bytes()),
-        (0, "Evil minds that plot destruction".as_bytes()),
-        (0, "Sorcerers of death's construction".as_bytes()),
+        (0, IoSlice::new(b"Generals gathered in their masses")),
+        (0, IoSlice::new(b"Just like witches at black masses")),
+        (0, IoSlice::new(b"Evil minds that plot destruction")),
+        (0, IoSlice::new(b"Sorcerers of death's construction")),
     ];
 
     // Send all the created messages using only one system call
