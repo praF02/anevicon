@@ -20,6 +20,7 @@
 
 use std::io::{self, Write};
 use std::net::{SocketAddr, UdpSocket};
+use std::os::unix::io::AsRawFd;
 
 use ifaces::Interface;
 use termion::{color, style};
@@ -70,8 +71,9 @@ fn init_one_socket(
 
     let receiver = config.receivers[receiver].to_string();
     debug!(
-        "a new socket has been initialized to {cyan}{receiver}{reset}.",
+        "a new socket has been initialized to {cyan}{receiver}{reset} (Fd = {cyan}{fd}{reset}).",
         receiver = receiver,
+        fd = socket.as_raw_fd(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
