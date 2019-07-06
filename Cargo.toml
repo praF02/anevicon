@@ -16,7 +16,7 @@ exclude = ["DEMO.png", "media/PROCESS.png"]
 anevicon_core = "0.5.3"
 ctrlc = "3.1.2"
 ifaces = "0.1.0"
-fern = { version = "0.5.8", features = ["colored"] }
+fern = "0.5.8"
 log = "0.4.6"
 time = "0.1.42"
 humantime = "1.2.0"

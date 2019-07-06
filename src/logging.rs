@@ -21,7 +21,6 @@
 
 use std::io;
 
-use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::{Level, LevelFilter};
 use termion::{color, style};
@@ -32,23 +31,19 @@ use super::config::LoggingConfig;
 /// Setups the logging system from `LoggingConfig`. Before this function,
 /// neither of log's macros such as `info!` won't work.
 pub fn setup_logging(logging_config: &LoggingConfig) {
-    let colors = ColoredLevelConfig::new()
-        .info(Color::Green)
-        .warn(Color::Yellow)
-        .error(Color::Red)
-        .debug(Color::Magenta)
-        .trace(Color::Cyan);
-    let date_time_format = logging_config.date_time_format.clone();
+    let dt_format = logging_config.date_time_format.clone();
 
     Dispatch::new()
         // Print fancy colored output to a terminal without a record date
         // and the program name
         .format(move |out, message, record| {
             out.finish(format_args!(
-                "[{underline}{level}{reset_style}] [{magenta}{time}{reset_color}]: {message}",
-                level = colors.color(record.level()),
-                time = time::strftime(&date_time_format, &time::now()).unwrap(),
+                "[{underline}{level_color}{level}{reset_color}{reset_style}] \
+                 [{magenta}{time}{reset_color}]: {message}",
+                level = record.level(),
+                time = time::strftime(&dt_format, &time::now()).unwrap(),
                 message = message,
+                level_color = associated_color(record.level()),
                 magenta = color::Fg(color::Magenta),
                 reset_color = color::Fg(color::Reset),
                 underline = style::Underline,
@@ -78,6 +73,16 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         .level(associated_level(logging_config.verbosity))
         .apply()
         .expect("Applying the fern::Dispatch has failed");
+}
+
+fn associated_color(level: Level) -> &'static str {
+    match level {
+        Level::Info => color::Green.fg_str(),
+        Level::Warn => color::Yellow.fg_str(),
+        Level::Error => color::Red.fg_str(),
+        Level::Debug => color::Magenta.fg_str(),
+        Level::Trace => color::Cyan.fg_str(),
+    }
 }
 
 fn associated_level(verbosity: i32) -> LevelFilter {
