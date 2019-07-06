@@ -154,10 +154,10 @@ fn print_ifs(if_addrs: &[Interface]) {
             name = item.name,
             ip = item
                 .addr
-                .map_or_else(|| String::from("none"), |val| val.to_string(),),
+                .map_or_else(|| String::from("none"), |val| val.to_string()),
             mask = item
                 .mask
-                .map_or_else(|| String::from("none"), |val| val.to_string(),),
+                .map_or_else(|| String::from("none"), |val| val.to_string()),
             cyan = color::Fg(color::Cyan),
             reset_color = color::Fg(color::Reset),
             italic = style::Italic,

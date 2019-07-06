@@ -298,7 +298,7 @@ mod tests {
         // All the packets will be sent because the allotted time is too long to be
         // expired
         assert_eq!(
-            resend_packets(&mut tester, &[message; 12], Duration::from_secs(3656),),
+            resend_packets(&mut tester, &[message; 12], Duration::from_secs(3656)),
             ResendPacketsResult::Completed
         );
 
@@ -308,7 +308,7 @@ mod tests {
         // Now the allotted time eventually expires, so check that resend_packets
         // returns TimeExpired
         assert_eq!(
-            resend_packets(&mut tester, &[message; 12], Duration::from_nanos(1),),
+            resend_packets(&mut tester, &[message; 12], Duration::from_nanos(1)),
             ResendPacketsResult::TimeExpired
         );
     }
