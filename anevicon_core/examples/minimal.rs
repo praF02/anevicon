@@ -10,7 +10,7 @@ use anevicon_core::{TestSummary, Tester};
 fn main() {
     // Setup the socket connected to the example.com domain
     let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
-    socket.connect("93.184.216.34:80").unwrap();
+    socket.connect("example.com:80").unwrap();
 
     // Setup all the I/O vectors (messages) we want to send
     let payload = &mut [
