@@ -39,6 +39,10 @@ impl<'a> Tester<'a> {
     /// Creates a new instance of `Tester` from the specified `socket` and
     /// `summary`. `socket` is defined as a file descriptor for more
     /// flexibility.
+    ///
+    /// A specified socket **MUST BE** connected before you supply it to this
+    /// function. If not, some methods will return an error because no IP
+    /// address was specified.
     #[inline]
     pub fn new(socket: RawFd, summary: &'a mut TestSummary) -> Tester<'a> {
         Tester { socket, summary }
