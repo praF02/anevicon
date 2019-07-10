@@ -18,26 +18,29 @@
 
 //! The test abstractions to easily describe and execute your own tests.
 
+use std::convert::TryInto;
 use std::io;
-use std::net::UdpSocket;
+use std::os::raw::c_void;
+use std::os::unix::prelude::RawFd;
 
-use crate::sendmmsg::{Portion, SendMMsg};
+use crate::sendmmsg::{sendmmsg, Portion};
 use crate::summary::SummaryPortion;
 
 use super::summary::TestSummary;
 
 /// A tester with which you are able to send packets to a server multiple times.
 #[derive(Debug)]
-pub struct Tester<'a, 'b> {
-    pub socket: &'a UdpSocket,
-    pub summary: &'b mut TestSummary,
+pub struct Tester<'a> {
+    pub socket: RawFd,
+    pub summary: &'a mut TestSummary,
 }
 
-impl<'a, 'b> Tester<'a, 'b> {
+impl<'a> Tester<'a> {
     /// Creates a new instance of `Tester` from the specified `socket` and
-    /// `summary`.
+    /// `summary`. `socket` is defined as a file descriptor for more
+    /// flexibility.
     #[inline]
-    pub fn new(socket: &'a UdpSocket, summary: &'b mut TestSummary) -> Tester<'a, 'b> {
+    pub fn new(socket: RawFd, summary: &'a mut TestSummary) -> Tester<'a> {
         Tester { socket, summary }
     }
 
@@ -49,12 +52,19 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// otherwise, returns an I/O error.
     #[inline]
     pub fn send_one(&mut self, packet: &[u8]) -> io::Result<SummaryPortion> {
-        match self.socket.send(&packet) {
-            Err(error) => Err(error),
-            Ok(bytes) => {
-                let portion = SummaryPortion::new(packet.len(), bytes, 1, 1);
-                self.summary.update(portion);
-                Ok(portion)
+        let packet_len = packet.len();
+        let packet = packet.as_ptr() as *const c_void;
+
+        unsafe {
+            match libc::send(self.socket, packet, packet_len, 0) {
+                // `libc::send` returns -1 one failure and initializes `errno`, so create
+                // `io::Error` as it follows
+                -1 => Err(io::Error::last_os_error()),
+                bytes => {
+                    let portion = SummaryPortion::new(packet_len, bytes.try_into().unwrap(), 1, 1);
+                    self.summary.update(portion);
+                    Ok(portion)
+                }
             }
         }
     }
@@ -73,7 +83,7 @@ impl<'a, 'b> Tester<'a, 'b> {
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
     #[inline]
     pub fn send_multiple(&mut self, portions: &mut [Portion]) -> io::Result<SummaryPortion> {
-        match self.socket.sendmmsg(portions) {
+        match sendmmsg(self.socket, portions) {
             Err(error) => Err(error),
             Ok(packets) => {
                 let mut bytes_expected_total = 0;
@@ -101,6 +111,8 @@ impl<'a, 'b> Tester<'a, 'b> {
 #[cfg(test)]
 mod tests {
     use std::io::IoSlice;
+    use std::net::UdpSocket;
+    use std::os::unix::io::AsRawFd;
 
     use lazy_static::lazy_static;
 
@@ -125,7 +137,7 @@ mod tests {
             (0, IoSlice::new(b"Sorcerers of death's construction")),
         ];
 
-        let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
+        let result = Tester::new(UDP_SOCKET.as_raw_fd(), &mut TestSummary::default())
             .send_multiple(messages)
             .expect("tester.send_multiple() has failed");
 
@@ -137,7 +149,7 @@ mod tests {
     fn test_send_once() {
         let message = b"Generals gathered in their masses";
 
-        let result = Tester::new(&UDP_SOCKET, &mut TestSummary::default())
+        let result = Tester::new(UDP_SOCKET.as_raw_fd(), &mut TestSummary::default())
             .send_one(message)
             .expect("tester.send_once() has failed");
 

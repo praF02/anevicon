@@ -3,6 +3,7 @@
 
 use std::io::IoSlice;
 use std::net::UdpSocket;
+use std::os::unix::io::AsRawFd;
 
 use anevicon_core::{TestSummary, Tester};
 
@@ -21,7 +22,7 @@ fn main() {
 
     // Send all the created messages using only one system call
     let mut summary = TestSummary::default();
-    let mut tester = Tester::new(&socket, &mut summary);
+    let mut tester = Tester::new(socket.as_raw_fd(), &mut summary);
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",

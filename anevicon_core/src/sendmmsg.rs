@@ -1,39 +1,30 @@
 use std::io;
 use std::io::IoSlice;
 use std::mem;
-use std::net::UdpSocket;
-use std::os::unix::io::AsRawFd;
+use std::os::unix::prelude::RawFd;
 
-use libc::{self, c_int, c_uint, iovec, mmsghdr, msghdr};
+use libc::{self, c_uint, iovec, mmsghdr, msghdr};
 
 /// A type alias that represents a portion to be sent, typically used in
 /// `Tester::send_multiple`.
 pub type Portion<'a> = (usize, IoSlice<'a>);
 
-pub trait SendMMsg {
-    /// Sends all the specified messages of `portions` using one system call,
-    /// and assigns the total bytes sent for each packet into the first
-    /// slice elements.
-    ///
-    /// # Errors
-    /// If the provided socket isn't connected to a remote server, the
-    /// `io::ErrorKind::NotConnected` error might be returned. Other kinds
-    /// of errors can also be returned, see the errors descriptions of
-    /// `io::ErrorKind` enumeration.
-    ///
-    /// [sendmmsg]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
-    fn sendmmsg(&self, portions: &mut [Portion]) -> io::Result<usize>;
+/// Sends all the specified messages of `portions` using one system call,
+/// and assigns the total bytes sent for each packet into the first
+/// slice elements.
+///
+/// # Errors
+/// If the provided socket isn't connected to a remote server, the
+/// `io::ErrorKind::NotConnected` error might be returned. Other kinds
+/// of errors can also be returned, see the errors descriptions of
+/// `io::ErrorKind` enumeration.
+///
+/// [sendmmsg]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
+pub fn sendmmsg(fd: RawFd, portions: &mut [Portion]) -> io::Result<usize> {
+    sendmmsg_impl(fd, portions)
 }
 
-impl SendMMsg for UdpSocket {
-    fn sendmmsg(&self, portions: &mut [Portion]) -> io::Result<usize> {
-        sendmmsg_impl(self.as_raw_fd(), portions)
-    }
-}
-
-/// Does all the dirty work using the specified `fd` (socket file descriptor and
-/// `packets`.
-fn sendmmsg_impl(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
+fn sendmmsg_impl(fd: RawFd, portions: &mut [Portion]) -> io::Result<usize> {
     let mut messages: Vec<mmsghdr> = prepare_messages(portions);
 
     unsafe {
@@ -43,12 +34,12 @@ fn sendmmsg_impl(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
             messages.len() as c_uint,
             0,
         ) {
-            // The system sendmmsg returns -1 one failure and writes the actual error to errno, so
-            // create io::Error as it follows
+            // `libc::sendmmsg` returns -1 one failure and initializes `errno`, so create
+            // `io::Error` as it follows
             -1 => Err(io::Error::last_os_error()),
             portions_sent => {
-                // The system sendmmsg assigns a number of bytes sent for each packet to
-                // mmsghdr, so copy it into our DataPortion
+                // `libc::sendmmsg` assigns a number of bytes sent for each packet to `mmsghdr`,
+                // so copy it into our `DataPortion`
                 for i in 0..messages.len() {
                     portions[i].0 = messages[i].msg_len as usize;
                 }
@@ -74,8 +65,8 @@ fn prepare_messages(portions: &mut [Portion]) -> Vec<mmsghdr> {
                     message
                 },
 
-                // This is a variable to which `libc::sendmmsg` will assign total bytes sent of a
-                // particular packet
+                // `libc::sendmmsg` assigns a total bytes sent of a particular portion into this
+                // value
                 msg_len: 0,
             }
         })
@@ -84,6 +75,9 @@ fn prepare_messages(portions: &mut [Portion]) -> Vec<mmsghdr> {
 
 #[cfg(test)]
 mod test {
+    use std::net::UdpSocket;
+    use std::os::unix::io::AsRawFd;
+
     use super::*;
 
     #[test]
@@ -100,9 +94,7 @@ mod test {
         ];
 
         assert_eq!(
-            socket
-                .sendmmsg(portions)
-                .expect("socket.sendmmsg(messages) has failed"),
+            sendmmsg(socket.as_raw_fd(), portions).expect("socket.sendmmsg(messages) has failed"),
             portions.len()
         );
 

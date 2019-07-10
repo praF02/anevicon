@@ -31,9 +31,10 @@
 //! ([`examples/minimal.rs`])
 //! ```rust,no_run
 //! use std::net::UdpSocket;
+//! use std::os::unix::io::AsRawFd;
+//! use std::io::IoSlice;
 //!
 //! use anevicon_core::{TestSummary, Tester};
-//! use std::io::IoSlice;
 //!
 //! fn main() {
 //!     // Setup the socket connected to the example.com domain
@@ -50,7 +51,7 @@
 //!
 //!     // Send all the created messages using only one system call
 //!     let mut summary = TestSummary::default();
-//!     let mut tester = Tester::new(&socket, &mut summary);
+//!     let mut tester = Tester::new(socket.as_raw_fd(), &mut summary);
 //!
 //!     println!(
 //!         "The total packets sent: {}, the total seconds passed: {}",
