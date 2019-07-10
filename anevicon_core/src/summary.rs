@@ -66,31 +66,31 @@ impl TestSummary {
         self.packets_sent += portion.packets_sent;
     }
 
-    /// Returns a count of megabytes you were trying to send.
+    /// Returns a count of megabytes you were trying to send while testing a server.
     #[inline]
     pub fn megabytes_expected(&self) -> usize {
         self.bytes_expected / 1024 / 1024
     }
 
-    /// Returns a count of megabytes sent totally.
+    /// Returns a count of megabytes sent totally while testing a server.
     #[inline]
     pub fn megabytes_sent(&self) -> usize {
         self.bytes_sent / 1024 / 1024
     }
 
-    /// Returns a count of packets you were trying to send.
+    /// Returns a count of packets you were trying to send while testing a server.
     #[inline]
     pub fn packets_expected(&self) -> usize {
         self.packets_expected
     }
 
-    /// Returns a count of packets sent totally.
+    /// Returns a count of packets sent totally while testing a server.
     #[inline]
     pub fn packets_sent(&self) -> usize {
         self.packets_sent
     }
 
-    /// Returns an average speeed, specified in Mbps (Megabites Per Second).
+    /// Returns an average speed of a test, specified in Mbps (Megabites Per Second).
     #[inline]
     pub fn megabites_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
@@ -102,7 +102,7 @@ impl TestSummary {
         }
     }
 
-    /// Returns an average speeed, specified in packets sent per second.
+    /// Returns an average speed of a test, specified in packets sent per second.
     #[inline]
     pub fn packets_per_sec(&self) -> usize {
         let secs_passed = self.time_passed().as_secs() as usize;
@@ -200,28 +200,28 @@ impl SummaryPortion {
         }
     }
 
-    /// Returns a number of bytes you were trying to send (see the
+    /// Returns a number of bytes you were trying to send while testing a server (see the
     /// `SummaryPortion::new()` associated function).
     #[inline]
     pub fn bytes_expected(&self) -> usize {
         self.bytes_expected
     }
 
-    /// Returns a number of bytes you actually sent (see the
+    /// Returns a number of bytes you actually sent while testing a server (see the
     /// `SummaryPortion::new()` associated function).
     #[inline]
     pub fn bytes_sent(&self) -> usize {
         self.bytes_sent
     }
 
-    /// Returns a number of packets you were trying to send (see the
+    /// Returns a number of packets you were trying to send while testing a server (see the
     /// `SummaryPortion::new()` associated function).
     #[inline]
     pub fn packets_expected(&self) -> usize {
         self.packets_expected
     }
 
-    /// Returns a number of packets you actually sent (see the
+    /// Returns a number of packets you actually sent while testing a server (see the
     /// `SummaryPortion::new()` associated function).
     #[inline]
     pub fn packets_sent(&self) -> usize {
