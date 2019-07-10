@@ -41,13 +41,14 @@ anevicon_core = "*"
 ```rust
 use std::io::IoSlice;
 use std::net::UdpSocket;
+use std::os::unix::io::AsRawFd;
 
-use anevicon_core::{TestSummary, Tester};
+use anevicon_core::{Tester, TestSummary};
 
 fn main() {
     // Setup the socket connected to the example.com domain
     let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
-    socket.connect("93.184.216.34:80").unwrap();
+    socket.connect("example.com:80").unwrap();
 
     // Setup all the I/O vectors (messages) we want to send
     let payload = &mut [
@@ -59,7 +60,7 @@ fn main() {
 
     // Send all the created messages using only one system call
     let mut summary = TestSummary::default();
-    let mut tester = Tester::new(&socket, &mut summary);
+    let mut tester = Tester::new(socket.as_raw_fd(), &mut summary);
 
     println!(
         "The total packets sent: {}, the total seconds passed: {}",
