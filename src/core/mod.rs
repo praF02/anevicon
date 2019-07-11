@@ -18,7 +18,7 @@
 
 //! A module containing the key function `run` which does the main work.
 
-mod construct_packets;
+mod construct_payload;
 mod create_sockets;
 mod select_interface;
 mod test_utils;

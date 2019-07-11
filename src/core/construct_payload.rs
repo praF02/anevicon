@@ -29,7 +29,11 @@ use crate::config::PacketsConfig;
 
 /// Constructs a bytes packets from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
-pub fn construct_packets(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
+///
+/// Note that this function constructs **ONLY** payload without
+/// protocol-specific headers and etc. Just payload that a user has specified by
+/// `--send-file`, `--send-message`, `--random-packet`.
+pub fn construct_payload(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
@@ -39,17 +43,17 @@ pub fn construct_packets(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPac
     }
 
     for file in &config.send_files {
-        packets.push(read_packet(file)?);
+        packets.push(read_payload(file)?);
     }
 
     for length in &config.random_packets {
-        packets.push(random_packet(*length));
+        packets.push(random_payload(*length));
     }
 
     Ok(packets)
 }
 
-fn random_packet(length: NonZeroUsize) -> Vec<u8> {
+fn random_payload(length: NonZeroUsize) -> Vec<u8> {
     // Don't do unnecessary initialization because we'll fill this buffer with
     // random values
     let mut buffer = Vec::with_capacity(length.get());
@@ -61,7 +65,7 @@ fn random_packet(length: NonZeroUsize) -> Vec<u8> {
     buffer
 }
 
-fn read_packet<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
+fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
     let content = fs::read(path).map_err(ReadPacketError::ReadFailed)?;
 
     if content.is_empty() {
@@ -111,9 +115,9 @@ mod tests {
     }
 
     #[test]
-    fn generates_random_packet() {
+    fn generates_random_payload() {
         let length = NonZeroUsize::new(35684).unwrap();
-        let buffer = random_packet(length);
+        let buffer = random_payload(length);
 
         // Check that we've got the correctly length and capacity
         assert_eq!(buffer.len(), length.get());
@@ -124,7 +128,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
-        if let Err(ReadPacketError::ZeroSize) = read_packet(ZERO_FILE.to_str().unwrap()) {
+        if let Err(ReadPacketError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
             panic!("Zero packet size");
         } else {
             panic!("Must return the 'ZeroSize' error");
@@ -132,9 +136,9 @@ mod tests {
     }
 
     #[test]
-    fn test_choose_random_packet() {
+    fn test_choose_random_payload() {
         let packet_length = NonZeroUsize::new(24550).unwrap();
-        let packets = construct_packets(&PacketsConfig {
+        let packets = construct_payload(&PacketsConfig {
             send_files: Vec::new(),
             random_packets: vec![packet_length],
             send_messages: Vec::new(),
@@ -147,8 +151,8 @@ mod tests {
     }
 
     #[test]
-    fn test_choose_file_packet() {
-        let packets = construct_packets(&PacketsConfig {
+    fn test_choose_file_payload() {
+        let packets = construct_payload(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone()],
             random_packets: Vec::new(),
             send_messages: Vec::new(),
@@ -165,7 +169,7 @@ mod tests {
     fn test_choose_text_message() {
         let message = String::from("Generals gathered in their masses");
 
-        let packets = construct_packets(&PacketsConfig {
+        let packets = construct_payload(&PacketsConfig {
             send_files: Vec::new(),
             random_packets: Vec::new(),
             send_messages: vec![message.clone()],
@@ -187,7 +191,7 @@ mod tests {
         let random_first = NonZeroUsize::new(3566).unwrap();
         let random_second = NonZeroUsize::new(9385).unwrap();
 
-        let packets = construct_packets(&PacketsConfig {
+        let packets = construct_payload(&PacketsConfig {
             send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
             random_packets: vec![random_first, random_second],
             send_messages: vec![first_message.clone(), second_message.clone()],
