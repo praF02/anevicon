@@ -60,7 +60,7 @@ group of hackers.
 ----------
 
 ## Advantages
- - **Linux-accelerated.** Anevicon uses a few system calls which is specific to Linux. They simply send large data sets using the single kernel call, thereby reducing CPU load.
+ - **Linux-accelerated.** Anevicon communicates with a Linux kernel by a few specific system calls to increase the performance significantly. However, it makes the program platform-dependent.
 
  - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, and even [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing) are supported.
  
