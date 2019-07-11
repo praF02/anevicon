@@ -5,17 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/core/create_sockets.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/select_interface.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/packets_buffer.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/sockets.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/test_utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/test_utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,7 +37,6 @@
       <find>socket_config</find>
       <find>UdpSocket</find>
       <find>pub</find>
-      <find>select</find>
       <find>current_receiver</find>
       <find>packet_config</find>
       <find>packets_count</find>
@@ -57,6 +46,7 @@
       <find>for</find>
       <find>a new</find>
       <find>megabites</find>
+      <find>select</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -83,7 +73,6 @@
         <option value="$PROJECT_DIR$/src/core/sender.rs" />
         <option value="$PROJECT_DIR$/terminalizer.yml" />
         <option value="$PROJECT_DIR$/files/second_packet.txt" />
-        <option value="$PROJECT_DIR$/src/config.rs" />
         <option value="$PROJECT_DIR$/src/core/test_utils.rs" />
         <option value="$PROJECT_DIR$/src/core/packets.rs" />
         <option value="$PROJECT_DIR$/rustfmt.toml" />
@@ -104,6 +93,7 @@
         <option value="$PROJECT_DIR$/src/core/mod.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
         <option value="$PROJECT_DIR$/src/core/sockets.rs" />
+        <option value="$PROJECT_DIR$/src/config.rs" />
       </list>
     </option>
   </component>
@@ -602,13 +592,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1598">
-          <caret line="94" column="12" selection-start-line="94" selection-start-column="8" selection-end-line="94" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/packets_buffer.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -692,6 +675,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" selection-start-line="21" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="120" column="35" lean-forward="true" selection-start-line="120" selection-start-column="35" selection-end-line="120" selection-end-column="35" />
         </state>
       </provider>
     </entry>
