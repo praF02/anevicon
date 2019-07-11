@@ -20,8 +20,7 @@
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/DEMO.png"><br>
   
 A high-performant traffic generator, designed to be as convenient and reliable as it is possible. It sends
-numerous UDP packets to a server, thereby simulating an activity that can be produced by your end users or a
-group of hackers.
+numerous UDP packets to a server which lets you test your server against the abnormal activity.
 
   <h4>
     <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
