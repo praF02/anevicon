@@ -124,12 +124,8 @@ pub struct SocketsConfig {
 
     /// Displays an interactive menu of network interfaces to use. If unset, a
     /// default one will be used
-    #[structopt(
-        long = "select-interface",
-        takes_value = false,
-        conflicts_with = "sender"
-    )]
-    pub select_interface: bool,
+    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
+    pub select_if: bool,
 
     /// A timeout of sending every single packet. If a timeout is reached, then
     /// a packet will be sent later
