@@ -15,5 +15,3 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
-
-//! A module containing abstractions for socket initialization and future usage.
