@@ -79,7 +79,16 @@ pub struct TesterConfig {
     )]
     pub send_periodicity: Duration,
 
-
+    /// A count of packets between printing test summaries. It is not
+    /// recommended to assign a low value (say, 10)
+    #[structopt(
+        long = "print-periodicity",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "600",
+        parse(try_from_str = "parse_non_zero_usize")
+    )]
+    pub print_periodicity: NonZeroUsize,
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
