@@ -19,8 +19,8 @@
   
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/DEMO.png"><br>
   
-A high-performant traffic generator, designed to be as convenient and reliable as it is possible. It sends
-numerous UDP packets to a server which lets you test your server against the abnormal activity.
+An open-source, high-performant traffic generator, designed to be as convenient and reliable as it is possible. It generates
+numerous UDP packets which lets you test your server against the abnormaly high activity.
 
   <h4>
     <a href="https://github.com/Gymmasssorla/anevicon/pulse">Pulse</a> &middot;
