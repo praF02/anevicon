@@ -37,16 +37,6 @@ fn main() {
 
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
-
-    if config.tester_config.packets_per_syscall > config.tester_config.exit_config.packets_count {
-        error!(
-            "A value of {green}--packets-count{reset} must be higher or equal to a value of \
-             {green}--packets-per-syscall{reset}",
-            green = color::Fg(color::Green),
-            reset = color::Fg(color::Reset)
-        );
-        std::process::exit(1);
-    }
 }
 
 fn setup_ctrlc_handler() {

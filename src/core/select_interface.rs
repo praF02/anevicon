@@ -16,23 +16,30 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::fmt::Write as _;
 use std::io;
 use std::io::Write as _;
 use std::net::SocketAddr;
 
-use pnet::datalink::NetworkInterface;
-use termion::{color, style};
+use termion::color;
 
 /// Displays an interactive menu of network interfaces to a user. Returns a
 /// selected address of a network interface.
 pub fn select_interface() -> SocketAddr {
-    print_interfaces(&pnet::datalink::interfaces());
+    info!(
+        "The program will display all your network interfaces now. Then you need to enter a \
+         source address for all future sockets (it can be located inside IP ranges of network \
+         interfaces).\n"
+    );
+
+    for interface in &pnet::datalink::interfaces() {
+        info!("{}", interface);
+    }
+    println!();
 
     let mut stdout = io::stdout();
 
     print!(
-        "Enter the source address for all future sockets (<IP>:<PORT>) {yellow}>>>#{reset}",
+        "Enter a global source address (<IP>:<PORT>) {yellow}>>>#{reset}",
         yellow = color::Fg(color::Yellow),
         reset = color::Fg(color::Reset),
     );
@@ -49,88 +56,12 @@ pub fn select_interface() -> SocketAddr {
             Ok(res) => return res,
             Err(_) => {
                 print!(
-                    "Failed to parse the socket address. Try again {yellow}>>>#{reset}",
+                    "Failed to parse the source address. Try again {yellow}>>>#{reset}",
                     yellow = color::Fg(color::Yellow),
                     reset = color::Fg(color::Reset),
                 );
                 stdout.flush().unwrap();
             }
         }
-    }
-}
-
-fn print_interfaces(interfaces: &[NetworkInterface]) {
-    for interface in interfaces {
-        let mut output = String::new();
-
-        write!(
-            &mut output,
-            "found a network interface:\n        Name: \
-             {italic}{cyan}{name}{reset_color}{reset_style}\n        ",
-            name = interface.name,
-            cyan = color::Fg(color::Cyan),
-            reset_color = color::Fg(color::Reset),
-            italic = style::Italic,
-            reset_style = style::Reset,
-        )
-        .unwrap();
-
-        if let Some(mac) = interface.mac {
-            write!(
-                &mut output,
-                "MAC address: {cyan}{address}{reset_color}\n        ",
-                address = mac,
-                cyan = color::Fg(color::Cyan),
-                reset_color = color::Fg(color::Reset),
-            )
-            .unwrap();
-        }
-
-        if interface.ips.is_empty() {
-            write!(
-                &mut output,
-                "This interface has no IP addresses and netmasks\n        "
-            )
-            .unwrap();
-        } else {
-            write!(&mut output, "Addresses:").unwrap();
-
-            for addresses in &interface.ips {
-                write!(&mut output, "\n                ").unwrap();
-
-                write!(
-                    &mut output,
-                    "IP: {cyan}{ip}{reset_color}",
-                    ip = addresses.ip(),
-                    cyan = color::Fg(color::Cyan),
-                    reset_color = color::Fg(color::Reset),
-                )
-                .unwrap();
-
-                write!(&mut output, "\n                ").unwrap();
-
-                write!(
-                    &mut output,
-                    "Netmask: {cyan}{netmask}{reset_color}",
-                    netmask = addresses.mask(),
-                    cyan = color::Fg(color::Cyan),
-                    reset_color = color::Fg(color::Reset),
-                )
-                .unwrap();
-
-                write!(&mut output, "\n                ").unwrap();
-
-                write!(
-                    &mut output,
-                    "Broadcast: {cyan}{broadcast}{reset_color}\n",
-                    broadcast = addresses.broadcast(),
-                    cyan = color::Fg(color::Cyan),
-                    reset_color = color::Fg(color::Reset),
-                )
-                .unwrap();
-            }
-        }
-
-        info!("{}", output);
     }
 }
