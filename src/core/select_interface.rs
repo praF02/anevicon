@@ -17,7 +17,7 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 use std::io;
-use std::io::Write as _;
+use std::io::Write;
 use std::net::SocketAddr;
 
 use termion::color;
