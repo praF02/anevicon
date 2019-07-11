@@ -16,9 +16,4 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-//! A module containing the key function `run` which does the main work.
-
-mod construct_packets;
-mod create_sockets;
-mod select_interface;
-mod test_utils;
+//! A module containing abstractions for socket initialization and future usage.
