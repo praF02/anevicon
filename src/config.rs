@@ -79,16 +79,17 @@ pub struct TesterConfig {
     )]
     pub send_periodicity: Duration,
 
-    /// A count of packets between printing test summaries. It is not
-    /// recommended to assign a low value (say, 10)
+    /// A count of packets which the program will send using only one system
+    /// call. After the operation completed, a test summary will have been
+    /// printed
     #[structopt(
-        long = "print-periodicity",
+        long = "packets-per-syscall",
         takes_value = true,
         value_name = "POSITIVE-INTEGER",
         default_value = "600",
         parse(try_from_str = "parse_non_zero_usize")
     )]
-    pub print_periodicity: NonZeroUsize,
+    pub packets_per_syscall: NonZeroUsize,
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
