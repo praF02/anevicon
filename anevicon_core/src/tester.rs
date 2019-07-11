@@ -1,4 +1,4 @@
-// anevicon: A high-performant UDP-based load generator, written in Rust.
+// anevicon: A library for building a UDP-based load generators for Rust.
 // Copyright (C) 2019  Temirkhan Myrzamadi <gymmasssorla@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-// For more information see <https://github.com/Gymmasssorla/anevicon>.
+// For more information see <https://github.com/Gymmasssorla/anevicon/tree/master/anevicon_core>.
 
 //! The test abstractions to easily describe and execute your own tests.
 
