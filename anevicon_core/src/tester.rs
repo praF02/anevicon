@@ -54,7 +54,6 @@ impl<'a> Tester<'a> {
     /// # Returns
     /// It returns an associated `SummaryPortion` if an operation succeeds,
     /// otherwise, returns an I/O error.
-    #[inline]
     pub fn send_one(&mut self, packet: &[u8]) -> io::Result<SummaryPortion> {
         let packet_len = packet.len();
         let packet = packet.as_ptr() as *const c_void;
@@ -85,7 +84,6 @@ impl<'a> Tester<'a> {
     /// of the concatenated results from [`sendmmsg`].
     ///
     /// [`sendmmsg`]: http://man7.org/linux/man-pages/man2/sendmmsg.2.html
-    #[inline]
     pub fn send_multiple(&mut self, portions: &mut [Portion]) -> io::Result<SummaryPortion> {
         match sendmmsg(self.socket, portions) {
             Err(error) => Err(error),
