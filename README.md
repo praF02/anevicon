@@ -59,7 +59,7 @@ numerous UDP packets which lets you test your server against the abnormaly high 
 ----------
 
 ## Advantages
- - **Linux-accelerated.** Anevicon communicates with a Linux kernel by a few specific system calls to increase the performance significantly. However, it makes the program platform-dependent.
+ - **Linux-accelerated.** Anevicon communicates with a Linux kernel by a few specific system calls to reduce the CPU load significantly. However, it makes the program platform-dependent.
 
  - **Functional.** I've tried to implement as many things to make a multi-functional tool and stay simple at the same time. Such features as multiple tests, verbosity levels, and even [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing) are supported.
  
