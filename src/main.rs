@@ -38,10 +38,12 @@ fn main() {
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
-    check_config(&config);
+    if check_config(&config).is_err() {
+        std::process::exit(1);
+    }
 }
 
-fn check_config(config: &ArgsConfig) {
+fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     if config.tester_config.packets_per_syscall > config.tester_config.exit_config.packets_count {
         error!(
             "A value of {green}--packets-count{reset} must be higher or equal to a value of \
@@ -50,8 +52,10 @@ fn check_config(config: &ArgsConfig) {
             reset = color::Fg(color::Reset)
         );
 
-        std::process::exit(1);
+        return Err(());
     }
+
+    return Ok(());
 }
 
 fn setup_ctrlc_handler() {
