@@ -33,22 +33,22 @@ pub fn select_interface() -> Result<SocketAddr, SelectInterfaceError> {
          interfaces)."
     );
 
-    // Recognize all network interfaces available in the current machine. If there
-    // is no network interfaces, then return an error
     let interfaces = pnet::datalink::interfaces();
     if interfaces.is_empty() {
         return Err(SelectInterfaceError::NoInterfaces);
     }
 
-    // Print all recognized network interfaces and then let a user choose one from
-    // the list by its IP address
     println!();
     for interface in &interfaces {
         info!("{}", interface);
     }
     println!();
 
-    let mut stdout = io::stdout();
+    Ok(read_sock_address())
+}
+
+fn read_sock_address() -> SocketAddr {
+    let (stdin, mut stdout) = (io::stdin(), io::stdout());
 
     print!(
         "Enter a global source address (<IP>:<PORT>) {yellow}>>>#{reset}",
@@ -59,9 +59,7 @@ pub fn select_interface() -> Result<SocketAddr, SelectInterfaceError> {
 
     loop {
         let mut choice = String::new();
-        io::stdin()
-            .read_line(&mut choice)
-            .expect("read_line(...) failed");
+        stdin.read_line(&mut choice).expect("read_line(...) failed");
         choice.pop(); // Delete the ending '\n' character
 
         match choice.parse::<SocketAddr>() {
