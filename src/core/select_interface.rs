@@ -70,7 +70,7 @@ fn read_sock_address() -> SocketAddr {
                     cyan = color::Fg(color::Cyan),
                     reset_color = color::Fg(color::Reset),
                 );
-                return Ok(res);
+                return res;
             }
             Err(_) => {
                 print!(
