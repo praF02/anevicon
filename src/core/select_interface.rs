@@ -65,7 +65,15 @@ pub fn select_interface() -> Result<SocketAddr, SelectInterfaceError> {
         choice.pop(); // Delete the ending '\n' character
 
         match choice.parse::<SocketAddr>() {
-            Ok(res) => return Ok(res),
+            Ok(res) => {
+                trace!(
+                    "a user has selected the {cyan}{address}{reset_color} source address.",
+                    address = choice,
+                    cyan = color::Fg(color::Cyan),
+                    reset_color = color::Fg(color::Reset),
+                );
+                return Ok(res);
+            }
             Err(_) => {
                 print!(
                     "Failed to parse the source address. Try again {yellow}>>>#{reset}",
