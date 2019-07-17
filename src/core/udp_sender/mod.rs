@@ -16,6 +16,30 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-mod construct_packets;
-mod test_utils;
+use std::io::IoSlice;
+
+use select_interface::select_interface;
+pub use select_interface::SelectInterfaceError;
+pub use udp_sender::UdpSender;
+
+use crate::config::TesterConfig;
+
+mod select_interface;
+mod sendmmsg;
 mod udp_sender;
+
+/// A type alias that represents a portion to be sent. The first item is a
+/// number of bytes sent, and the second item is a packet to be sent.
+pub type Portion<'a> = (usize, IoSlice<'a>);
+
+pub fn create_udp_senders(config: &TesterConfig) -> Result<Vec<UdpSender>, SelectInterfaceError> {
+    let interface_address = if config.sockets_config.select_if {
+        Some(select_interface()?)
+    } else {
+        None
+    };
+
+    let mut senders = Vec::with_capacity(config.sockets_config.receivers.len());
+
+    Ok(senders)
+}

@@ -61,9 +61,6 @@ pub struct ArgsConfig {
 
     #[structopt(flatten)]
     pub packets_config: PacketsConfig,
-
-    #[structopt(flatten)]
-    pub sockets_config: SocketsConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
@@ -93,6 +90,9 @@ pub struct TesterConfig {
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
+
+    #[structopt(flatten)]
+    pub sockets_config: SocketsConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]

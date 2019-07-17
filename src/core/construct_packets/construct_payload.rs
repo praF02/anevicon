@@ -33,7 +33,7 @@ use crate::config::PacketsConfig;
 /// Note that this function constructs **ONLY** payload without
 /// protocol-specific headers and etc. Just payload that a user has specified by
 /// `--send-file`, `--send-message`, `--random-packet`.
-pub fn construct_payload(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ReadPacketError> {
+pub fn construct_payload(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ConstructPayloadError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
@@ -65,34 +65,34 @@ fn random_payload(length: NonZeroUsize) -> Vec<u8> {
     buffer
 }
 
-fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ReadPacketError> {
-    let content = fs::read(path).map_err(ReadPacketError::ReadFailed)?;
+fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ConstructPayloadError> {
+    let content = fs::read(path).map_err(ConstructPayloadError::ReadFailed)?;
 
     if content.is_empty() {
-        return Err(ReadPacketError::ZeroSize);
+        return Err(ConstructPayloadError::ZeroSize);
     }
 
     Ok(content)
 }
 
 #[derive(Debug)]
-pub enum ReadPacketError {
+pub enum ConstructPayloadError {
     ReadFailed(io::Error),
     ZeroSize,
 }
 
-impl Display for ReadPacketError {
+impl Display for ConstructPayloadError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            ReadPacketError::ReadFailed(error) => {
+            ConstructPayloadError::ReadFailed(error) => {
                 write!(fmt, "Error while reading the file >>> {}", error)
             }
-            ReadPacketError::ZeroSize => write!(fmt, "Zero packet size"),
+            ConstructPayloadError::ZeroSize => write!(fmt, "Zero packet size"),
         }
     }
 }
 
-impl Error for ReadPacketError {}
+impl Error for ConstructPayloadError {}
 
 #[cfg(test)]
 mod tests {
@@ -128,7 +128,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
-        if let Err(ReadPacketError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
+        if let Err(ConstructPayloadError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
             panic!("Zero packet size");
         } else {
             panic!("Must return the 'ZeroSize' error");

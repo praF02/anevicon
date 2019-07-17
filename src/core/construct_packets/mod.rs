@@ -15,3 +15,33 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
+
+use pnet::packet::udp::UdpPacket;
+
+use construct_payload::construct_payload;
+pub use construct_payload::ConstructPayloadError;
+
+use crate::config::PacketsConfig;
+
+mod construct_payload;
+
+/// Returns a new instance of `UdpPacketsIterator` (an iterator of UDP packets
+/// each constructed from specified user's payload, i.e by `--random-packet`,
+/// `--send-message`, `--send-file`).
+pub fn packets_iterator(
+    config: &PacketsConfig,
+) -> Result<UdpPacketsIterator, ConstructPayloadError> {
+    Ok(UdpPacketsIterator {
+        user_packets: construct_payload(config)?,
+    })
+}
+
+pub struct UdpPacketsIterator {
+    user_packets: Vec<Vec<u8>>,
+}
+
+//impl Iterator for UdpPacketsIterator {
+//   type Item = UdpPacket;
+
+//   fn next(&mut self) -> Option<Self::Item> {}
+//}

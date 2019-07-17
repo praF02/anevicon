@@ -55,7 +55,7 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
         return Err(());
     }
 
-    return Ok(());
+    Ok(())
 }
 
 fn setup_ctrlc_handler() {
