@@ -19,4 +19,4 @@ script:
 # Let Clippy also check the tests and non-default crate features
 # to ensure that the code is correct:
   - cargo clippy --all --all-targets --all-features
-  - cargo test --all
+  - sudo env PATH=$PATH cargo test --all
