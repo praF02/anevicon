@@ -9,16 +9,14 @@ env:
   - RUST_BACKTRACE=1
   
 before_script:
-  - export CARGO_PATH="/home/gymmasssorla/.cargo/bin/cargo"
-  
 # We want to check for any warnings and errors in this crate, so
 # install Clippy:
   - rustup component add clippy
 
 script:
-  - ${CARGO_PATH} build --all --verbose
+  - cargo build --all --verbose
 
 # Let Clippy also check the tests and non-default crate features
 # to ensure that the code is correct:
-  - ${CARGO_PATH} clippy --all --all-targets --all-features
-  - sudo ${CARGO_PATH} test --all
+  - cargo clippy --all --all-targets --all-features
+  - cargo test --all
