@@ -125,14 +125,19 @@ Name | Value | Default | Explanation
 ----------
 
 ## Overview
-First of all, please remember that Anevicon uses [raw sockets](https://en.wikipedia.org/wiki/Network_socket#Raw_socket) that require root permissions, so in order to run Anevicon you must already have them (just type `sudo` before `anevicon`).
+First of all, please remember that Anevicon uses [raw sockets](https://en.wikipedia.org/wiki/Network_socket#Raw_socket) that require root permissions, so in order to run Anevicon you must already have them. Just type the commands below before running Anevicon:
+
+```bash
+$ sudo -s
+$ PATH+=":/home/gymmasssorla/.cargo/bin"
+```
 
 ### Minimal command
 All you need is to provide the testing server address, which consists of an IP address and a port number, separated by the colon character. By default, all sending sockets will have your local address:
 
 ```bash
 # Test the 80 port of the example.com site using your local address
-$ sudo anevicon --receiver=93.184.216.34:80
+$ anevicon --receiver=93.184.216.34:80
 ```
 
 ### Test intensity
@@ -140,7 +145,7 @@ In some situations, you don't need to transmit the maximum possible amount of pa
 
 ```bash
 # Test the example.com waiting for 270 microseconds after each sendmmsg syscall
-$ sudo anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
+$ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
 ### Multiple receivers
@@ -148,7 +153,7 @@ Anevicon also has the functionality to test multiple receivers in parallel mode,
 
 ```bash
 # Test the 80 port of example.com and the 13 port of google.com in parallel
-$ sudo anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
+$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
 ### Network interfaces
@@ -156,7 +161,7 @@ There is also an ability to bind all future sockets to a specific network interf
 
 ```bash
 # Test example.com with a custom network interface using `--select-if`
-$ sudo anevicon --receiver=93.184.216.34:80 --select-if
+$ anevicon --receiver=93.184.216.34:80 --select-if
 ```
 
 ### Exit conditions
@@ -164,7 +169,7 @@ Note that the command above might not work on your system due to the security re
 
 ```bash
 # Test the 80 port of the example.com site with the two limit options
-$ sudo anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
+$ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 ```
 
 ### Custom messages
@@ -172,17 +177,17 @@ By default, Anevicon will generate a random packet with a default size (32768). 
 
 ```bash
 # Test the 80 port of example.com with the custom file 'message.txt'
-$ sudo anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
+$ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 
 # Test the 80 port of example.com with the custom text message
-$ sudo anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
+$ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
 ```
 
 Also, you are able to specify one or more random packets with your own lengths using the `--random-packet` option. This example specifies two random-generated packets with the sizes 1454 and 29400:
 
 ```bash
 # Test the 80 port of example.com with two random packets
-$ sudo anevicon --receiver=93.184.216.34:80 --random-packet=1454 --random-packet=29400
+$ anevicon --receiver=93.184.216.34:80 --random-packet=1454 --random-packet=29400
 ```
 
 ### Logging options
@@ -190,7 +195,7 @@ Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is
 
 ```bash
 # Use a custom date-time format and the last verbosity level
-$ sudo anevicon --receiver=64.233.165.113:80 --date-time-format="%F" --verbosity=5
+$ anevicon --receiver=64.233.165.113:80 --date-time-format="%F" --verbosity=5
 ```
 
 Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
@@ -216,7 +221,7 @@ Different verbosity levels print different logging types. As you can see in the 
 #   4) A text message "Goodbye, Albret! You're my best friend.";
 #   5) A random packet of 5355 bytes;
 #   6) A random packet of 2222 bytes.
-$ sudo anevicon --receiver=93.184.216.34:80 \
+$ anevicon --receiver=93.184.216.34:80 \
 --send-file="file.txt" \
 --send-message="Hello, Pitty! You're my worst friend." \
 --send-message="Hello, Scott! This is just a test." \
@@ -234,7 +239,7 @@ An optimized sending buffer is a data structure representing a sending buffer wh
 
 That is, Anevicon has been designed to minimize a number of system calls to your Linux kernel. Yes, we can instead use such libraries as [netmap](https://www.freebsd.org/cgi/man.cgi?query=netmap)/[PF_RING](https://www.ntop.org/products/packet-capture/pf_ring/)/[DPDK](https://www.dpdk.org/), but then users might be confused with running Anevicon on their systems. Anyway, I think that `sendmmsg` provides pretty well performance for all needs.
 
-Here is a visual demonstration of the described process. You enter `sudo anevicon --receiver=93.184.216.34:80 --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
+Here is a visual demonstration of the described process. You enter `anevicon --receiver=93.184.216.34:80 --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
 
 <div align="center">
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/media/PROCESS.png">
