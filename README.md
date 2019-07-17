@@ -137,7 +137,7 @@ $ PATH+=":/home/gymmasssorla/.cargo/bin"
 All you need is to provide the testing server address, which consists of an IP address and a port number, separated by the colon character. By default, all sending sockets will have your local address:
 
 ```bash
-# Test the 80 port of the example.com site using your local address
+# Test example.com:80 using your local address
 $ anevicon --receiver=93.184.216.34:80
 ```
 
@@ -145,7 +145,7 @@ $ anevicon --receiver=93.184.216.34:80
 In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
-# Test the example.com waiting for 270 microseconds after each sendmmsg syscall
+# Test example.com:80 waiting for 270 microseconds after each sendmmsg syscall
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
@@ -153,7 +153,7 @@ $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
 
 ```bash
-# Test the 80 port of example.com and the 13 port of google.com in parallel
+# Test example.com:80 and google.com:13 in parallel
 $ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 ```
 
@@ -161,7 +161,7 @@ $ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
 There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
 
 ```bash
-# Test example.com with a custom network interface using `--select-if`
+# Test example.com with a custom network interface using --select-if
 $ anevicon --receiver=93.184.216.34:80 --select-if
 ```
 
@@ -169,7 +169,7 @@ $ anevicon --receiver=93.184.216.34:80 --select-if
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
-# Test the 80 port of the example.com site with the two limit options
+# Test example.com:80 with the two limit options
 $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 ```
 
@@ -177,17 +177,17 @@ $ anevicon --receiver=93.184.216.34:80 --test-duration=3min --packets-count=7000
 By default, Anevicon will generate a random packet with a default size (32768). In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
-# Test the 80 port of example.com with the custom file 'message.txt'
+# Test example.com:80 with the custom file 'message.txt'
 $ anevicon --receiver=93.184.216.34:80 --send-file="message.txt"
 
-# Test the 80 port of example.com with the custom text message
+# Test example.com:80 with the custom text message
 $ anevicon --receiver=93.184.216.34:80 --send-message="How do you do?"
 ```
 
 Also, you are able to specify one or more random packets with your own lengths using the `--random-packet` option. This example specifies two random-generated packets with the sizes 1454 and 29400:
 
 ```bash
-# Test the 80 port of example.com with two random packets
+# Test example.com:80 with two random packets
 $ anevicon --receiver=93.184.216.34:80 --random-packet=1454 --random-packet=29400
 ```
 
@@ -215,7 +215,7 @@ Different verbosity levels print different logging types. As you can see in the 
 [v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
 
 ```bash
-# Test the 80 port of example.com with these messages:
+# Test example.com:80 with these messages
 #   1) A custom file "file.txt";
 #   2) A text message "Hello, Pitty! You're my worst friend.";
 #   3) A text message "Hello, Scott! This is just a test.";
@@ -235,11 +235,11 @@ $ anevicon --receiver=93.184.216.34:80 \
 One of the most interesting options is `--sender`. It accepts a source address of all future datagrams and can be an absolutely any valid IPv4/IPv6 address, not only your network interface's. Take a look at this example:
 
 ```bash
-# Test the 80 port of example.com using the 172.217.22.14:173 sender:
+# Test example.com:80 using the 172.217.22.14:173 sender
 $ anevicon --receiver=93.184.216.34:80 --sender=172.217.22.14:173
 ```
 
-The command above will run a test to http://example.com/, assigning a source address to `172.217.22.14:173` (A Google's IP), therefore, the destination server will be thinking that all the packets are from Google. This is called [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing).
+The command above will run a test to http://example.com/, assigning source addresses to `172.217.22.14:173` (A Google's IP), therefore, the destination server will be thinking that all the packets are from Google. This is called [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing).
 
 ----------
 
