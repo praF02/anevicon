@@ -21,7 +21,6 @@ use std::fmt::{self, Display, Formatter};
 use std::io;
 use std::io::Write;
 use std::net::SocketAddr;
-
 use termion::color;
 
 /// Displays an interactive menu of network interfaces to a user. Returns a

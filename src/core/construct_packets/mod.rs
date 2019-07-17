@@ -25,19 +25,19 @@ use crate::config::PacketsConfig;
 
 mod construct_payload;
 
-/// Returns a new instance of `UdpPacketsIterator` (an iterator of UDP packets
-/// each constructed from specified user's payload, i.e by `--random-packet`,
-/// `--send-message`, `--send-file`).
-pub fn packets_iterator(
-    config: &PacketsConfig,
-) -> Result<UdpPacketsIterator, ConstructPayloadError> {
-    Ok(UdpPacketsIterator {
-        user_packets: construct_payload(config)?,
-    })
-}
-
 pub struct UdpPacketsIterator {
     user_packets: Vec<Vec<u8>>,
+}
+
+impl UdpPacketsIterator {
+    /// Returns a new instance of `UdpPacketsIterator` (an iterator of UDP
+    /// packets each constructed from specified user's payload, i.e by
+    /// `--random-packet`, `--send-message`, `--send-file`).
+    pub fn new(config: &PacketsConfig) -> Result<UdpPacketsIterator, ConstructPayloadError> {
+        Ok(UdpPacketsIterator {
+            user_packets: construct_payload(config)?,
+        })
+    }
 }
 
 //impl Iterator for UdpPacketsIterator {

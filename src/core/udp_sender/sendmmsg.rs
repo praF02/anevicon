@@ -23,19 +23,19 @@ use std::net::UdpSocket;
 
 use libc::{self, c_int, c_uint, iovec, mmsghdr, msghdr};
 
-use super::Portion;
+use super::Packet;
 
-/// Sends all the specified `portions` using a single system call. `fd` is a
+/// Sends all the specified `packets` using a single system call. `fd` is a
 /// file descriptor of a socket.
 ///
 /// # Returns
 /// It returns a total number of transmitted messages. It can be less or equal
-/// to `portions.len()`.
+/// to `packets.len()`.
 ///
 /// # References
 /// For more information please read https://linux.die.net/man/2/sendmmsg.
-pub fn sendmmsg(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
-    let mut messages: Vec<mmsghdr> = prepare_messages(portions);
+pub fn sendmmsg(fd: c_int, packets: &mut [Packet]) -> io::Result<usize> {
+    let mut messages: Vec<mmsghdr> = prepare_messages(packets);
 
     unsafe {
         match libc::sendmmsg(
@@ -49,7 +49,7 @@ pub fn sendmmsg(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
                 // libc::sendmmsg assigns a number of bytes sent for each packet to
                 // mmsghdr.msg_len, so copy it into our DataPortion
                 for i in 0..messages.len() {
-                    portions[i].0 = messages[i].msg_len as usize;
+                    packets[i].0 = messages[i].msg_len as usize;
                 }
 
                 Ok(portions_sent as usize)
@@ -58,15 +58,15 @@ pub fn sendmmsg(fd: c_int, portions: &mut [Portion]) -> io::Result<usize> {
     }
 }
 
-/// Converts an mutable slice of the `Portion` structure to a vector of
+/// Converts an mutable slice of the `Packet` structure to a vector of
 /// `mmsghdr` that is able to be transmitted by `libc::sendmmsg`.
-fn prepare_messages(portions: &mut [Portion]) -> Vec<mmsghdr> {
-    portions
+fn prepare_messages(packets: &mut [Packet]) -> Vec<mmsghdr> {
+    packets
         .iter_mut()
-        .map(|(_, portion)| mmsghdr {
+        .map(|(_, packet)| mmsghdr {
             msg_hdr: {
                 let mut message = unsafe { mem::zeroed::<msghdr>() };
-                message.msg_iov = portion as *mut IoSlice as *mut iovec;
+                message.msg_iov = packet as *mut IoSlice as *mut iovec;
                 message.msg_iovlen = 1;
 
                 message
@@ -90,38 +90,38 @@ mod test {
             .connect(socket.local_addr().unwrap())
             .expect("socket.connect() has failed");
 
-        let portions = &mut [
+        let packets = &mut [
             (0, IoSlice::new(b"Welcome to the jungle")),
             (0, IoSlice::new(b"We got fun 'n' games")),
             (0, IoSlice::new(b"We got everything you want")),
         ];
 
         assert_eq!(
-            sendmmsg(socket.as_raw_fd(), portions).expect("socket.sendmmsg(messages) has failed"),
-            portions.len()
+            sendmmsg(socket.as_raw_fd(), packets).expect("socket.sendmmsg(messages) has failed"),
+            packets.len()
         );
 
-        for portion in portions {
-            assert_eq!(portion.0, portion.1.len());
+        for packet in packets {
+            assert_eq!(packet.0, packet.1.len());
         }
     }
 
     #[test]
     fn prepares_messages() {
-        let portions = &mut [
+        let packets = &mut [
             (0, IoSlice::new(b"Welcome to the jungle")),
             (0, IoSlice::new(b"We got fun 'n' games")),
             (0, IoSlice::new(b"We got everything you want")),
         ];
 
-        let messages = prepare_messages(portions);
+        let messages = prepare_messages(packets);
 
-        for (headers, (_, portion)) in messages.iter().zip(portions.iter()) {
+        for (headers, (_, packet)) in messages.iter().zip(packets.iter()) {
             assert_eq!(headers.msg_len, 0);
 
             assert_eq!(
                 headers.msg_hdr.msg_iov as *const iovec,
-                portion as *const IoSlice as *const iovec
+                packet as *const IoSlice as *const iovec
             );
             assert_eq!(headers.msg_hdr.msg_iovlen, 1);
         }
