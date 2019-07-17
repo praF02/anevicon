@@ -14,9 +14,8 @@ before_script:
   - rustup component add clippy
   
 # Anevicon uses raw IPv4/IPv6 sockets that require root permissions,
-# so run all future command under sudo:
-  - sudo -s
-  - PATH+=":/home/gymmasssorla/.cargo/bin/cargo"
+# so add cargo to the PATH environmental variable
+  - sudo PATH+=":/home/gymmasssorla/.cargo/bin/cargo"
 
 script:
   - cargo build --all --verbose
