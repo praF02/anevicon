@@ -3,13 +3,14 @@ language: rust
 rust:
   - stable
 
-# We want to see a call stack if something has failed to examine
-# what happened, so set `RUST_BACKTRACE`
 env:
+# We want to see a call stack if something has failed to examine
+# what happened, so set `RUST_BACKTRACE`:
   - RUST_BACKTRACE=1
-  - CARGO_PATH="/home/gymmasssorla/.cargo/bin/cargo"
   
 before_script:
+  - export CARGO_PATH="/home/gymmasssorla/.cargo/bin/cargo"
+  
 # We want to check for any warnings and errors in this crate, so
 # install Clippy:
   - rustup component add clippy
@@ -18,6 +19,6 @@ script:
   - ${CARGO_PATH} build --all --verbose
 
 # Let Clippy also check the tests and non-default crate features
-# to ensure that the code is correct
+# to ensure that the code is correct:
   - ${CARGO_PATH} clippy --all --all-targets --all-features
   - sudo ${CARGO_PATH} test --all
