@@ -51,6 +51,7 @@ numerous UDP packets which lets you test your server against the abnormaly high 
    - [Custom messages](https://github.com/Gymmasssorla/anevicon#custom-messages)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
+   - [IP address spoofing](https://github.com/Gymmasssorla/anevicon#ip-address-spoofing)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
@@ -229,6 +230,16 @@ $ anevicon --receiver=93.184.216.34:80 \
 --random-packet=5355 \
 --random-packet=2222
 ```
+
+### IP address spoofing
+One of the most interesting options is `--sender`. It accepts a source address of all future datagrams and can be an absolutely any valid IPv4/IPv6 address, not only your network interface's. Take a look at this example:
+
+```bash
+# Test the 80 port of example.com using the 172.217.22.14:173 sender:
+$ anevicon --receiver=93.184.216.34:80 --sender=172.217.22.14:173
+```
+
+The command above will run a test to http://example.com/, assigning a source address to `172.217.22.14:173` (A Google's IP), therefore, the destination server will be thinking that all the packets are from Google. This is called [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing).
 
 ----------
 
