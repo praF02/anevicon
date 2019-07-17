@@ -117,7 +117,7 @@ Name | Value | Default | Explanation
 `-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
 `--send-periodicity` | Time span | `0secs` | A time interval between `sendmmsg` system calls. This option can be used to modify test intensity
 `-t, --send-timeout` | Time span | `10secs` | A timeout of sending every single packet. If a timeout is reached, then a packet will be sent later
-`-s, --sender` | Socket address | `0.0.0.0:0` | A sender of generated traffic, specified as an IP-address and a port number, separated by a colon
+`-s, --sender` | Socket address | `0.0.0.0:0` | A sender of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>A sender may not be a local interface's address, it can be absolutely any valid IPv4/IPv6 address. It can be used to send spoofed packets.
 `-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long `sendmmsg` system calls. For more precision, decrease the `--packets-per-syscall` value.
 `-v, --verbosity` | From 0 to 5 | `3` | Enable one of the possible verbosity levels. The zero level doesn't print anything, and the last level prints everything.<br><br>Note that specifying the 4 and 5 verbosity levels might decrease performance, do it only for debugging.
 `-w, --wait` | Time span | `5secs` | A waiting time span before a test execution used to prevent a launch of an erroneous (unwanted) test

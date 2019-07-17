@@ -112,7 +112,10 @@ pub struct SocketsConfig {
     pub receivers: Vec<SocketAddr>,
 
     /// A sender of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon
+    /// number, separated by a colon.
+    ///
+    /// A sender may not be a local interface's address, it can be absolutely
+    /// any valid IPv4/IPv6 address. It can be used to send spoofed packets.
     #[structopt(
         short = "s",
         long = "sender",
