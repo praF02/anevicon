@@ -53,18 +53,6 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    #[structopt(flatten)]
-    pub logging_config: LoggingConfig,
-
-    #[structopt(flatten)]
-    pub tester_config: TesterConfig,
-
-    #[structopt(flatten)]
-    pub packets_config: PacketsConfig,
-}
-
-#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct TesterConfig {
     /// A time interval between sendmmsg system calls. This option can be used
     /// to modify test intensity
     #[structopt(
@@ -88,48 +76,29 @@ pub struct TesterConfig {
     )]
     pub packets_per_syscall: NonZeroUsize,
 
-    #[structopt(flatten)]
-    pub exit_config: ExitConfig,
-
-    #[structopt(flatten)]
-    pub sockets_config: SocketsConfig,
-}
-
-#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct SocketsConfig {
-    /// A receiver of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon.
-    ///
-    /// This option can be specified several times to identically test multiple
-    /// receivers in parallel mode.
-    #[structopt(
-        short = "r",
-        long = "receiver",
-        takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        required = true
-    )]
-    pub receivers: Vec<SocketAddr>,
-
-    /// A sender of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon.
-    ///
-    /// A sender may not be a local interface's address, it can be absolutely
-    /// any valid IPv4/IPv6 address. It can be used to send spoofed packets.
-    #[structopt(
-        short = "s",
-        long = "sender",
-        takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        default_value = "0.0.0.0:0"
-    )]
-    pub sender: SocketAddr,
-
     /// Displays an interactive menu of network interfaces to use. If unset, a
     /// default one will be used
     #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
     pub select_if: bool,
 
+    #[structopt(flatten)]
+    pub exit_config: ExitConfig,
+
+    #[structopt(flatten)]
+    pub sockets_config: SocketsConfig,
+
+    #[structopt(flatten)]
+    pub logging_config: LoggingConfig,
+
+    #[structopt(flatten)]
+    pub payload_config: PayloadConfig,
+
+    #[structopt(flatten)]
+    pub packets_config: PacketsConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct SocketsConfig {
     /// A timeout of sending every single packet. If a timeout is reached, then
     /// a packet will be sent later
     #[structopt(
@@ -141,11 +110,6 @@ pub struct SocketsConfig {
         parse(try_from_str = "parse_duration")
     )]
     pub send_timeout: Duration,
-
-    /// Specifies the IP_TTL value for all future sockets. Usually this value
-    /// equals a number of routers that a packet can go through
-    #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
-    pub ip_ttl: Option<u32>,
 
     /// Allow sockets to send packets to a broadcast address specified using the
     /// `--receiver` option
@@ -214,7 +178,7 @@ pub struct ExitConfig {
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct PacketsConfig {
+pub struct PayloadConfig {
     /// Repeatedly send a random-generated packet with a specified bytes length.
     /// The default is 32768
     #[structopt(
@@ -247,6 +211,42 @@ pub struct PacketsConfig {
     pub send_messages: Vec<String>,
 }
 
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct PacketsConfig {
+    /// A receiver of generated traffic, specified as an IP-address and a port
+    /// number, separated by a colon.
+    ///
+    /// This option can be specified several times to identically test multiple
+    /// receivers in parallel mode.
+    #[structopt(
+        short = "r",
+        long = "receiver",
+        takes_value = true,
+        value_name = "SOCKET-ADDRESS",
+        required = true
+    )]
+    pub receivers: Vec<SocketAddr>,
+
+    /// A sender of generated traffic, specified as an IP-address and a port
+    /// number, separated by a colon.
+    ///
+    /// A sender may not be a local interface's address, it can be absolutely
+    /// any valid IPv4/IPv6 address. It can be used to send spoofed packets.
+    #[structopt(
+        short = "s",
+        long = "sender",
+        takes_value = true,
+        value_name = "SOCKET-ADDRESS",
+        default_value = "0.0.0.0:0"
+    )]
+    pub sender: SocketAddr,
+
+    /// Specifies the IP_TTL value for all future sockets. Usually this value
+    /// equals a number of routers that a packet can go through
+    #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
+    pub ip_ttl: Option<u32>,
+}
+
 impl ArgsConfig {
     /// Use it to setup the current structure. It does special additional stuff
     /// unlike the typical `StructOpt::from_args()`.
@@ -255,11 +255,11 @@ impl ArgsConfig {
 
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
-        if matches.packets_config.send_files.is_empty()
-            && matches.packets_config.random_packets.is_empty()
-            && matches.packets_config.send_messages.is_empty()
+        if matches.payload_config.send_files.is_empty()
+            && matches.payload_config.random_packets.is_empty()
+            && matches.payload_config.send_messages.is_empty()
         {
-            matches.packets_config.random_packets =
+            matches.payload_config.random_packets =
                 vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
         }
 

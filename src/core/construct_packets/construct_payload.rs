@@ -25,7 +25,7 @@ use std::path::Path;
 
 use rand::{thread_rng, RngCore};
 
-use crate::config::PacketsConfig;
+use crate::config::PayloadConfig;
 
 /// Constructs a bytes packets from `PacketConfig`. Then it must be sent to all
 /// receivers multiple times.
@@ -33,7 +33,7 @@ use crate::config::PacketsConfig;
 /// Note that this function constructs **ONLY** payload without
 /// protocol-specific headers and etc. Just payload that a user has specified by
 /// `--send-file`, `--send-message`, `--random-packet`.
-pub fn construct_payload(config: &PacketsConfig) -> Result<Vec<Vec<u8>>, ConstructPayloadError> {
+pub fn construct_payload(config: &PayloadConfig) -> Result<Vec<Vec<u8>>, ConstructPayloadError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
@@ -100,7 +100,7 @@ mod tests {
 
     use lazy_static::lazy_static;
 
-    use crate::config::PacketsConfig;
+    use crate::config::PayloadConfig;
 
     use super::*;
 
@@ -138,7 +138,7 @@ mod tests {
     #[test]
     fn test_choose_random_payload() {
         let packet_length = NonZeroUsize::new(24550).unwrap();
-        let packets = construct_payload(&PacketsConfig {
+        let packets = construct_payload(&PayloadConfig {
             send_files: Vec::new(),
             random_packets: vec![packet_length],
             send_messages: Vec::new(),
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_choose_file_payload() {
-        let packets = construct_payload(&PacketsConfig {
+        let packets = construct_payload(&PayloadConfig {
             send_files: vec![PACKET_FILE.clone()],
             random_packets: Vec::new(),
             send_messages: Vec::new(),
@@ -169,7 +169,7 @@ mod tests {
     fn test_choose_text_message() {
         let message = String::from("Generals gathered in their masses");
 
-        let packets = construct_payload(&PacketsConfig {
+        let packets = construct_payload(&PayloadConfig {
             send_files: Vec::new(),
             random_packets: Vec::new(),
             send_messages: vec![message.clone()],
@@ -191,7 +191,7 @@ mod tests {
         let random_first = NonZeroUsize::new(3566).unwrap();
         let random_second = NonZeroUsize::new(9385).unwrap();
 
-        let packets = construct_payload(&PacketsConfig {
+        let packets = construct_payload(&PayloadConfig {
             send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
             random_packets: vec![random_first, random_second],
             send_messages: vec![first_message.clone(), second_message.clone()],

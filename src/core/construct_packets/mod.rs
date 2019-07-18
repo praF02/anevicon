@@ -21,7 +21,7 @@ use pnet::packet::udp::UdpPacket;
 use construct_payload::construct_payload;
 pub use construct_payload::ConstructPayloadError;
 
-use crate::config::PacketsConfig;
+use crate::config::PayloadConfig;
 
 mod construct_payload;
 
@@ -33,7 +33,7 @@ impl UdpPacketsIterator {
     /// Returns a new instance of `UdpPacketsIterator` (an iterator of UDP
     /// packets each constructed from specified user's payload, i.e by
     /// `--random-packet`, `--send-message`, `--send-file`).
-    pub fn new(config: &PacketsConfig) -> Result<UdpPacketsIterator, ConstructPayloadError> {
+    pub fn new(config: &PayloadConfig) -> Result<UdpPacketsIterator, ConstructPayloadError> {
         Ok(UdpPacketsIterator {
             user_packets: construct_payload(config)?,
         })

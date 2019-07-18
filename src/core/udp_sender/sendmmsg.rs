@@ -19,9 +19,6 @@
 use std::io;
 use std::io::IoSlice;
 use std::mem;
-use std::net::UdpSocket;
-
-use libc::{self, c_int, c_uint, iovec, mmsghdr, msghdr};
 
 use super::Packet;
 
@@ -34,14 +31,14 @@ use super::Packet;
 ///
 /// # References
 /// For more information please read https://linux.die.net/man/2/sendmmsg.
-pub fn sendmmsg(fd: c_int, packets: &mut [Packet]) -> io::Result<usize> {
-    let mut messages: Vec<mmsghdr> = prepare_messages(packets);
+pub fn sendmmsg(fd: libc::c_int, packets: &mut [Packet]) -> io::Result<usize> {
+    let mut messages: Vec<libc::mmsghdr> = prepare_messages(packets);
 
     unsafe {
         match libc::sendmmsg(
             fd,
-            &mut messages[0] as *mut mmsghdr,
-            messages.len() as c_uint,
+            &mut messages[0] as *mut libc::mmsghdr,
+            messages.len() as libc::c_uint,
             0,
         ) {
             -1 => Err(io::Error::last_os_error()),
@@ -60,13 +57,13 @@ pub fn sendmmsg(fd: c_int, packets: &mut [Packet]) -> io::Result<usize> {
 
 /// Converts an mutable slice of the `Packet` structure to a vector of
 /// `mmsghdr` that is able to be transmitted by `libc::sendmmsg`.
-fn prepare_messages(packets: &mut [Packet]) -> Vec<mmsghdr> {
+fn prepare_messages(packets: &mut [Packet]) -> Vec<libc::mmsghdr> {
     packets
         .iter_mut()
-        .map(|(_, packet)| mmsghdr {
+        .map(|(_, packet)| libc::mmsghdr {
             msg_hdr: {
-                let mut message = unsafe { mem::zeroed::<msghdr>() };
-                message.msg_iov = packet as *mut IoSlice as *mut iovec;
+                let mut message = unsafe { mem::zeroed::<libc::msghdr>() };
+                message.msg_iov = packet as *mut IoSlice as *mut libc::iovec;
                 message.msg_iovlen = 1;
 
                 message
@@ -79,6 +76,7 @@ fn prepare_messages(packets: &mut [Packet]) -> Vec<mmsghdr> {
 
 #[cfg(test)]
 mod test {
+    use std::net::UdpSocket;
     use std::os::unix::io::AsRawFd;
 
     use super::*;
@@ -120,8 +118,8 @@ mod test {
             assert_eq!(headers.msg_len, 0);
 
             assert_eq!(
-                headers.msg_hdr.msg_iov as *const iovec,
-                packet as *const IoSlice as *const iovec
+                headers.msg_hdr.msg_iov as *const libc::iovec,
+                packet as *const IoSlice as *const libc::iovec
             );
             assert_eq!(headers.msg_hdr.msg_iovlen, 1);
         }
