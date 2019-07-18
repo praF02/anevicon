@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEMO.png" beforeDir="false" afterPath="$PROJECT_DIR$/DEMO.png" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,7 +18,7 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -120,17 +121,16 @@
     <option name="directoryName" value="OdtwNIyU" />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="482" />
-    <option name="y" value="386" />
-    <option name="width" value="927" />
-    <option name="height" value="787" />
+    <option name="x" value="67" />
+    <option name="y" value="25" />
+    <option name="width" value="1853" />
+    <option name="height" value="1055" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -167,6 +167,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -362,8 +363,8 @@
       <item itemvalue="Cargo Command.Test core::packets::tests::test_multiple_packets" />
       <item itemvalue="Cargo Command.Test core::packets_buffer::tests::constructs_buffer_correctly" />
       <item itemvalue="Cargo Command.Test core::packets_buffer::tests::test_packets_buffer" />
-      <item itemvalue="Cargo Command.Test sockets::tests::test_init_socket" />
       <item itemvalue="Cargo Command.Test core::udp_sender::tests::test_set_socket_options" />
+      <item itemvalue="Cargo Command.Test sockets::tests::test_init_socket" />
     </list>
     <recent_temporary>
       <list>
@@ -427,7 +428,7 @@
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19701162" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19922523" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
