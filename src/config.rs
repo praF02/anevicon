@@ -76,11 +76,6 @@ pub struct ArgsConfig {
     )]
     pub packets_per_syscall: NonZeroUsize,
 
-    /// Displays an interactive menu of network interfaces to use. If unset, a
-    /// default one will be used
-    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
-    pub select_if: bool,
-
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
 
@@ -245,6 +240,11 @@ pub struct PacketsConfig {
     /// equals a number of routers that a packet can go through
     #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
     pub ip_ttl: Option<u32>,
+
+    /// Displays an interactive menu of network interfaces to use. If unset, a
+    /// default one will be used
+    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
+    pub select_if: bool,
 }
 
 impl ArgsConfig {
