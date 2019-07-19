@@ -30,9 +30,13 @@ use crate::core::summary::{SummaryPortion, TestSummary};
 
 mod sendmmsg;
 
-/// A type alias that represents a portion to be sent. The first item is a
-/// number of bytes sent, and the second item is a packet to be sent.
-pub type Packet<'a> = (usize, IoSlice<'a>);
+/// A type alias that represents a portion to be sent. `transmitted` is a
+/// number of bytes sent, and `slice` is a packet to be sent.
+#[derive(Debug)]
+pub struct DataPortion<'a> {
+    pub transmitted: usize,
+    pub slice: IoSlice<'a>,
+}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum SupplyResult {
@@ -48,7 +52,7 @@ pub struct UdpSender<'a> {
     /// The buffer capacity equals to a number of packets transmitted per a
     /// system call (`--packets-per-syscall`). When this buffer is full, then it
     /// will be flushed to an endpoint using `libc::sendmmsg`.
-    buffer: Vec<Packet<'a>>,
+    buffer: Vec<DataPortion<'a>>,
 }
 
 impl<'a> UdpSender<'a> {
@@ -106,7 +110,7 @@ impl<'a> UdpSender<'a> {
     pub fn supply(
         &mut self,
         summary: &mut TestSummary,
-        packet: Packet<'a>,
+        packet: DataPortion<'a>,
     ) -> io::Result<SupplyResult> {
         let res = if self.buffer.len() == self.buffer.capacity() {
             self.flush(summary)?;
@@ -128,9 +132,9 @@ impl<'a> UdpSender<'a> {
 
             let mut bytes_expected = 0usize;
             let mut bytes_sent = 0usize;
-            for (bytes_of_packet, slice) in &self.buffer {
-                bytes_expected += slice.len();
-                bytes_sent += *bytes_of_packet;
+            for packet in &self.buffer {
+                bytes_expected += packet.slice.len();
+                bytes_sent += packet.transmitted;
             }
 
             *summary +=
@@ -198,6 +202,7 @@ mod tests {
             broadcast: false,
             send_timeout: Duration::from_secs(3),
         };
+
         static ref UDP_SERVER: UdpSocket =
             UdpSocket::bind("127.0.0.1:0").expect("Failed to setup UDP_SERVER");
 
@@ -265,6 +270,8 @@ mod tests {
 
     #[test]
     fn test_packets_buffer() {
+        const SUPPLY_COUNT: usize = 6;
+
         let mut summary = TestSummary::default();
         let mut buffer = UdpSender::new(
             &UDP_SERVER.local_addr().unwrap(),
@@ -272,52 +279,66 @@ mod tests {
             &DEFAULT_SOCKETS_CONFIG,
         )
         .expect("UdpSender::new(...) failed");
-        ;
 
         let check = |buffer: &UdpSender| {
             assert_eq!(buffer.buffer.capacity(), 4);
             assert_eq!(
-                buffer.buffer.last().unwrap().1.deref(),
+                buffer.buffer.last().unwrap().slice.deref(),
                 TEST_UDP_PACKET.packet()
             );
         };
 
         let mut supply = |buffer: &mut UdpSender| {
             buffer
-                .supply(&mut summary, (0, IoSlice::new(TEST_UDP_PACKET.packet())))
+                .supply(
+                    &mut summary,
+                    DataPortion {
+                        transmitted: 0usize,
+                        slice: IoSlice::new(TEST_UDP_PACKET.packet()),
+                    },
+                )
                 .expect("buffer.supply() failed");
         };
 
-        supply(&mut buffer);
+        supply(&mut buffer); // 1
         assert_eq!(buffer.buffer.len(), 1);
         check(&buffer);
 
-        supply(&mut buffer);
+        supply(&mut buffer); // 2
         assert_eq!(buffer.buffer.len(), 2);
         check(&buffer);
 
-        supply(&mut buffer);
+        supply(&mut buffer); // 3
         assert_eq!(buffer.buffer.len(), 3);
         check(&buffer);
 
-        supply(&mut buffer);
+        supply(&mut buffer); // 4
         assert_eq!(buffer.buffer.len(), 4);
         check(&buffer);
 
         // At this moment our buffer must flush itself
-        supply(&mut buffer);
+        supply(&mut buffer); // 5
         assert_eq!(buffer.buffer.len(), 1);
         check(&buffer);
 
-        supply(&mut buffer);
+        supply(&mut buffer); // 6
         assert_eq!(buffer.buffer.len(), 2);
         check(&buffer);
 
-        buffer
-            .flush(&mut summary)
-            .expect("buffer.complete() failed");
+        buffer.flush(&mut summary).expect("buffer.flush() failed");
         assert_eq!(buffer.buffer.len(), 0);
         assert_eq!(buffer.buffer.capacity(), 4);
+
+        // Check that our UdpSender has updates the TestSummary
+        assert!(
+            summary.megabytes_expected() == summary.megabytes_sent()
+                && summary.megabytes_sent()
+                    == (SUPPLY_COUNT * TEST_UDP_PACKET.packet().len()) / 1024 / 1024
+        );
+        assert!(
+            summary.packets_expected() == summary.packets_sent()
+                && summary.packets_sent() == SUPPLY_COUNT
+        );
     }
 
     #[test]

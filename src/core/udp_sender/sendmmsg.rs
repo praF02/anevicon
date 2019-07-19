@@ -20,7 +20,7 @@ use std::io;
 use std::io::IoSlice;
 use std::mem;
 
-use super::Packet;
+use super::DataPortion;
 
 /// Sends all the specified `packets` using a single system call. `fd` is a
 /// file descriptor of a socket.
@@ -31,7 +31,7 @@ use super::Packet;
 ///
 /// # References
 /// For more information please read https://linux.die.net/man/2/sendmmsg.
-pub fn sendmmsg(fd: libc::c_int, packets: &mut [Packet]) -> io::Result<usize> {
+pub fn sendmmsg(fd: libc::c_int, packets: &mut [DataPortion]) -> io::Result<usize> {
     let mut messages: Vec<libc::mmsghdr> = prepare_messages(packets);
 
     unsafe {
@@ -46,7 +46,7 @@ pub fn sendmmsg(fd: libc::c_int, packets: &mut [Packet]) -> io::Result<usize> {
                 // libc::sendmmsg assigns a number of bytes sent for each packet to
                 // mmsghdr.msg_len, so copy it into our DataPortion
                 for i in 0..messages.len() {
-                    packets[i].0 = messages[i].msg_len as usize;
+                    packets[i].transmitted = messages[i].msg_len as usize;
                 }
 
                 Ok(portions_sent as usize)
@@ -55,15 +55,15 @@ pub fn sendmmsg(fd: libc::c_int, packets: &mut [Packet]) -> io::Result<usize> {
     }
 }
 
-/// Converts an mutable slice of the `Packet` structure to a vector of
+/// Converts an mutable slice of the `DataPortion` structure to a vector of
 /// `mmsghdr` that is able to be transmitted by `libc::sendmmsg`.
-fn prepare_messages(packets: &mut [Packet]) -> Vec<libc::mmsghdr> {
+fn prepare_messages(packets: &mut [DataPortion]) -> Vec<libc::mmsghdr> {
     packets
         .iter_mut()
-        .map(|(_, packet)| libc::mmsghdr {
+        .map(|packet| libc::mmsghdr {
             msg_hdr: {
                 let mut message = unsafe { mem::zeroed::<libc::msghdr>() };
-                message.msg_iov = packet as *mut IoSlice as *mut libc::iovec;
+                message.msg_iov = &mut packet.slice as *mut IoSlice as *mut libc::iovec;
                 message.msg_iovlen = 1;
 
                 message
@@ -89,9 +89,18 @@ mod test {
             .expect("socket.connect() has failed");
 
         let packets = &mut [
-            (0, IoSlice::new(b"Welcome to the jungle")),
-            (0, IoSlice::new(b"We got fun 'n' games")),
-            (0, IoSlice::new(b"We got everything you want")),
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"Welcome to the jungle"),
+            },
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"We got fun 'n' games"),
+            },
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"We got everything you want"),
+            },
         ];
 
         assert_eq!(
@@ -100,26 +109,35 @@ mod test {
         );
 
         for packet in packets {
-            assert_eq!(packet.0, packet.1.len());
+            assert_eq!(packet.transmitted, packet.slice.len());
         }
     }
 
     #[test]
     fn prepares_messages() {
         let packets = &mut [
-            (0, IoSlice::new(b"Welcome to the jungle")),
-            (0, IoSlice::new(b"We got fun 'n' games")),
-            (0, IoSlice::new(b"We got everything you want")),
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"Welcome to the jungle"),
+            },
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"We got fun 'n' games"),
+            },
+            DataPortion {
+                transmitted: 0usize,
+                slice: IoSlice::new(b"We got everything you want"),
+            },
         ];
 
         let messages = prepare_messages(packets);
 
-        for (headers, (_, packet)) in messages.iter().zip(packets.iter()) {
+        for (headers, packet) in messages.iter().zip(packets.iter()) {
             assert_eq!(headers.msg_len, 0);
 
             assert_eq!(
                 headers.msg_hdr.msg_iov as *const libc::iovec,
-                packet as *const IoSlice as *const libc::iovec
+                &packet.slice as *const IoSlice as *const libc::iovec
             );
             assert_eq!(headers.msg_hdr.msg_iovlen, 1);
         }
