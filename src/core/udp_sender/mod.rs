@@ -101,6 +101,8 @@ impl<'a> UdpSender<'a> {
         })
     }
 
+    /// Puts `packet` into an inner buffer. If a buffer is full, then all its
+    /// content will be flushed and a specified `summary` will be updated.
     pub fn supply(
         &mut self,
         summary: &mut TestSummary,
@@ -117,6 +119,9 @@ impl<'a> UdpSender<'a> {
         Ok(res)
     }
 
+    /// Flushes contents of an inner buffer (sends data to an endpoint),
+    /// simultaneously updating a specified `summary`. A buffer will be
+    /// empty after this operation.
     pub fn flush(&mut self, summary: &mut TestSummary) -> io::Result<()> {
         if !self.buffer.is_empty() {
             let packets_sent = sendmmsg(self.fd, self.buffer.as_mut_slice())?;
