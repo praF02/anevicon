@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEMO.png" beforeDir="false" afterPath="$PROJECT_DIR$/DEMO.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,7 +18,7 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -63,7 +63,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/CONTRIBUTING.md" />
         <option value="$PROJECT_DIR$/anevicon_core/src/testing.rs" />
         <option value="$PROJECT_DIR$/src/testers.rs" />
         <option value="$PROJECT_DIR$/src/pool.rs" />
@@ -106,14 +105,15 @@
         <option value="$PROJECT_DIR$/src/core/summary.rs" />
         <option value="$PROJECT_DIR$/src/core/udp_sender/udp_sender.rs" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/core/mod.rs" />
         <option value="$PROJECT_DIR$/src/core/select_interface.rs" />
         <option value="$PROJECT_DIR$/src/config.rs" />
+        <option value="$PROJECT_DIR$/src/core/construct_packets/mod.rs" />
+        <option value="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" />
+        <option value="$PROJECT_DIR$/src/core/udp_sender/test.rs" />
+        <option value="$PROJECT_DIR$/src/core/mod.rs" />
         <option value="$PROJECT_DIR$/src/main.rs" />
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/src/core/udp_sender/mod.rs" />
-        <option value="$PROJECT_DIR$/src/core/construct_packets/mod.rs" />
-        <option value="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" />
       </list>
     </option>
   </component>
@@ -123,7 +123,7 @@
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="67" />
     <option name="y" value="25" />
-    <option name="width" value="1853" />
+    <option name="width" value="927" />
     <option name="height" value="1055" />
   </component>
   <component name="ProjectView">
@@ -167,8 +167,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -176,6 +176,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8.0_191" />
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
+    <property name="org.rust.hideDetachedFileNotifications/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon/src/core/udp_sender/test.rs" value="true" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
@@ -363,8 +364,8 @@
       <item itemvalue="Cargo Command.Test core::packets::tests::test_multiple_packets" />
       <item itemvalue="Cargo Command.Test core::packets_buffer::tests::constructs_buffer_correctly" />
       <item itemvalue="Cargo Command.Test core::packets_buffer::tests::test_packets_buffer" />
-      <item itemvalue="Cargo Command.Test core::udp_sender::tests::test_set_socket_options" />
       <item itemvalue="Cargo Command.Test sockets::tests::test_init_socket" />
+      <item itemvalue="Cargo Command.Test core::udp_sender::tests::test_set_socket_options" />
     </list>
     <recent_temporary>
       <list>
@@ -394,12 +395,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_core__udp_sender__tests__test_set_socket_options - 2019.07.18 at 03h 06m 15s.xml">
-      <configuration name="Test core::udp_sender::tests::test_set_socket_options" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
-    <history-entry file="Test_core__udp_sender__tests__test_set_socket_options - 2019.07.18 at 14h 10m 30s.xml">
-      <configuration name="Test core::udp_sender::tests::test_set_socket_options" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Test_core__udp_sender__tests__test_set_socket_options - 2019.07.18 at 14h 20m 09s.xml">
       <configuration name="Test core::udp_sender::tests::test_set_socket_options" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -424,11 +419,17 @@
     <history-entry file="Cargo_Test - 2019.07.18 at 19h 44m 51s.xml">
       <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.19 at 01h 20m 17s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
+    <history-entry file="Cargo_Test - 2019.07.19 at 13h 18m 50s.xml">
+      <configuration name="Cargo Test" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19922523" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20420587" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -440,13 +441,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969433" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.17602591" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.03347732" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.24406047" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" visible="true" weight="0.5799136" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32937366" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -495,18 +496,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/thread/mod.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="579">
-          <caret line="1457" column="11" selection-start-line="1457" selection-start-column="11" selection-end-line="1457" selection-end-column="11" />
-          <folding>
-            <element signature="e#53393#53394#0" expanded="true" />
-            <element signature="e#53421#53422#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/anevicon_core/rustfmt.toml" />
     <entry file="file://$PROJECT_DIR$/anevicon_core/src/options.rs" />
     <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/sendmmsg-0.3.4/src/lib.rs" />
     <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-2019-04-11-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/io/stdio.rs" />
@@ -626,11 +615,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="-714">
-          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="204">
@@ -639,39 +623,16 @@
           <second_editor />
         </state>
       </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="-714">
+          <caret line="18" column="2" lean-forward="true" selection-start-line="18" selection-start-column="2" selection-end-line="18" selection-end-column="2" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/core/select_interface.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="56" column="23" lean-forward="true" selection-start-line="56" selection-start-column="23" selection-end-line="56" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/mod.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="42" column="5" lean-forward="true" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.60/src/unix/mod.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="544" column="40" lean-forward="true" selection-start-line="544" selection-start-column="40" selection-end-line="544" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="26" column="14" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
         </state>
       </provider>
     </entry>
@@ -715,13 +676,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="596">
-          <caret line="265" column="15" selection-start-line="265" selection-start-column="15" selection-end-line="265" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="62">
@@ -729,10 +683,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.60/src/unix/mod.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="941" column="42" lean-forward="true" selection-start-line="941" selection-start-column="42" selection-end-line="941" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libcore/mem/mod.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="267" column="7" selection-start-line="267" selection-start-column="7" selection-end-line="267" selection-end-column="7" />
+          <folding>
+            <element signature="e#8537#8538#0" expanded="true" />
+            <element signature="e#8583#8584#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-24">
+          <caret line="100" column="11" selection-start-line="100" selection-start-column="11" selection-end-line="100" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/udp_sender/test.rs" />
+    <entry file="file://$PROJECT_DIR$/src/main.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/mod.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="26" column="14" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/udp_sender/mod.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1689">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="-658">
+          <caret line="83" column="21" selection-start-line="83" selection-start-column="21" selection-end-line="83" selection-end-column="21" />
+          <folding>
+            <element signature="e#4538#4539#0" expanded="true" />
+            <element signature="e#4616#4617#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
