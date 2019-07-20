@@ -31,10 +31,13 @@ use pnet::packet::{Packet, PacketSize};
 
 use construct_payload::construct_payload;
 pub use construct_payload::ConstructPayloadError;
+use select_interface::select_interface;
+pub use select_interface::SelectInterfaceError;
 
 use crate::config::PacketsConfig;
 
 mod construct_payload;
+mod select_interface;
 
 const IPV4_HEADER_LENGTH: usize = 20;
 const IPV6_HEADER_LENGTH: usize = 40;
@@ -44,12 +47,14 @@ const UDP_HEADER_LENGTH: usize = 8;
 pub enum ConstructPacketsError {
     PayloadError(ConstructPayloadError),
     InvalidAddresses,
+    InterfaceError(SelectInterfaceError),
 }
 
 impl Display for ConstructPacketsError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
             ConstructPacketsError::PayloadError(err) => err.fmt(fmt),
+            ConstructPacketsError::InterfaceError(err) => err.fmt(fmt),
             ConstructPacketsError::InvalidAddresses => write!(
                 fmt,
                 "A sender and all receivers must be both either IPv4 or IPv6 addresses"
@@ -74,12 +79,21 @@ pub fn construct_packets(
     let payload =
         construct_payload(&config.payload_config).map_err(ConstructPacketsError::PayloadError)?;
 
+    let source_addr = if config.select_if {
+        match select_interface() {
+            Ok(res) => res,
+            Err(err) => return Err(ConstructPacketsError::InterfaceError(err)),
+        }
+    } else {
+        config.sender
+    };
+
     for receiver in &config.receivers {
         let mut packets = Vec::with_capacity(payload.len());
 
         for packet_payload in &payload {
             packets.push(construct_ip_udp_packet(
-                &config.sender,
+                &source_addr,
                 &receiver,
                 packet_payload,
                 config.ip_ttl,

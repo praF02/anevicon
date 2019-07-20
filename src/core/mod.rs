@@ -17,6 +17,5 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 mod construct_packets;
-mod select_interface;
 mod summary;
 mod udp_sender;
