@@ -19,6 +19,7 @@
 use std::convert::TryInto;
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
+use std::hint::unreachable_unchecked;
 use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
 use std::vec::IntoIter;
 
@@ -113,6 +114,9 @@ fn construct_ip_udp_packet(
     payload: &[u8],
     ttl: u8,
 ) -> Vec<u8> {
+    // Both source and dest are specifies as either IPv4 or IPv6 packets (before
+    // calling this function we checked this condition by check_packets_config()),
+    // so later we use unreachable_unchecked() to optimize the code.
     let binary_packet = match source {
         SocketAddr::V4(source_addr) => match dest {
             SocketAddr::V4(dest_addr) => {
@@ -120,7 +124,7 @@ fn construct_ip_udp_packet(
                     .packet()
                     .to_owned()
             }
-            _ => panic!("Both a source and a destination addresses must be either IPv4 or IPv6"),
+            _ => unsafe { unreachable_unchecked() },
         },
         SocketAddr::V6(source_addr) => match dest {
             SocketAddr::V6(dest_addr) => {
@@ -128,7 +132,7 @@ fn construct_ip_udp_packet(
                     .packet()
                     .to_owned()
             }
-            _ => panic!("Both a source and a destination addresses must be either IPv4 or IPv6"),
+            _ => unsafe { unreachable_unchecked() },
         },
     };
 
