@@ -86,9 +86,6 @@ pub struct ArgsConfig {
     pub logging_config: LoggingConfig,
 
     #[structopt(flatten)]
-    pub payload_config: PayloadConfig,
-
-    #[structopt(flatten)]
     pub packets_config: PacketsConfig,
 }
 
@@ -245,6 +242,9 @@ pub struct PacketsConfig {
     /// default one will be used
     #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
     pub select_if: bool,
+
+    #[structopt(flatten)]
+    pub payload_config: PayloadConfig,
 }
 
 impl ArgsConfig {
