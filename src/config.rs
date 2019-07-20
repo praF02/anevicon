@@ -260,11 +260,19 @@ impl ArgsConfig {
 
         // If a user hasn't specified both a file, a text message, and a packet length,
         // then set the default packet length
-        if matches.payload_config.send_files.is_empty()
-            && matches.payload_config.random_packets.is_empty()
-            && matches.payload_config.send_messages.is_empty()
+        if matches.packets_config.payload_config.send_files.is_empty()
+            && matches
+                .packets_config
+                .payload_config
+                .random_packets
+                .is_empty()
+            && matches
+                .packets_config
+                .payload_config
+                .send_messages
+                .is_empty()
         {
-            matches.payload_config.random_packets =
+            matches.packets_config.payload_config.random_packets =
                 vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
         }
 
