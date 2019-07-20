@@ -235,8 +235,13 @@ pub struct PacketsConfig {
 
     /// Specifies the IP_TTL value for all future sockets. Usually this value
     /// equals a number of routers that a packet can go through
-    #[structopt(long = "ip-ttl", takes_value = true, value_name = "UNSIGNED-INTEGER")]
-    pub ip_ttl: Option<u32>,
+    #[structopt(
+        long = "ip-ttl",
+        takes_value = true,
+        default_value = "64",
+        value_name = "UNSIGNED-INTEGER"
+    )]
+    pub ip_ttl: u8,
 
     /// Displays an interactive menu of network interfaces to use. If unset, a
     /// default one will be used
