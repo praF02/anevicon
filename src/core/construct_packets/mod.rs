@@ -16,7 +16,14 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use pnet::packet::udp::UdpPacket;
+use std::convert::TryInto;
+use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
+
+use pnet::packet::ip::IpNextHeaderProtocols;
+use pnet::packet::ipv4::{Ipv4Packet, MutableIpv4Packet};
+use pnet::packet::ipv6::{Ipv6Packet, MutableIpv6Packet};
+use pnet::packet::udp::{self, MutableUdpPacket, UdpPacket};
+use pnet::packet::{Packet, PacketSize};
 
 use construct_payload::construct_payload;
 pub use construct_payload::ConstructPayloadError;
@@ -25,23 +32,113 @@ use crate::config::PayloadConfig;
 
 mod construct_payload;
 
-pub struct UdpPacketsIterator {
+const IPV4_HEADER_LENGTH: usize = 20;
+const IPV6_HEADER_LENGTH: usize = 40;
+const UDP_HEADER_LENGTH: usize = 8;
+
+pub struct UdpPacketsGenerator {
     user_packets: Vec<Vec<u8>>,
 }
 
-impl UdpPacketsIterator {
+impl UdpPacketsGenerator {
     /// Returns a new instance of `UdpPacketsIterator` (an iterator of UDP
     /// packets each constructed from specified user's payload, i.e by
     /// `--random-packet`, `--send-message`, `--send-file`).
-    pub fn new(config: &PayloadConfig) -> Result<UdpPacketsIterator, ConstructPayloadError> {
-        Ok(UdpPacketsIterator {
+    pub fn new(config: &PayloadConfig) -> Result<UdpPacketsGenerator, ConstructPayloadError> {
+        Ok(UdpPacketsGenerator {
             user_packets: construct_payload(config)?,
         })
     }
 }
 
-//impl Iterator for UdpPacketsIterator {
-//   type Item = UdpPacket;
+fn construct_ipv4_udp_packet(
+    source: &SocketAddrV4,
+    dest: &SocketAddrV4,
+    payload: &[u8],
+    ttl: u8,
+) -> Ipv4Packet<'static> {
+    let mut udp_packet = construct_udp_packet_without_checksum(
+        SocketAddr::V4(*source),
+        SocketAddr::V4(*dest),
+        payload,
+    );
+    udp_packet.set_checksum(pnet::packet::udp::ipv4_checksum_adv(
+        &udp_packet.to_immutable(),
+        payload,
+        &source.ip(),
+        &dest.ip(),
+    ));
 
-//   fn next(&mut self) -> Option<Self::Item> {}
-//}
+    let total_ipv4_packet_length = IPV4_HEADER_LENGTH + udp_packet.packet_size();
+
+    let mut ipv4_packet = MutableIpv4Packet::owned(vec![0u8; total_ipv4_packet_length]).unwrap();
+    ipv4_packet.set_version(4);
+    ipv4_packet.set_header_length((IPV4_HEADER_LENGTH / 4).try_into().unwrap());
+    ipv4_packet.set_dscp(0);
+    ipv4_packet.set_ecn(0);
+    ipv4_packet.set_total_length(total_ipv4_packet_length.try_into().unwrap());
+    // Linux will care about the identification field
+    ipv4_packet.set_identification(0);
+    ipv4_packet.set_flags(0);
+    ipv4_packet.set_fragment_offset(0);
+    ipv4_packet.set_ttl(ttl);
+    ipv4_packet.set_next_level_protocol(IpNextHeaderProtocols::Udp);
+    ipv4_packet.set_source(*source.ip());
+    ipv4_packet.set_destination(*dest.ip());
+    ipv4_packet.set_payload(udp_packet.packet());
+    ipv4_packet.set_checksum(0);
+    ipv4_packet.set_checksum(pnet::packet::ipv4::checksum(&ipv4_packet.to_immutable()));
+
+    ipv4_packet.consume_to_immutable()
+}
+
+fn construct_ipv6_udp_packet(
+    source: &SocketAddrV6,
+    dest: &SocketAddrV6,
+    payload: &[u8],
+    ttl: u8,
+) -> Ipv6Packet<'static> {
+    let mut udp_packet = construct_udp_packet_without_checksum(
+        SocketAddr::V6(*source),
+        SocketAddr::V6(*dest),
+        payload,
+    );
+    udp_packet.set_checksum(pnet::packet::udp::ipv6_checksum_adv(
+        &udp_packet.to_immutable(),
+        payload,
+        &source.ip(),
+        &dest.ip(),
+    ));
+
+    let total_ipv6_packet_length = IPV6_HEADER_LENGTH + udp_packet.packet_size();
+
+    let mut ipv6_packet = MutableIpv6Packet::owned(vec![0u8; total_ipv6_packet_length]).unwrap();
+    ipv6_packet.set_version(6);
+    ipv6_packet.set_traffic_class(0);
+    ipv6_packet.set_flow_label(0);
+    ipv6_packet.set_hop_limit(ttl);
+    ipv6_packet.set_next_header(IpNextHeaderProtocols::Udp);
+    ipv6_packet.set_source(*source.ip());
+    ipv6_packet.set_destination(*dest.ip());
+    ipv6_packet.set_payload(udp_packet.packet());
+    ipv6_packet.set_payload_length(udp_packet.packet_size().try_into().unwrap());
+
+    ipv6_packet.consume_to_immutable()
+}
+
+fn construct_udp_packet_without_checksum(
+    source: SocketAddr,
+    dest: SocketAddr,
+    payload: &[u8],
+) -> MutableUdpPacket<'static> {
+    let udp_packet_length = UDP_HEADER_LENGTH + payload.len();
+
+    let mut udp_packet = MutableUdpPacket::owned(vec![0u8; udp_packet_length]).unwrap();
+    udp_packet.set_source(source.port());
+    udp_packet.set_destination(dest.port());
+    udp_packet.set_length(udp_packet_length.try_into().unwrap());
+    udp_packet.set_payload(payload);
+    udp_packet.set_checksum(0);
+
+    udp_packet
+}
