@@ -29,7 +29,7 @@ mod config;
 mod core;
 mod logging;
 
-fn main() {
+fn main() -> Result<(), ()> {
     setup_ctrlc_handler();
 
     let config = ArgsConfig::setup();
@@ -39,20 +39,41 @@ fn main() {
     trace!("{:?}", config);
 
     if check_config(&config).is_err() {
-        std::process::exit(1);
+        return Err(());
     }
+
+    core::run(config)
 }
 
 fn check_config(config: &ArgsConfig) -> Result<(), ()> {
+    // Allowing --packets-count be less than --packets-per-syscall is a logical
+    // mistake, so display the error to a user
     if config.packets_per_syscall > config.exit_config.packets_count {
         error!(
-            "A value of {green}--packets-count{reset} must be higher or equal to a value of \
-             {green}--packets-per-syscall{reset}",
+            "a value of {green}--packets-count{reset} must be higher or equal to a value of \
+             {green}--packets-per-syscall{reset}!",
             green = color::Fg(color::Green),
             reset = color::Fg(color::Reset)
         );
 
         return Err(());
+    }
+
+    // A sender and all receivers must be both specified as either IPv4 or IPv6
+    // addresses, because we cannot put both IPv4 and IPv6 address in a
+    // single IP packet
+    let is_ipv4_sender = config.packets_config.sender.is_ipv4();
+
+    for receiver in &config.packets_config.receivers {
+        let is_ipv4_receiver = receiver.is_ipv4();
+        if is_ipv4_sender != is_ipv4_receiver {
+            error!(
+                "a sender and all receivers must be both specified as either IPv4 or IPv6 \
+                 addresses!"
+            );
+
+            return Err(());
+        }
     }
 
     Ok(())

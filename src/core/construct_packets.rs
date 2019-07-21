@@ -17,11 +17,7 @@
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
 use std::convert::TryInto;
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
-use std::hint::unreachable_unchecked;
 use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
-use std::vec::IntoIter;
 
 use pnet::packet::ip::IpNextHeaderProtocols;
 use pnet::packet::ipv4::{Ipv4Packet, MutableIpv4Packet};
@@ -29,132 +25,11 @@ use pnet::packet::ipv6::{Ipv6Packet, MutableIpv6Packet};
 use pnet::packet::udp::MutableUdpPacket;
 use pnet::packet::{Packet, PacketSize};
 
-use construct_payload::construct_payload;
-pub use construct_payload::ConstructPayloadError;
-use select_interface::select_interface;
-pub use select_interface::SelectInterfaceError;
-
-use crate::config::PacketsConfig;
-
-mod construct_payload;
-mod select_interface;
-
 const IPV4_HEADER_LENGTH: usize = 20;
 const IPV6_HEADER_LENGTH: usize = 40;
 const UDP_HEADER_LENGTH: usize = 8;
 
-#[derive(Debug)]
-pub enum ConstructPacketsError {
-    PayloadError(ConstructPayloadError),
-    InvalidAddresses,
-    InterfaceError(SelectInterfaceError),
-}
-
-impl Display for ConstructPacketsError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            ConstructPacketsError::PayloadError(err) => err.fmt(fmt),
-            ConstructPacketsError::InterfaceError(err) => err.fmt(fmt),
-            ConstructPacketsError::InvalidAddresses => write!(
-                fmt,
-                "A sender and all receivers must be both either IPv4 or IPv6 addresses"
-            ),
-        }
-    }
-}
-
-impl Error for ConstructPacketsError {}
-
-/// Returns a vector of iterators built from a specified `PacketsConfig`. Nth
-/// iterator generates binary UDP packets which are ready to be sent to Nth
-/// `config.receivers`.
-pub fn construct_packets(
-    config: &PacketsConfig,
-) -> Result<Vec<IntoIter<Vec<u8>>>, ConstructPacketsError> {
-    if let Some(err) = check_packets_config(config) {
-        return Err(err);
-    }
-
-    let mut iters = Vec::with_capacity(config.receivers.len());
-    let payload =
-        construct_payload(&config.payload_config).map_err(ConstructPacketsError::PayloadError)?;
-
-    let source_addr = if config.select_if {
-        match select_interface() {
-            Ok(res) => res,
-            Err(err) => return Err(ConstructPacketsError::InterfaceError(err)),
-        }
-    } else {
-        config.sender
-    };
-
-    for receiver in &config.receivers {
-        let mut packets = Vec::with_capacity(payload.len());
-
-        for packet_payload in &payload {
-            packets.push(construct_ip_udp_packet(
-                &source_addr,
-                &receiver,
-                packet_payload,
-                config.ip_ttl,
-            ));
-        }
-
-        iters.push(packets.into_iter());
-    }
-
-    Ok(iters)
-}
-
-fn check_packets_config(config: &PacketsConfig) -> Option<ConstructPacketsError> {
-    // Check that a sender and all receivers are all both specified as either IPv4
-    // or IPv6 addresses (because we cannot put both IPv4 and IPv6 address in a
-    // single IP packet!)
-    let is_ipv4_sender = config.sender.is_ipv4();
-
-    for receiver in &config.receivers {
-        let is_ipv4_receiver = receiver.is_ipv4();
-        if is_ipv4_sender != is_ipv4_receiver {
-            return Some(ConstructPacketsError::InvalidAddresses);
-        }
-    }
-
-    None
-}
-
-fn construct_ip_udp_packet(
-    source: &SocketAddr,
-    dest: &SocketAddr,
-    payload: &[u8],
-    ttl: u8,
-) -> Vec<u8> {
-    // Both source and dest are specifies as either IPv4 or IPv6 addresses (because
-    // before calling this function we checked this condition by
-    // check_packets_config()), so later we use unreachable_unchecked() to
-    // optimize the code.
-    let binary_packet = match source {
-        SocketAddr::V4(source_addr) => match dest {
-            SocketAddr::V4(dest_addr) => {
-                construct_ipv4_udp_packet(source_addr, dest_addr, payload, ttl)
-                    .packet()
-                    .to_owned()
-            }
-            _ => unsafe { unreachable_unchecked() },
-        },
-        SocketAddr::V6(source_addr) => match dest {
-            SocketAddr::V6(dest_addr) => {
-                construct_ipv6_udp_packet(source_addr, dest_addr, payload, ttl)
-                    .packet()
-                    .to_owned()
-            }
-            _ => unsafe { unreachable_unchecked() },
-        },
-    };
-
-    binary_packet
-}
-
-fn construct_ipv4_udp_packet(
+pub fn construct_ipv4_udp_packet(
     source: &SocketAddrV4,
     dest: &SocketAddrV4,
     payload: &[u8],
@@ -195,7 +70,7 @@ fn construct_ipv4_udp_packet(
     ipv4_packet.consume_to_immutable()
 }
 
-fn construct_ipv6_udp_packet(
+pub fn construct_ipv6_udp_packet(
     source: &SocketAddrV6,
     dest: &SocketAddrV6,
     payload: &[u8],

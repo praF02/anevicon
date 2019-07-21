@@ -21,12 +21,13 @@ use std::io::IoSlice;
 use std::net::SocketAddr;
 use std::num::NonZeroUsize;
 
+use nix::sys::socket::MsgFlags;
 use nix::sys::socket::{InetAddr, IpAddr, SockAddr};
 
 use sendmmsg::sendmmsg;
 
 use crate::config::SocketsConfig;
-use crate::core::summary::{SummaryPortion, TestSummary};
+use crate::core::statistics::{SummaryPortion, TestSummary};
 
 mod sendmmsg;
 
@@ -110,7 +111,7 @@ impl<'a> UdpSender<'a> {
     pub fn supply(
         &mut self,
         summary: &mut TestSummary,
-        packet: DataPortion<'a>,
+        packet: &'a [u8],
     ) -> io::Result<SupplyResult> {
         let res = if self.buffer.len() == self.buffer.capacity() {
             self.flush(summary)?;
@@ -119,8 +120,26 @@ impl<'a> UdpSender<'a> {
             SupplyResult::NotFlushed
         };
 
-        self.buffer.push(packet);
+        self.buffer.push(DataPortion {
+            transmitted: 0,
+            slice: IoSlice::new(packet),
+        });
         Ok(res)
+    }
+
+    /// Sends the a specified `packet` immediately (without buffering),
+    /// returning a number of bytes send successfully, or `nix::Error`.
+    pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> nix::Result<usize> {
+        match nix::sys::socket::send(self.fd, packet, MsgFlags::empty()) {
+            Err(err) => {
+                summary.update(SummaryPortion::new(packet.len(), 0, 1, 0));
+                Err(err)
+            }
+            Ok(res) => {
+                summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
+                Ok(res)
+            }
+        }
     }
 
     /// Flushes contents of an inner buffer (sends data to an endpoint),
@@ -178,21 +197,17 @@ mod helpers {
 
 #[cfg(test)]
 mod tests {
-    use std::convert::TryInto;
-    use std::io::IoSlice;
-    use std::net::{Ipv4Addr, UdpSocket};
+    use std::net::{Ipv4Addr, SocketAddrV4, UdpSocket};
     use std::ops::Deref;
     use std::os::unix::io::AsRawFd;
     use std::time::Duration;
 
-    use pnet::packet::ip::IpNextHeaderProtocols;
-    use pnet::packet::ipv4::MutableIpv4Packet;
-    use pnet::packet::udp::MutableUdpPacket;
-    use pnet::packet::{Packet, PacketSize};
+    use pnet::packet::Packet;
 
     use lazy_static::lazy_static;
 
-    use crate::core::summary::TestSummary;
+    use crate::core::construct_packets::construct_ipv4_udp_packet;
+    use crate::core::statistics::TestSummary;
     use crate::core::udp_sender::helpers::set_socket_options;
 
     use super::*;
@@ -202,58 +217,18 @@ mod tests {
             broadcast: false,
             send_timeout: Duration::from_secs(3),
         };
-
         static ref UDP_SERVER: UdpSocket =
             UdpSocket::bind("127.0.0.1:0").expect("Failed to setup UDP_SERVER");
-
-        static ref TEST_UDP_PACKET: MutableIpv4Packet<'static> = {
-            let payload = b"Our packet";
-
-            // Construct a UDP packet
-            let mut udp_packet =
-                MutableUdpPacket::owned(vec![0; UDP_HEADER_LENGTH + payload.len()]).unwrap();
-            udp_packet.set_source(181);
-            udp_packet.set_destination(UDP_SERVER.local_addr().unwrap().port());
-            udp_packet.set_length((UDP_HEADER_LENGTH + payload.len()).try_into().unwrap());
-            udp_packet.set_payload(payload.as_ref());
-            udp_packet.set_checksum(0);
-            udp_packet.set_checksum(pnet::packet::udp::ipv4_checksum_adv(
-                &udp_packet.to_immutable(),
-                payload.as_ref(),
-                &Ipv4Addr::new(127, 0, 0, 1),
-                &Ipv4Addr::new(127, 0, 0, 1),
-            ));
-
-            // Construct an IPv4 packet
-            let mut ipv4_packet =
-                MutableIpv4Packet::owned(vec![0; IPV4_HEADER_LENGTH + udp_packet.packet_size()])
-                    .unwrap();
-            ipv4_packet.set_version(4);
-            ipv4_packet.set_header_length((IPV4_HEADER_LENGTH / 4).try_into().unwrap());
-            ipv4_packet.set_dscp(0);
-            ipv4_packet.set_ecn(0);
-            ipv4_packet.set_total_length(
-                (IPV4_HEADER_LENGTH + UDP_HEADER_LENGTH + payload.len())
-                    .try_into()
-                    .unwrap(),
+        static ref TEST_UDP_PACKET: Vec<u8> = {
+            let address = SocketAddrV4::new(
+                Ipv4Addr::new(127, 0, 0, 1),
+                UDP_SERVER.local_addr().unwrap().port(),
             );
-            ipv4_packet.set_identification(0x123);
-            ipv4_packet.set_flags(0);
-            ipv4_packet.set_fragment_offset(0);
-            ipv4_packet.set_ttl(8);
-            ipv4_packet.set_next_level_protocol(IpNextHeaderProtocols::Udp);
-            ipv4_packet.set_source(Ipv4Addr::new(127, 0, 0, 1));
-            ipv4_packet.set_destination(Ipv4Addr::new(127, 0, 0, 1));
-            ipv4_packet.set_payload(udp_packet.packet());
-            ipv4_packet.set_checksum(0);
-            ipv4_packet.set_checksum(pnet::packet::ipv4::checksum(&ipv4_packet.to_immutable()));
-
-            ipv4_packet
+            construct_ipv4_udp_packet(&address, &address, b"Our packet", 8)
+                .packet()
+                .to_owned()
         };
     }
-
-    const IPV4_HEADER_LENGTH: usize = 20;
-    const UDP_HEADER_LENGTH: usize = 8;
 
     #[test]
     fn constructs_buffer() {
@@ -284,19 +259,13 @@ mod tests {
             assert_eq!(buffer.buffer.capacity(), 4);
             assert_eq!(
                 buffer.buffer.last().unwrap().slice.deref(),
-                TEST_UDP_PACKET.packet()
+                TEST_UDP_PACKET.as_slice()
             );
         };
 
         let mut supply = |buffer: &mut UdpSender| {
             buffer
-                .supply(
-                    &mut summary,
-                    DataPortion {
-                        transmitted: 0usize,
-                        slice: IoSlice::new(TEST_UDP_PACKET.packet()),
-                    },
-                )
+                .supply(&mut summary, TEST_UDP_PACKET.as_ref())
                 .expect("buffer.supply() failed");
         };
 
@@ -332,8 +301,7 @@ mod tests {
         // Check that our UdpSender has updates the TestSummary
         assert!(
             summary.megabytes_expected() == summary.megabytes_sent()
-                && summary.megabytes_sent()
-                    == (SUPPLY_COUNT * TEST_UDP_PACKET.packet().len()) / 1024 / 1024
+                && summary.megabytes_sent() == (SUPPLY_COUNT * TEST_UDP_PACKET.len()) / 1024 / 1024
         );
         assert!(
             summary.packets_expected() == summary.packets_sent()
@@ -370,5 +338,34 @@ mod tests {
         };
         set_socket_options(socket.as_raw_fd(), &config);
         check(&config);
+    }
+
+    #[test]
+    fn test_send_one() {
+        let mut summary = TestSummary::default();
+        let mut sender = UdpSender::new(
+            &UDP_SERVER.local_addr().unwrap(),
+            NonZeroUsize::new(1).unwrap(),
+            &DEFAULT_SOCKETS_CONFIG,
+        )
+        .expect("UdpSender::new(...) failed");
+        dbg!();
+        assert_eq!(summary.megabytes_expected(), 0);
+        assert_eq!(summary.megabytes_sent(), 0);
+        assert_eq!(summary.packets_expected(), 0);
+        assert_eq!(summary.packets_sent(), 0);
+
+        sender
+            .send_one(&mut summary, TEST_UDP_PACKET.as_slice())
+            .expect("sender.send_one(...) failed");
+
+        // Check that our UdpSender has updates the TestSummary
+        assert!(
+            summary.megabytes_expected() == summary.megabytes_sent()
+                && summary.megabytes_sent() == TEST_UDP_PACKET.len() / 1024 / 1024
+        );
+        assert!(
+            summary.packets_expected() == summary.packets_sent() && summary.packets_sent() == 1
+        );
     }
 }
