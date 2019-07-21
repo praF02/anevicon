@@ -76,6 +76,11 @@ pub struct ArgsConfig {
     )]
     pub packets_per_syscall: NonZeroUsize,
 
+    /// Displays an interactive menu of network interfaces to use. If unset, a
+    /// default one will be used
+    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
+    pub select_if: bool,
+
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
 
@@ -242,11 +247,6 @@ pub struct PacketsConfig {
         value_name = "UNSIGNED-INTEGER"
     )]
     pub ip_ttl: u8,
-
-    /// Displays an interactive menu of network interfaces to use. If unset, a
-    /// default one will be used
-    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
-    pub select_if: bool,
 
     #[structopt(flatten)]
     pub payload_config: PayloadConfig,

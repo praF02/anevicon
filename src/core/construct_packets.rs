@@ -19,28 +19,55 @@
 use std::convert::TryInto;
 use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
 
-use pnet::packet::ip::IpNextHeaderProtocols;
-use pnet::packet::ipv4::{Ipv4Packet, MutableIpv4Packet};
-use pnet::packet::ipv6::{Ipv6Packet, MutableIpv6Packet};
-use pnet::packet::udp::MutableUdpPacket;
-use pnet::packet::{Packet, PacketSize};
+use pnet_packet::ip::IpNextHeaderProtocols;
+use pnet_packet::ipv4::{Ipv4Packet, MutableIpv4Packet};
+use pnet_packet::ipv6::{Ipv6Packet, MutableIpv6Packet};
+use pnet_packet::udp::MutableUdpPacket;
+use pnet_packet::{Packet, PacketSize};
+use std::hint::unreachable_unchecked;
 
 const IPV4_HEADER_LENGTH: usize = 20;
 const IPV6_HEADER_LENGTH: usize = 40;
 const UDP_HEADER_LENGTH: usize = 8;
 
+pub fn construct_ip_udp_packet(
+    source: &SocketAddr,
+    dest: &SocketAddr,
+    payload: &[u8],
+    ip_ttl: u8,
+) -> Vec<u8> {
+    match source {
+        SocketAddr::V4(ipv4_source) => match dest {
+            SocketAddr::V4(ipv4_dest) => {
+                construct_ipv4_udp_packet(ipv4_source, ipv4_dest, payload, ip_ttl)
+                    .packet()
+                    .to_owned()
+            }
+            _ => unsafe { unreachable_unchecked() },
+        },
+        SocketAddr::V6(ipv6_source) => match dest {
+            SocketAddr::V6(ipv6_dest) => {
+                construct_ipv6_udp_packet(ipv6_source, ipv6_dest, payload, ip_ttl)
+                    .packet()
+                    .to_owned()
+            }
+            _ => unsafe { unreachable_unchecked() },
+        },
+    }
+}
+
 pub fn construct_ipv4_udp_packet(
     source: &SocketAddrV4,
     dest: &SocketAddrV4,
     payload: &[u8],
-    ttl: u8,
+    ip_ttl: u8,
 ) -> Ipv4Packet<'static> {
     let mut udp_packet = construct_udp_packet_without_checksum(
         SocketAddr::V4(*source),
         SocketAddr::V4(*dest),
         payload,
     );
-    udp_packet.set_checksum(pnet::packet::udp::ipv4_checksum_adv(
+    udp_packet.set_checksum(pnet_packet::udp::ipv4_checksum_adv(
         &udp_packet.to_immutable(),
         payload,
         &source.ip(),
@@ -59,13 +86,13 @@ pub fn construct_ipv4_udp_packet(
     ipv4_packet.set_identification(0);
     ipv4_packet.set_flags(0);
     ipv4_packet.set_fragment_offset(0);
-    ipv4_packet.set_ttl(ttl);
+    ipv4_packet.set_ttl(ip_ttl);
     ipv4_packet.set_next_level_protocol(IpNextHeaderProtocols::Udp);
     ipv4_packet.set_source(*source.ip());
     ipv4_packet.set_destination(*dest.ip());
     ipv4_packet.set_payload(udp_packet.packet());
     ipv4_packet.set_checksum(0);
-    ipv4_packet.set_checksum(pnet::packet::ipv4::checksum(&ipv4_packet.to_immutable()));
+    ipv4_packet.set_checksum(pnet_packet::ipv4::checksum(&ipv4_packet.to_immutable()));
 
     ipv4_packet.consume_to_immutable()
 }
@@ -74,14 +101,14 @@ pub fn construct_ipv6_udp_packet(
     source: &SocketAddrV6,
     dest: &SocketAddrV6,
     payload: &[u8],
-    ttl: u8,
+    ip_ttl: u8,
 ) -> Ipv6Packet<'static> {
     let mut udp_packet = construct_udp_packet_without_checksum(
         SocketAddr::V6(*source),
         SocketAddr::V6(*dest),
         payload,
     );
-    udp_packet.set_checksum(pnet::packet::udp::ipv6_checksum_adv(
+    udp_packet.set_checksum(pnet_packet::udp::ipv6_checksum_adv(
         &udp_packet.to_immutable(),
         payload,
         &source.ip(),
@@ -94,7 +121,7 @@ pub fn construct_ipv6_udp_packet(
     ipv6_packet.set_version(6);
     ipv6_packet.set_traffic_class(0);
     ipv6_packet.set_flow_label(0);
-    ipv6_packet.set_hop_limit(ttl);
+    ipv6_packet.set_hop_limit(ip_ttl);
     ipv6_packet.set_next_header(IpNextHeaderProtocols::Udp);
     ipv6_packet.set_source(*source.ip());
     ipv6_packet.set_destination(*dest.ip());

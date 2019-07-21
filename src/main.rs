@@ -24,23 +24,24 @@ use std::convert::TryInto;
 use termion::{color, style, terminal_size};
 
 use config::ArgsConfig;
+use select_interface::select_interface;
 
 mod config;
 mod core;
 mod logging;
+mod select_interface;
 
 fn main() -> Result<(), ()> {
     setup_ctrlc_handler();
 
-    let config = ArgsConfig::setup();
+    let mut config = ArgsConfig::setup();
     title();
 
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
-    if check_config(&config).is_err() {
-        return Err(());
-    }
+    check_config(&config)?;
+    prepare_config(&mut config)?;
 
     core::run(config)
 }
@@ -75,6 +76,22 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
             return Err(());
         }
     }
+
+    Ok(())
+}
+
+fn prepare_config(config: &mut ArgsConfig) -> Result<(), ()> {
+    config.packets_config.sender = if config.select_if {
+        match select_interface() {
+            Err(err) => {
+                error!("failed to select a network interface >>> {}!", err);
+                return Err(());
+            }
+            Ok(interface) => interface,
+        }
+    } else {
+        config.packets_config.sender
+    };
 
     Ok(())
 }

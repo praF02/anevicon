@@ -21,5 +21,5 @@
 pub use summary_portion::SummaryPortion;
 pub use test_summary::TestSummary;
 
-pub mod summary_portion;
-pub mod test_summary;
+mod summary_portion;
+mod test_summary;

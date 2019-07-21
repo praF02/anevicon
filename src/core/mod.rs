@@ -16,42 +16,228 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+//! A module containing the key function `run` which does the main work.
+
 use std::cell::RefCell;
-use std::fmt::Display;
+use std::error::Error;
+use std::fmt::{self, Display, Formatter};
+use std::net::SocketAddr;
+use std::num::NonZeroUsize;
+use std::sync::Arc;
 use std::thread;
+use std::thread::JoinHandle;
+use std::time::Duration;
 
 use humantime::format_duration;
 use termion::color;
 
+use construct_payload::construct_payload;
+use statistics::TestSummary;
+
 use crate::config::ArgsConfig;
-use crate::core::statistics::TestSummary;
+use crate::core::construct_packets::construct_ip_udp_packet;
+use crate::core::udp_sender::{SupplyResult, UdpSender};
 
 mod construct_packets;
 mod construct_payload;
-mod select_interface;
 mod statistics;
 mod udp_sender;
 
 thread_local! {
-    /// A receiver name for this thread.
-    static RECEIVER: RefCell<String> = RefCell::new(String::from("Undefined"))
+    /// A colored receiver name for this thread.
+    static RECEIVER: RefCell<String> = RefCell::new(format!("{cyan}Undefined{reset}", cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset),));
 }
 
-/// Initializes the `RECEIVER` thread-local variable.
-fn init_receiver(value: String) {
-    RECEIVER.with(|receiver| *receiver.borrow_mut() = value);
+fn init_receiver(value: SocketAddr) {
+    RECEIVER.with(|receiver| {
+        *receiver.borrow_mut() = format!(
+            "{cyan}{receiver}{reset}",
+            receiver = value,
+            cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset),
+        )
+    });
 }
 
-/// Returns the thread-local value of a current receiver.
-#[inline]
 fn current_receiver() -> String {
     RECEIVER.with(|string| string.borrow().clone())
 }
 
-/// This is the key function which accepts a whole `ArgsConfig` and returns an
-/// exit code (either 1 on failure or 0 on success).
+/// This is the key function which accepts a whole `ArgsConfig` and returns
+/// `Result<(), ()>` that needs to be returned out of `main()`.
 pub fn run(config: ArgsConfig) -> Result<(), ()> {
+    let payload = match construct_payload(&config.packets_config.payload_config) {
+        Err(err) => {
+            error!("failed to construct payload >>> {}!", err);
+            return Err(());
+        }
+        Ok(payload) => payload,
+    };
+
+    wait(&config);
+
+    let payload = Arc::new(payload);
+    let config = Arc::new(config);
+    let mut workers = Vec::with_capacity(config.packets_config.receivers.len());
+
+    for &receiver in &config.packets_config.receivers {
+        let payload = payload.clone();
+        let config = config.clone();
+
+        workers.push(thread::spawn(move || {
+            init_receiver(receiver);
+            run_tester(config, payload, receiver)?;
+            Ok(())
+        }));
+    }
+
+    workers
+        .into_iter()
+        .for_each(|worker: JoinHandle<Result<_, RunTesterError>>| {
+            if let Err(err) = worker.join().expect("A child thread has panicked") {
+                error!("a tester exited unexpectedly >>> {}!", err);
+            }
+        });
     Ok(())
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum RunTesterError {
+    NixError(nix::Error),
+}
+
+impl Display for RunTesterError {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        match self {
+            RunTesterError::NixError(err) => err.fmt(fmt),
+        }
+    }
+}
+
+impl Error for RunTesterError {}
+
+fn run_tester(
+    config: Arc<ArgsConfig>,
+    payload: Arc<Vec<Vec<u8>>>,
+    dest: SocketAddr,
+) -> Result<TestSummary, RunTesterError> {
+    let mut summary = TestSummary::default();
+    let mut sender = UdpSender::new(&dest, config.packets_per_syscall, &config.sockets_config)
+        .map_err(RunTesterError::NixError)?;
+    let packets = payload
+        .iter()
+        .map(|payload| {
+            construct_ip_udp_packet(
+                &config.packets_config.sender,
+                &dest,
+                payload,
+                config.packets_config.ip_ttl,
+            )
+        })
+        .collect::<Vec<Vec<u8>>>();
+
+    // Run the main cycle for the current worker, and exit if the allotted time
+    // expires
+    for (packet, _) in packets
+        .iter()
+        .cycle()
+        .zip(0..config.exit_config.packets_count.get())
+    {
+        match sender.supply(&mut summary, packet) {
+            Err(err) => send_multiple_error(err),
+            Ok(res) => {
+                if res == SupplyResult::Flushed {
+                    display_summary(&summary);
+                }
+            }
+        }
+
+        if summary.time_passed() >= config.exit_config.test_duration {
+            display_expired_time();
+            return Ok(summary);
+        }
+
+        thread::sleep(config.send_periodicity);
+    }
+
+    if let Err(err) = sender.flush(&mut summary) {
+        send_multiple_error(err);
+    }
+
+    // We might have a situation when not all the required packets are sent, so fix
+    // it
+    let unsent =
+        unsafe { NonZeroUsize::new_unchecked(summary.packets_expected() - summary.packets_sent()) };
+
+    if unsent.get() != 0 {
+        match resend_packets(
+            &mut sender,
+            &mut summary,
+            &packets
+                .iter()
+                .cycle()
+                .take(unsent.get())
+                .map(|packet| packet.as_slice())
+                .collect::<Vec<&[u8]>>(),
+            config.exit_config.test_duration,
+        ) {
+            ResendPacketsResult::Completed => display_packets_sent(),
+            ResendPacketsResult::TimeExpired => display_expired_time(),
+        }
+    } else {
+        display_packets_sent();
+    }
+
+    Ok(summary)
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+enum ResendPacketsResult {
+    Completed,
+    TimeExpired,
+}
+
+/// Sends `count` packets using the given `summary`. If the `limit` is reached,
+/// it will return `ResendPacketsResult::TimeExpired`, otherwise,
+/// `ResendPacketsResult::Completed`.
+fn resend_packets(
+    sender: &mut UdpSender,
+    summary: &mut TestSummary,
+    packets: &[&[u8]],
+    limit: Duration,
+) -> ResendPacketsResult {
+    info!(
+        "trying to resend {cyan}{count}{reset} packets to {receiver} that haven't been sent yet...",
+        count = packets.len(),
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
+    );
+
+    for &packet in packets {
+        if summary.time_passed() >= limit {
+            return ResendPacketsResult::TimeExpired;
+        }
+
+        while let Err(error) = sender.send_one(summary, packet) {
+            error!(
+                "failed to send a packet to {receiver} >>> {error}! Retrying the operation...",
+                receiver = current_receiver(),
+                error = error,
+            );
+        }
+    }
+
+    info!(
+        "{cyan}{count}{reset} packets have been resent to {receiver}.",
+        count = packets.len(),
+        receiver = current_receiver(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
+    );
+
+    ResendPacketsResult::Completed
 }
 
 fn wait(config: &ArgsConfig) {
@@ -70,26 +256,22 @@ fn wait(config: &ArgsConfig) {
 
 fn display_expired_time() {
     info!(
-        "the allotted time has passed for {cyan}{receiver}{reset}.",
+        "the allotted time has passed for {receiver}.",
         receiver = current_receiver(),
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
     );
 }
 
 fn display_packets_sent() {
     info!(
-        "all the packets have been sent to {cyan}{receiver}{reset}.",
+        "all the packets have been sent to {receiver}.",
         receiver = current_receiver(),
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
     );
 }
 
 fn display_summary(summary: &TestSummary) {
     info!(
-        "stats for {cyan}{receiver}{reset}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage \
-         Speed: {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
+        "stats for {receiver}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage Speed: \
+         {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
         receiver = current_receiver(),
         data_sent = format!(
             "{packets} packets ({megabytes} MB)",
@@ -109,10 +291,78 @@ fn display_summary(summary: &TestSummary) {
 
 fn send_multiple_error<E: Display>(error: E) {
     error!(
-        "failed to send packets to {cyan}{receiver}{reset} >>> {error}!",
+        "failed to send packets to {receiver} >>> {error}!",
         receiver = current_receiver(),
         error = error,
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use structopt::StructOpt;
+
+    use crate::core::construct_payload::construct_payload;
+
+    use super::*;
+
+    #[test]
+    fn resends_all_packets() {
+        let mut summary = TestSummary::default();
+        let socket = loopback_socket();
+        let mut tester = Tester::new(&socket, &mut summary);
+
+        let message = b"Trying to resend packets which weren't sent yet".as_ref();
+
+        // All the packets will be sent because the allotted time is too long to be
+        // expired
+        assert_eq!(
+            resend_packets(&mut tester, &[message; 12], Duration::from_secs(3656)),
+            ResendPacketsResult::Completed
+        );
+
+        assert_eq!(tester.summary.packets_sent(), 12);
+        assert_eq!(tester.summary.packets_expected(), 12);
+
+        // Now the allotted time eventually expires, so check that resend_packets
+        // returns TimeExpired
+        assert_eq!(
+            resend_packets(&mut tester, &[message; 12], Duration::from_nanos(1)),
+            ResendPacketsResult::TimeExpired
+        );
+    }
+
+    #[test]
+    fn test_run_tester() {
+        let socket = loopback_socket();
+
+        let config = ArgsConfig::from_iter(&[
+            "anevicon",
+            "--receiver",
+            &format!("{}", socket.local_addr().unwrap()),
+            "--packets-count",
+            "100",
+            "--send-message",
+            "My first message",
+            "--send-message",
+            "My second message",
+            "--send-message",
+            "My third message",
+            "--send-file",
+            "files/packet.txt",
+            "--random-packet",
+            "3000",
+            "--wait",
+            "0secs",
+        ]);
+
+        let packets = construct_packets(&config.packets_config).expect("Cannot construct packets");
+        assert_eq!(packets.len(), 5);
+
+        let summary = run_tester(Arc::new(config), Arc::new(packets), socket);
+
+        assert_eq!(summary.packets_expected(), 100);
+        assert_eq!(summary.packets_sent(), 100);
+    }
 }

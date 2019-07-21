@@ -202,9 +202,8 @@ mod tests {
     use std::os::unix::io::AsRawFd;
     use std::time::Duration;
 
-    use pnet::packet::Packet;
-
     use lazy_static::lazy_static;
+    use pnet::packet::Packet;
 
     use crate::core::construct_packets::construct_ipv4_udp_packet;
     use crate::core::statistics::TestSummary;

@@ -33,7 +33,7 @@ pub fn select_interface() -> Result<SocketAddr, SelectInterfaceError> {
          interfaces)."
     );
 
-    let interfaces = pnet::datalink::interfaces();
+    let interfaces = pnet_datalink::interfaces();
     if interfaces.is_empty() {
         return Err(SelectInterfaceError::NoInterfaces);
     }
