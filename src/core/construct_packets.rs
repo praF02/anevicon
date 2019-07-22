@@ -16,9 +16,10 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use etherparse::PacketBuilder;
 use std::hint::unreachable_unchecked;
 use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
+
+use etherparse::PacketBuilder;
 
 pub fn ip_udp_packet(
     source: &SocketAddr,
