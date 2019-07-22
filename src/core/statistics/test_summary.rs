@@ -46,6 +46,7 @@ impl TestSummary {
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub fn megabytes_expected(&self) -> usize {
         self.bytes_expected / 1024 / 1024
     }

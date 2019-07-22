@@ -122,9 +122,6 @@ fn run_tester(
     payload: Arc<Vec<Vec<u8>>>,
     dest: SocketAddr,
 ) -> Result<TestSummary, RunTesterError> {
-    let mut summary = TestSummary::default();
-    let mut sender = UdpSender::new(&dest, config.packets_per_syscall, &config.sockets_config)
-        .map_err(RunTesterError::NixError)?;
     let packets = payload
         .iter()
         .map(|payload| {
@@ -136,9 +133,12 @@ fn run_tester(
             )
         })
         .collect::<Vec<Vec<u8>>>();
+    let mut summary = TestSummary::default();
+    let mut sender = UdpSender::new(&dest, config.packets_per_syscall, &config.sockets_config)
+        .map_err(RunTesterError::NixError)?;
 
     // Run the main cycle for the current worker, and exit if the allotted time
-    // expires
+    // expires or all required packets will be sent (whichever happens first)
     for (packet, _) in packets
         .iter()
         .cycle()
@@ -165,8 +165,8 @@ fn run_tester(
         send_multiple_error(err);
     }
 
-    // We might have a situation when not all the required packets are sent, so fix
-    // it
+    // We might have a situation when not all the required packets are sent, so
+    // resend them again
     let unsent =
         unsafe { NonZeroUsize::new_unchecked(summary.packets_expected() - summary.packets_sent()) };
 
