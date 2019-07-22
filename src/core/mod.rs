@@ -35,7 +35,7 @@ use construct_payload::construct_payload;
 use statistics::TestSummary;
 
 use crate::config::ArgsConfig;
-use crate::core::construct_packets::construct_ip_udp_packet;
+use crate::core::construct_packets::ip_udp_packet;
 use crate::core::udp_sender::{SupplyResult, UdpSender};
 
 mod construct_packets;
@@ -125,7 +125,7 @@ fn run_tester(
     let packets = payload
         .iter()
         .map(|payload| {
-            construct_ip_udp_packet(
+            ip_udp_packet(
                 &config.packets_config.sender,
                 &dest,
                 payload,

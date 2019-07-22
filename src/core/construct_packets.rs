@@ -16,124 +16,58 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::convert::TryInto;
+use etherparse::PacketBuilder;
 use std::hint::unreachable_unchecked;
 use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
 
-use pnet_packet::ip::IpNextHeaderProtocols;
-use pnet_packet::ipv4::{Ipv4Packet, MutableIpv4Packet};
-use pnet_packet::ipv6::{Ipv6Packet, MutableIpv6Packet};
-use pnet_packet::udp::MutableUdpPacket;
-use pnet_packet::{Packet, PacketSize};
-
-const IPV4_HEADER_LENGTH: usize = 20;
-const IPV6_HEADER_LENGTH: usize = 40;
-const UDP_HEADER_LENGTH: usize = 8;
-
-pub fn construct_ip_udp_packet(
+pub fn ip_udp_packet(
     source: &SocketAddr,
     dest: &SocketAddr,
     payload: &[u8],
-    ip_ttl: u8,
+    time_to_live: u8,
 ) -> Vec<u8> {
     match source {
         SocketAddr::V4(ipv4_source) => match dest {
             SocketAddr::V4(ipv4_dest) => {
-                construct_ipv4_udp_packet(ipv4_source, ipv4_dest, payload, ip_ttl)
-                    .packet()
-                    .to_owned()
+                ipv4_udp_packet(ipv4_source, ipv4_dest, payload, time_to_live)
             }
             _ => unsafe { unreachable_unchecked() },
         },
         SocketAddr::V6(ipv6_source) => match dest {
             SocketAddr::V6(ipv6_dest) => {
-                construct_ipv6_udp_packet(ipv6_source, ipv6_dest, payload, ip_ttl)
-                    .packet()
-                    .to_owned()
+                ipv6_udp_packet(ipv6_source, ipv6_dest, payload, time_to_live)
             }
             _ => unsafe { unreachable_unchecked() },
         },
     }
 }
 
-pub fn construct_ipv4_udp_packet(
+pub fn ipv4_udp_packet(
     source: &SocketAddrV4,
     dest: &SocketAddrV4,
     payload: &[u8],
-    ip_ttl: u8,
-) -> Ipv4Packet<'static> {
-    let mut udp_packet = construct_udp_packet_without_checksum(source.port(), dest.port(), payload);
-    udp_packet.set_checksum(pnet_packet::udp::ipv4_checksum(
-        &udp_packet.to_immutable(),
-        &source.ip(),
-        &dest.ip(),
-    ));
-
-    let total_ipv4_packet_length = IPV4_HEADER_LENGTH + UDP_HEADER_LENGTH + payload.len();
-
-    let mut ipv4_packet = MutableIpv4Packet::owned(vec![0u8; total_ipv4_packet_length]).unwrap();
-    ipv4_packet.set_source(*source.ip());
-    ipv4_packet.set_destination(*dest.ip());
-    ipv4_packet.set_total_length(total_ipv4_packet_length.try_into().unwrap());
-    ipv4_packet.set_header_length((IPV4_HEADER_LENGTH / 4).try_into().unwrap());
-    ipv4_packet.set_version(4);
-    ipv4_packet.set_ecn(0);
-    ipv4_packet.set_dscp(0);
-    // Linux will care about the identification field
-    ipv4_packet.set_identification(0);
-    ipv4_packet.set_flags(0);
-    ipv4_packet.set_fragment_offset(0);
-    ipv4_packet.set_ttl(ip_ttl);
-    ipv4_packet.set_next_level_protocol(IpNextHeaderProtocols::Udp);
-    ipv4_packet.set_payload(udp_packet.packet());
-    ipv4_packet.set_checksum(0);
-    ipv4_packet.set_checksum(pnet_packet::ipv4::checksum(&ipv4_packet.to_immutable()));
-
-    ipv4_packet.consume_to_immutable()
+    time_to_live: u8,
+) -> Vec<u8> {
+    let builder = PacketBuilder::ipv4(source.ip().octets(), dest.ip().octets(), time_to_live)
+        .udp(source.port(), dest.port());
+    let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
+    builder
+        .write(&mut serialized, payload)
+        .expect("Failed to serialize a UDP/IPv4 packet into Vec<u8>");
+    serialized
 }
 
-pub fn construct_ipv6_udp_packet(
+pub fn ipv6_udp_packet(
     source: &SocketAddrV6,
     dest: &SocketAddrV6,
     payload: &[u8],
-    ip_ttl: u8,
-) -> Ipv6Packet<'static> {
-    let mut udp_packet = construct_udp_packet_without_checksum(source.port(), dest.port(), payload);
-    udp_packet.set_checksum(pnet_packet::udp::ipv6_checksum(
-        &udp_packet.to_immutable(),
-        &source.ip(),
-        &dest.ip(),
-    ));
-
-    let total_ipv6_packet_length = IPV6_HEADER_LENGTH + UDP_HEADER_LENGTH + payload.len();
-
-    let mut ipv6_packet = MutableIpv6Packet::owned(vec![0u8; total_ipv6_packet_length]).unwrap();
-    ipv6_packet.set_version(6);
-    ipv6_packet.set_traffic_class(0);
-    ipv6_packet.set_flow_label(0);
-    ipv6_packet.set_hop_limit(ip_ttl);
-    ipv6_packet.set_next_header(IpNextHeaderProtocols::Udp);
-    ipv6_packet.set_source(*source.ip());
-    ipv6_packet.set_destination(*dest.ip());
-    ipv6_packet.set_payload(udp_packet.packet());
-    ipv6_packet.set_payload_length(udp_packet.packet_size().try_into().unwrap());
-
-    ipv6_packet.consume_to_immutable()
-}
-
-fn construct_udp_packet_without_checksum(
-    source: u16,
-    dest: u16,
-    payload: &[u8],
-) -> MutableUdpPacket<'static> {
-    let total_udp_packet_length = UDP_HEADER_LENGTH + payload.len();
-
-    let mut udp_packet = MutableUdpPacket::owned(vec![0u8; total_udp_packet_length]).unwrap();
-    udp_packet.set_source(source);
-    udp_packet.set_destination(dest);
-    udp_packet.set_length(total_udp_packet_length.try_into().unwrap());
-    udp_packet.set_checksum(0);
-    udp_packet.set_payload(payload);
-
-    udp_packet
+    time_to_live: u8,
+) -> Vec<u8> {
+    let builder = PacketBuilder::ipv6(source.ip().octets(), dest.ip().octets(), time_to_live)
+        .udp(source.port(), dest.port());
+    let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
+    builder
+        .write(&mut serialized, payload)
+        .expect("Failed to serialize a UDP/IPv4 packet into Vec<u8>");
+    serialized
 }

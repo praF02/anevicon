@@ -205,7 +205,7 @@ mod tests {
     use lazy_static::lazy_static;
     use pnet::packet::Packet;
 
-    use crate::core::construct_packets::construct_ipv4_udp_packet;
+    use crate::core::construct_packets::ipv4_udp_packet;
     use crate::core::statistics::TestSummary;
     use crate::core::udp_sender::helpers::set_socket_options;
 
