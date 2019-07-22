@@ -214,7 +214,7 @@ pub struct PacketsConfig {
     /// number, separated by a colon.
     ///
     /// This option can be specified several times to identically test multiple
-    /// receivers in parallel mode.
+    /// receivers in concurrent mode.
     #[structopt(
         short = "r",
         long = "receiver",
@@ -229,6 +229,10 @@ pub struct PacketsConfig {
     ///
     /// A sender may not be a local interface's address, it can be absolutely
     /// any valid IPv4/IPv6 address. It can be used to send spoofed packets.
+    ///
+    /// Note that your system will automatically fill in a source address in an
+    /// IP packet if you give an unspecified (0.0.0.0) address, but it won't do
+    /// something with a port.
     #[structopt(
         short = "s",
         long = "sender",
