@@ -69,6 +69,6 @@ pub fn ipv6_udp_packet(
     let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
     builder
         .write(&mut serialized, payload)
-        .expect("Failed to serialize a UDP/IPv4 packet into Vec<u8>");
+        .expect("Failed to serialize a UDP/IPv6 packet into Vec<u8>");
     serialized
 }
