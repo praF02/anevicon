@@ -16,30 +16,22 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::hint::unreachable_unchecked;
-use std::net::{SocketAddr, SocketAddrV4, SocketAddrV6};
+use std::net::{SocketAddrV4, SocketAddrV6};
 
 use etherparse::PacketBuilder;
 
-pub fn ip_udp_packet(
-    source: &SocketAddr,
-    dest: &SocketAddr,
-    payload: &[u8],
-    time_to_live: u8,
-) -> Vec<u8> {
-    match source {
-        SocketAddr::V4(ipv4_source) => match dest {
-            SocketAddr::V4(ipv4_dest) => {
-                ipv4_udp_packet(ipv4_source, ipv4_dest, payload, time_to_live)
-            }
-            _ => unsafe { unreachable_unchecked() },
-        },
-        SocketAddr::V6(ipv6_source) => match dest {
-            SocketAddr::V6(ipv6_dest) => {
-                ipv6_udp_packet(ipv6_source, ipv6_dest, payload, time_to_live)
-            }
-            _ => unsafe { unreachable_unchecked() },
-        },
+use crate::config::Endpoints;
+
+pub fn ip_udp_packet(endpoints: &Endpoints, payload: &[u8], time_to_live: u8) -> Vec<u8> {
+    match endpoints {
+        Endpoints::V4 {
+            sender: sender_v4,
+            receiver: receiver_v4,
+        } => ipv4_udp_packet(sender_v4, receiver_v4, payload, time_to_live),
+        Endpoints::V6 {
+            sender: sender_v6,
+            receiver: receiver_v6,
+        } => ipv6_udp_packet(sender_v6, receiver_v6, payload, time_to_live),
     }
 }
 

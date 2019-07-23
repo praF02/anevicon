@@ -24,32 +24,27 @@ use std::convert::TryInto;
 use termion::{color, style, terminal_size};
 
 use config::ArgsConfig;
-use select_interface::select_interface;
 
 mod config;
 mod core;
 mod logging;
-mod select_interface;
 
 fn main() -> Result<(), ()> {
     setup_ctrlc_handler();
 
-    let mut config = ArgsConfig::setup();
+    let config = ArgsConfig::setup();
     title();
 
     logging::setup_logging(&config.logging_config);
     trace!("{:?}", config);
 
     check_config(&config)?;
-    prepare_config(&mut config)?;
 
     core::run(config)
 }
 
 fn check_config(config: &ArgsConfig) -> Result<(), ()> {
-    // Allowing --packets-count be less than --packets-per-syscall is a logical
-    // mistake, so display the error to a user
-    if config.packets_per_syscall > config.exit_config.packets_count {
+    if config.buffer_capacity > config.exit_config.packets_count {
         error!(
             "a value of {green}--packets-count{reset} must be higher or equal to a value of \
              {green}--packets-per-syscall{reset}!",
@@ -59,39 +54,6 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
 
         return Err(());
     }
-
-    // A sender and all receivers must be both specified as either IPv4 or IPv6
-    // addresses, because we cannot put both IPv4 and IPv6 address in a
-    // single IP packet
-    let is_ipv4_sender = config.packets_config.sender.is_ipv4();
-
-    for receiver in &config.packets_config.receivers {
-        let is_ipv4_receiver = receiver.is_ipv4();
-        if is_ipv4_sender != is_ipv4_receiver {
-            error!(
-                "a sender and all receivers must be both specified as either IPv4 or IPv6 \
-                 addresses!"
-            );
-
-            return Err(());
-        }
-    }
-
-    Ok(())
-}
-
-fn prepare_config(config: &mut ArgsConfig) -> Result<(), ()> {
-    config.packets_config.sender = if config.select_if {
-        match select_interface() {
-            Err(err) => {
-                error!("failed to select a network interface >>> {}!", err);
-                return Err(());
-            }
-            Ok(interface) => interface,
-        }
-    } else {
-        config.packets_config.sender
-    };
 
     Ok(())
 }
