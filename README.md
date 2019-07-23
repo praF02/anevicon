@@ -204,7 +204,7 @@ Different verbosity levels print different logging types. As you can see in the 
 #   4) A text message "Goodbye, Albret! You're my best friend.";
 #   5) A random packet of 5355 bytes;
 #   6) A random packet of 2222 bytes.
-$ anevicon ---endpoints="192.168.1.41:0&93.184.216.34:80" \
+$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" \
 --send-file="file.txt" \
 --send-message="Hello, Pitty! You're my worst friend." \
 --send-message="Hello, Scott! This is just a test." \
