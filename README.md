@@ -219,11 +219,11 @@ $ anevicon --receiver=93.184.216.34:80 \
 ## Going deeper
 Well, it's time to understand the internals of Anevicon. First, it constructs an iterator of N messages (specified by both `--send-message`, `--send-file`, and `--random-packet`), where N is a number of packets specified by `--packets-count`. Each of these packets is accepted by an optimized sending buffer.
 
-An optimized sending buffer is a data structure representing a sending buffer which can contain M messages, where M is a number of packets transmitted per a [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call. When this buffer is full, it flushes all its messages by (surprise!) `sendmmsg`, thereby providing much better performance than an ordinary buffer.
+An optimized sending buffer is a data structure representing a sending buffer which can contain M messages, where M (`--buffer-capacity=M`) is a number of packets transmitted per a [`sendmmsg`](http://man7.org/linux/man-pages/man2/sendmmsg.2.html) system call. When this buffer is full, it flushes all its messages by (surprise!) `sendmmsg`, thereby providing much better performance than an ordinary buffer.
 
 That is, Anevicon has been designed to minimize a number of system calls to your Linux kernel. Yes, we can instead use such libraries as [netmap](https://www.freebsd.org/cgi/man.cgi?query=netmap)/[PF_RING](https://www.ntop.org/products/packet-capture/pf_ring/)/[DPDK](https://www.dpdk.org/), but then users might be confused with running Anevicon on their systems. Anyway, I think that `sendmmsg` provides pretty well performance for all needs.
 
-Here is a visual demonstration of the described process. You enter `anevicon --endpoints=”192.168.1.41:0&93.184.216.34:80” --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --buffer-capacity=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
+Here is a visual demonstration of the described process. You enter `anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --buffer-capacity=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
 
 <div align="center">
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/media/PROCESS.png">

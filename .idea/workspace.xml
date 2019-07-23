@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/config/endpoints.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEMO.png" beforeDir="false" afterPath="$PROJECT_DIR$/DEMO.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/media/PROCESS.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/select_interface.rs" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -468,7 +453,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.32181427" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.032397408" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32937366" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -839,8 +824,8 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="120">
-            <caret line="218" column="12" selection-start-line="218" selection-start-column="12" selection-end-line="218" selection-end-column="12" />
+          <first_editor relative-caret-position="354">
+            <caret line="223" column="33" selection-start-line="223" selection-start-column="33" selection-end-line="223" selection-end-column="33" />
           </first_editor>
           <second_editor />
         </state>
