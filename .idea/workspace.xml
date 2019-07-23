@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/mod.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,10 +55,10 @@
       <find>conflicts</find>
       <find>parse_non</find>
       <find>parse_dura</find>
-      <find>sendmmsg</find>
       <find>packets_per</find>
       <find>buffer-</find>
       <find>packets-per</find>
+      <find>sendmmsg</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -116,8 +116,8 @@
         <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/src/core/udp_sender/mod.rs" />
         <option value="$PROJECT_DIR$/src/config/endpoints.rs" />
-        <option value="$PROJECT_DIR$/src/config/mod.rs" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/config/mod.rs" />
       </list>
     </option>
   </component>
@@ -146,12 +146,6 @@
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
               <item name="anevicon" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
-              <item name="anevicon" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="anevicon" type="b2602c69:ProjectViewProjectNode" />
@@ -297,16 +291,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="Test config::endpoints::tests::check_endpoints_v6" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="channel" value="DEFAULT" />
-      <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests::check_endpoints_v6 -- --exact" />
-      <option name="allFeatures" value="false" />
-      <option name="nocapture" value="false" />
-      <option name="backtrace" value="SHORT" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="Test config::endpoints::tests::check_invalid_address_format" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests::check_invalid_address_format -- --exact" />
@@ -337,6 +321,16 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="Test config::tests::validates_valid_time_format" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package anevicon --bin anevicon config::tests::validates_valid_time_format -- --exact" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="Test endpoints::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests" />
@@ -358,19 +352,19 @@
       <item itemvalue="Cargo Command.Cargo Run Release" />
       <item itemvalue="Cargo Command.Cargo Run" />
       <item itemvalue="Cargo Command.Cargo Test" />
-      <item itemvalue="Cargo Command.Test config::endpoints::tests::check_endpoints_v6" />
       <item itemvalue="Cargo Command.Test endpoints::tests" />
       <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_address_format" />
       <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_format" />
       <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_versions" />
+      <item itemvalue="Cargo Command.Test config::tests::validates_valid_time_format" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Cargo Command.Test config::tests::validates_valid_time_format" />
         <item itemvalue="Cargo Command.Test endpoints::tests" />
         <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_versions" />
         <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_format" />
         <item itemvalue="Cargo Command.Test config::endpoints::tests::check_invalid_address_format" />
-        <item itemvalue="Cargo Command.Test config::endpoints::tests::check_endpoints_v6" />
       </list>
     </recent_temporary>
   </component>
@@ -392,9 +386,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test_config__endpoints__tests__check_endpoints_v6 - 2019.07.23 at 20h 22m 19s.xml">
-      <configuration name="Test config::endpoints::tests::check_endpoints_v6" configurationId="CargoCommandRunConfiguration" />
-    </history-entry>
     <history-entry file="Test_endpoints__tests - 2019.07.23 at 20h 49m 03s.xml">
       <configuration name="Test endpoints::tests" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
@@ -422,6 +413,9 @@
     <history-entry file="Test_endpoints__tests - 2019.07.23 at 21h 03m 48s.xml">
       <configuration name="Test endpoints::tests" configurationId="CargoCommandRunConfiguration" />
     </history-entry>
+    <history-entry file="Test_config__tests__validates_valid_time_format - 2019.07.23 at 23h 41m 32s.xml">
+      <configuration name="Test config::tests::validates_valid_time_format" configurationId="CargoCommandRunConfiguration" />
+    </history-entry>
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -435,7 +429,7 @@
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22910902" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.22910902" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -447,13 +441,13 @@
       <window_info id="Job Explorer" order="9" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32937366" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49839914" visible="true" weight="0.19330454" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49839914" weight="0.3574514" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50160086" side_tool="true" weight="0.15938865" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" weight="0.032397408" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49839914" visible="true" weight="0.38552916" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32937366" />
       <window_info anchor="bottom" id="DB Execution Console" order="10" />
       <window_info anchor="bottom" id="Console" order="11" />
@@ -502,13 +496,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/files/packet.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="50" selection-start-line="4" selection-start-column="50" selection-end-line="4" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/files/second_packet.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -781,13 +768,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config/endpoints.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1843">
-          <caret line="70" column="18" lean-forward="true" selection-start-line="70" selection-start-column="18" selection-end-line="70" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -809,13 +789,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config/mod.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="71" column="16" lean-forward="true" selection-start-line="71" selection-start-column="16" selection-end-line="71" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="-714">
@@ -824,10 +797,31 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="354">
-            <caret line="223" column="33" selection-start-line="223" selection-start-column="33" selection-end-line="223" selection-end-column="33" />
+          <first_editor relative-caret-position="132">
+            <caret line="139" lean-forward="true" selection-start-line="139" selection-end-line="139" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config/endpoints.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="70" column="9" lean-forward="true" selection-start-line="70" selection-start-column="9" selection-end-line="70" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/time-0.1.42/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="643" column="7" selection-start-line="643" selection-start-column="7" selection-end-line="643" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config/mod.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="103">
+          <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
         </state>
       </provider>
     </entry>

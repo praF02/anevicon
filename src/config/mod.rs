@@ -24,7 +24,6 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use structopt::StructOpt;
-use time::ParseError;
 
 pub use endpoints::{Endpoints, ParseEndpointsError};
 
@@ -134,7 +133,7 @@ pub struct LoggingConfig {
         takes_value = true,
         value_name = "STRING",
         default_value = "%X",
-        parse(try_from_str = "parse_time_format")
+        raw(validator = "validate_date_time_format")
     )]
     pub date_time_format: String,
 }
@@ -264,9 +263,11 @@ impl ArgsConfig {
     }
 }
 
-fn parse_time_format(format: &str) -> Result<String, ParseError> {
+fn validate_date_time_format(format: String) -> Result<(), String> {
     // If this call succeeds, `format` is correct
-    time::strftime(format, &time::now()).map(|_| format.to_string())
+    time::strftime(&format, &time::now())
+        .map(|_| ())
+        .map_err(|err| err.to_string())
 }
 
 #[cfg(test)]
@@ -275,11 +276,11 @@ mod tests {
 
     // Check that ordinary formats are passed correctly
     #[test]
-    fn parses_valid_time_format() {
+    fn validates_valid_time_format() {
         let check = |format| {
             assert_eq!(
-                parse_time_format(format),
-                Ok(String::from(format)),
+                validate_date_time_format(String::from(format)),
+                Ok(()),
                 "Parses valid time incorrectly"
             )
         };
@@ -292,10 +293,10 @@ mod tests {
 
     // Invalid formats must produce the invalid format error
     #[test]
-    fn parses_invalid_time_format() {
+    fn validates_invalid_time_format() {
         let check = |format| {
             assert!(
-                parse_time_format(format).is_err(),
+                validate_date_time_format(String::from(format)).is_err(),
                 "Parses invalid time correctly"
             )
         };
