@@ -18,11 +18,11 @@
 
 use std::io;
 use std::io::IoSlice;
-use std::net::SocketAddr;
+use std::net::{IpAddr, SocketAddr};
 use std::num::NonZeroUsize;
 
 use nix::sys::socket::MsgFlags;
-use nix::sys::socket::{InetAddr, IpAddr, SockAddr};
+use nix::sys::socket::{InetAddr, SockAddr};
 
 use sendmmsg::sendmmsg;
 
@@ -68,32 +68,21 @@ impl<'a> UdpSender<'a> {
         capacity: NonZeroUsize,
         config: &SocketsConfig,
     ) -> nix::Result<Self> {
-        let dest = InetAddr::from_std(dest);
-        let is_ipv4 = match dest.ip() {
-            IpAddr::V4(_) => true,
-            IpAddr::V6(_) => false,
-        };
-
         let fd = unsafe {
             libc::socket(
-                if is_ipv4 {
-                    libc::AF_INET
-                } else {
-                    libc::AF_INET6
+                match dest.ip() {
+                    IpAddr::V4(_) => libc::AF_INET,
+                    IpAddr::V6(_) => libc::AF_INET6,
                 },
                 libc::SOCK_RAW,
                 libc::IPPROTO_RAW,
             )
         };
-
         if fd == -1 {
-            panic!(
-                "Failed to create a raw socket >>> {}",
-                io::Error::last_os_error()
-            );
+            return Err(nix::Error::last());
         }
 
-        nix::sys::socket::connect(fd, &SockAddr::Inet(dest))?;
+        nix::sys::socket::connect(fd, &SockAddr::Inet(InetAddr::from_std(dest)))?;
         helpers::set_socket_options(fd, config);
 
         Ok(UdpSender {
@@ -203,7 +192,6 @@ mod tests {
     use std::time::Duration;
 
     use lazy_static::lazy_static;
-    use pnet::packet::Packet;
 
     use crate::core::construct_packets::ipv4_udp_packet;
     use crate::core::statistics::TestSummary;
@@ -223,9 +211,7 @@ mod tests {
                 Ipv4Addr::new(127, 0, 0, 1),
                 UDP_SERVER.local_addr().unwrap().port(),
             );
-            construct_ipv4_udp_packet(&address, &address, b"Our packet", 8)
-                .packet()
-                .to_owned()
+            ipv4_udp_packet(&address, &address, b"Our packet", 8)
         };
     }
 

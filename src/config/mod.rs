@@ -19,14 +19,16 @@
 //! A module containing command-line configurations such as receivers, date-time
 //! format and so on.
 
-use std::net::SocketAddr;
-use std::num::{NonZeroUsize, ParseIntError};
+use std::num::NonZeroUsize;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use humantime::parse_duration;
 use structopt::StructOpt;
 use time::ParseError;
+
+pub use endpoints::{Endpoints, ParseEndpointsError};
+
+mod endpoints;
 
 #[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
 #[structopt(
@@ -49,7 +51,7 @@ pub struct ArgsConfig {
         takes_value = true,
         value_name = "TIME-SPAN",
         default_value = "5secs",
-        parse(try_from_str = "parse_duration")
+        parse(try_from_str = "humantime::parse_duration")
     )]
     pub wait: Duration,
 
@@ -60,7 +62,7 @@ pub struct ArgsConfig {
         takes_value = true,
         value_name = "TIME-SPAN",
         default_value = "0secs",
-        parse(try_from_str = "parse_duration")
+        parse(try_from_str = "humantime::parse_duration")
     )]
     pub send_periodicity: Duration,
 
@@ -68,18 +70,12 @@ pub struct ArgsConfig {
     /// call. After the operation completed, a test summary will have been
     /// printed
     #[structopt(
-        long = "packets-per-syscall",
+        long = "buffer-capacity",
         takes_value = true,
         value_name = "POSITIVE-INTEGER",
-        default_value = "600",
-        parse(try_from_str = "parse_non_zero_usize")
+        default_value = "600"
     )]
-    pub packets_per_syscall: NonZeroUsize,
-
-    /// Displays an interactive menu of network interfaces to use. If unset, a
-    /// default one will be used
-    #[structopt(long = "select-if", takes_value = false, conflicts_with = "sender")]
-    pub select_if: bool,
+    pub buffer_capacity: NonZeroUsize,
 
     #[structopt(flatten)]
     pub exit_config: ExitConfig,
@@ -104,7 +100,7 @@ pub struct SocketsConfig {
         takes_value = true,
         value_name = "TIME-SPAN",
         default_value = "10secs",
-        parse(try_from_str = "parse_duration")
+        parse(try_from_str = "humantime::parse_duration")
     )]
     pub send_timeout: Duration,
 
@@ -152,8 +148,7 @@ pub struct ExitConfig {
         long = "packets-count",
         takes_value = true,
         value_name = "POSITIVE-INTEGER",
-        default_value = "18446744073709551615",
-        parse(try_from_str = "parse_non_zero_usize")
+        default_value = "18446744073709551615"
     )]
     pub packets_count: NonZeroUsize,
 
@@ -161,7 +156,7 @@ pub struct ExitConfig {
     /// exit.
     ///
     /// Exit might occur a few seconds later because of long sendmmsg system
-    /// calls. For more precision, decrease the `--packets-per-syscall`
+    /// calls. For more precision, decrease the `--buffer-capacity`
     /// value.
     #[structopt(
         short = "d",
@@ -169,7 +164,7 @@ pub struct ExitConfig {
         takes_value = true,
         value_name = "TIME-SPAN",
         default_value = "64years 64hours 64secs",
-        parse(try_from_str = "parse_duration")
+        parse(try_from_str = "humantime::parse_duration")
     )]
     pub test_duration: Duration,
 }
@@ -182,8 +177,7 @@ pub struct PayloadConfig {
         short = "l",
         long = "random-packet",
         takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        parse(try_from_str = "parse_non_zero_usize")
+        value_name = "POSITIVE-INTEGER"
     )]
     pub random_packets: Vec<NonZeroUsize>,
 
@@ -210,37 +204,23 @@ pub struct PayloadConfig {
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PacketsConfig {
-    /// A receiver of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon.
+    /// Two endpoints specified as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where
+    /// address is a string of a `<IP>:<PORT>` format.
+    ///
+    /// A sender and a receiver can be absolutely any valid IPv4/IPv6 addresses
+    /// (which is used to send spoofed packets sometimes).
     ///
     /// This option can be specified several times to identically test multiple
-    /// receivers in concurrent mode.
+    /// web servers in concurrent mode.
     #[structopt(
-        short = "r",
-        long = "receiver",
+        short = "e",
+        long = "endpoints",
         takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        required = true
+        value_name = "SENDER&RECEIVER",
+        multiple = true,
+        number_of_values = 1
     )]
-    pub receivers: Vec<SocketAddr>,
-
-    /// A sender of generated traffic, specified as an IP-address and a port
-    /// number, separated by a colon.
-    ///
-    /// A sender may not be a local interface's address, it can be absolutely
-    /// any valid IPv4/IPv6 address. It can be used to send spoofed packets.
-    ///
-    /// Note that your system will automatically fill in a source address in an
-    /// IP packet if you give an unspecified (0.0.0.0) address, but it won't do
-    /// something with a port.
-    #[structopt(
-        short = "s",
-        long = "sender",
-        takes_value = true,
-        value_name = "SOCKET-ADDRESS",
-        default_value = "0.0.0.0:0"
-    )]
-    pub sender: SocketAddr,
+    pub endpoints: Vec<Endpoints>,
 
     /// Specifies the IP_TTL value for all future sockets. Usually this value
     /// equals a number of routers that a packet can go through
@@ -285,12 +265,8 @@ impl ArgsConfig {
 }
 
 fn parse_time_format(format: &str) -> Result<String, ParseError> {
-    // If this call succeeds, then the format is also correctly
+    // If this call succeeds, `format` is correct
     time::strftime(format, &time::now()).map(|_| format.to_string())
-}
-
-fn parse_non_zero_usize(number: &str) -> Result<NonZeroUsize, ParseIntError> {
-    number.parse()
 }
 
 #[cfg(test)]
@@ -327,39 +303,5 @@ mod tests {
         check("%_=-%vbg=");
         check("yufb%44htv");
         check("sf%jhei9%990");
-    }
-
-    // Check that ordinary values are parsed correctly
-    #[test]
-    fn parses_valid_non_zero_usize() {
-        let check = |num| {
-            assert_eq!(
-                parse_non_zero_usize(num),
-                Ok(NonZeroUsize::new(num.parse().unwrap()).unwrap()),
-                "Parses valid NonZeroUsize incorrectly"
-            )
-        };
-
-        check("1");
-        check("3");
-        check("26655");
-        check("+75");
-    }
-
-    // Invalid numbers must produce the invalid format error
-    #[test]
-    fn parses_invalid_non_zero_usize() {
-        let check = |num| {
-            assert!(
-                parse_non_zero_usize(num).is_err(),
-                "Parses invalid NonZeroUsize correctly"
-            )
-        };
-
-        check("   ");
-        check("abc5653odr!");
-        check("6485&02hde");
-        check("-565642");
-        check(&"2178".repeat(50));
     }
 }

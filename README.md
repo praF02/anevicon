@@ -45,12 +45,9 @@ numerous UDP packets which lets you test your server against the abnormaly high 
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
-   - [Multiple receivers](https://github.com/Gymmasssorla/anevicon#multiple-receivers)
-   - [Network interfaces](https://github.com/Gymmasssorla/anevicon#network-interfaces)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Custom messages](https://github.com/Gymmasssorla/anevicon#custom-messages)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
-   - [IP address spoofing](https://github.com/Gymmasssorla/anevicon#ip-address-spoofing)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
@@ -102,24 +99,22 @@ Name | Explanation
 -----|------------
 `-b, --allow-broadcast`| Allow sockets to send packets to a broadcast address specified using the `--receiver` option
 `-h, --help` | Prints help information
-`--select-if` | Displays an interactive menu of network interfaces to use. If unset, a default one will be used
 `-V, --version` | Prints version information
 
 ### Options
 Name | Value | Default | Explanation
 -----|-------|---------|------------
 `--date-time-format` | String | `%X` | A format for displaying local date and time in log messages. Type `man strftime` to see the format specification
+`-e, --endpoints` | Sender&Receiver | None | Two endpoints specified as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string of a `<IP>:<PORT>` format.<br><br>A sender and a receiver can be absolutely any valid IPv4/IPv6 addresses (which is used to send spoofed packets sometimes).<br><br>This option can be specified several times to identically test multiple web servers in concurrent mode.
 `--ip-ttl` | Unsigned integer | `64` | Specifies the `IP_TTL` value for all future sockets. Usually this value equals a number of routers that a packet can go through
 `--random-packet` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
 `-p, --packets-count` | Positive integer | `18 '446 '744 '073 '709 '551 '615` | A count of packets for sending. When this limit is reached, then the program will exit
-`--packets-per-syscall` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
-`-r, --receiver` | Socket address | None | A receiver of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>This option can be specified several times to identically test multiple receivers in concurrent mode.
+`--buffer-capacity` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
 `-f, --send-file` | Filename | None | Interpret the specified file content as a single packet and repeatedly send it to each receiver
 `-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
 `--send-periodicity` | Time span | `0secs` | A time interval between `sendmmsg` system calls. This option can be used to modify test intensity
 `-t, --send-timeout` | Time span | `10secs` | A timeout of sending every single packet. If a timeout is reached, then a packet will be sent later
-`-s, --sender` | Socket address | `0.0.0.0:0` | A sender of generated traffic, specified as an IP-address and a port number, separated by a colon.<br><br>A sender may not be a local interface's address, it can be absolutely any valid IPv4/IPv6 address. It can be used to send spoofed packets.<br><br>Note that your system will automatically fill in a source address in an IP packet if you give an unspecified (0.0.0.0) address, but it won't do something with a port.
-`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long `sendmmsg` system calls. For more precision, decrease the `--packets-per-syscall` value.
+`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long `sendmmsg` system calls. For more precision, decrease the `--buffer-capacity` value.
 `-v, --verbosity` | From 0 to 5 | `3` | Enable one of the possible verbosity levels. The zero level doesn't print anything, and the last level prints everything.<br><br>Note that specifying the 4 and 5 verbosity levels might decrease performance, do it only for debugging.
 `-w, --wait` | Time span | `5secs` | A waiting time span before a test execution used to prevent a launch of an erroneous (unwanted) test
 
@@ -134,36 +129,25 @@ $ PATH+=":/home/gymmasssorla/.cargo/bin"
 ```
 
 ### Minimal command
-All you need is to provide the testing server address, which consists of an IP address and a port number, separated by the colon character. By default, all sending sockets will have your local address:
+All you need is to provide a source address and a testing server address, each of which consists of an IP address and a port number, separated by the colon character. You must specify them as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`:
 
 ```bash
-# Test example.com:80 using your local address
-$ anevicon --receiver=93.184.216.34:80
+# Test example.com:80 on a local network interface 192.168.1.41
+$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 ```
+
+Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
+
+You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints. Also it's possible to [spoof UDP packets](https://en.wikipedia.org/wiki/IP_address_spoofing), in other words, fake a source address so that your receiver will be thinking that someone else sends packets to it, not you!
 
 ### Test intensity
 In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
-# Test example.com:80 waiting for 270 microseconds after each sendmmsg syscall
+# Test example.com:80 waiting for 270 microseconds after each sendmmsg call
 $ anevicon --receiver=93.184.216.34:80 --send-periodicity=270us
 ```
 
-### Multiple receivers
-Anevicon also has the functionality to test multiple receivers in parallel mode, thereby distributing the load on your processor cores. To do so, just specify the `--receiver` option several times.
-
-```bash
-# Test example.com:80 and google.com:13 in parallel
-$ anevicon --receiver=93.184.216.34:80 --receiver=216.58.207.78:13
-```
-
-### Network interfaces
-There is also an ability to bind all future sockets to a specific network interface. Consider the `--select-if` flag, which displays an interactive menu of network interfaces in a command line:
-
-```bash
-# Test example.com with a custom network interface using --select-if
-$ anevicon --receiver=93.184.216.34:80 --select-if
-```
 
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
@@ -210,16 +194,6 @@ Different verbosity levels print different logging types. As you can see in the 
 | Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
 | Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
 
-### IP address spoofing
-One of the most interesting options is `--sender`. It accepts a source address of all future datagrams and can be an absolutely any valid IPv4/IPv6 address, not only your network interface's. Take a look at this example:
-
-```bash
-# Test example.com:80 using the 172.217.22.14:173 sender
-$ anevicon --receiver=93.184.216.34:80 --sender=172.217.22.14:173
-```
-
-The command above will run a test to http://example.com/, assigning source addresses to `172.217.22.14:173` (A Google's IP), therefore, the destination server will be thinking that all the packets are from Google. This is called [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing).
-
 ### Multiple messages
 [v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
 
@@ -249,7 +223,7 @@ An optimized sending buffer is a data structure representing a sending buffer wh
 
 That is, Anevicon has been designed to minimize a number of system calls to your Linux kernel. Yes, we can instead use such libraries as [netmap](https://www.freebsd.org/cgi/man.cgi?query=netmap)/[PF_RING](https://www.ntop.org/products/packet-capture/pf_ring/)/[DPDK](https://www.dpdk.org/), but then users might be confused with running Anevicon on their systems. Anyway, I think that `sendmmsg` provides pretty well performance for all needs.
 
-Here is a visual demonstration of the described process. You enter `anevicon --receiver=93.184.216.34:80 --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --packets-per-syscall=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
+Here is a visual demonstration of the described process. You enter `anevicon --endpoints=”192.168.1.41:0&93.184.216.34:80” --packets-count=7 --send-message="First" --send-message="Second" --send-message="Third" --buffer-capacity=3` and the program generates an iterator over ten messages that will be processed by an optimized sending buffer with the capacity of three:
 
 <div align="center">
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/media/PROCESS.png">
