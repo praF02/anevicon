@@ -138,7 +138,7 @@ $ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 
 Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
 
-You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints. Also it's possible to [spoof UDP packets](https://en.wikipedia.org/wiki/IP_address_spoofing), in other words, fake a source address so that your receiver will be thinking that someone else sends packets to it, not you!
+You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints. Also it's possible to [spoof UDP packets](https://en.wikipedia.org/wiki/IP_address_spoofing) since `--endpoints` accepts any IPv4/IPv6 addresses.
 
 ### Test intensity
 In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
