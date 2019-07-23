@@ -145,16 +145,15 @@ In some situations, you don't need to transmit the maximum possible amount of pa
 
 ```bash
 # Test example.com:80 waiting for 270 microseconds after each sendmmsg call
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --send-periodicity=270us
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-periodicity=270us
 ```
-
 
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
 
 ```bash
 # Test example.com:80 with the two limit options
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --test-duration=3min --packets-count=7000
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-duration=3min --packets-count=7000
 ```
 
 ### Custom messages
@@ -162,17 +161,17 @@ By default, Anevicon will generate a random packet with a default size (32768). 
 
 ```bash
 # Test example.com:80 with the custom file 'message.txt'
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --send-file="message.txt"
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-file="message.txt"
 
 # Test example.com:80 with the custom text message
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --send-message="How do you do?"
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-message="How do you do?"
 ```
 
 Also, you are able to specify one or more random packets with your own lengths using the `--random-packet` option. This example specifies two random-generated packets with the sizes 1454 and 29400:
 
 ```bash
 # Test example.com:80 with two random packets
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --random-packet=1454 --random-packet=29400
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --random-packet=1454 --random-packet=29400
 ```
 
 ### Logging options
@@ -180,7 +179,7 @@ Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is
 
 ```bash
 # Use a custom date-time format and the last verbosity level
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" --date-time-format="%F" --verbosity=5
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --date-time-format="%F" --verbosity=5
 ```
 
 Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
