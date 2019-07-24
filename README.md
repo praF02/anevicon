@@ -44,6 +44,7 @@ numerous UDP packets which lets you test your server against the abnormaly high 
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
+   - [Multiple endpoints](https://github.com/Gymmasssorla/anevicon#multiple-endpoints)
    - [IP address spoofing](https://github.com/Gymmasssorla/anevicon#ip-address-spoofing)
    - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
@@ -139,7 +140,15 @@ $ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 
 Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
 
-You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints.
+### Multiple endpoints
+You can specify as many `--endpoints` options as you want to test multiple web servers in separate threads. Here we test both `176.34.155.23:80` (DuckDuckGo), `93.184.216.34:80` (Example.com), and `216.58.205.238:80` (Google):
+
+```bash
+# Test duckduckgo.com:80, example.com:80, and google.com:80 concurrently
+$ anevicon --endpoints="192.168.1.41:0&176.34.155.23:80:80" \
+--endpoints="192.168.1.41:0&93.184.216.34:80" \
+--endpoints="192.168.1.41:0&216.58.205.238:80"
+```
 
 ### IP address spoofing
 Anevicon provides functionality for [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing) since the `--endpoints` option accepts any IPv4/IPv6 addresses. For example, you can specify your source address as Google's:
