@@ -44,10 +44,11 @@ numerous UDP packets which lets you test your server against the abnormaly high 
    - [Options](https://github.com/Gymmasssorla/anevicon#options)
  - [Overview](https://github.com/Gymmasssorla/anevicon#overview)
    - [Minimal command](https://github.com/Gymmasssorla/anevicon#minimal-command)
-   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
+   - [IP address spoofing](https://github.com/Gymmasssorla/anevicon#ip-address-spoofing)
+   - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
    - [Exit conditions](https://github.com/Gymmasssorla/anevicon#exit-conditions)
    - [Custom messages](https://github.com/Gymmasssorla/anevicon#custom-messages)
-   - [Logging options](https://github.com/Gymmasssorla/anevicon#logging-options)
+   - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
  - [Going deeper](https://github.com/Gymmasssorla/anevicon#going-deeper)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
@@ -138,15 +139,35 @@ $ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 
 Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
 
-You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints. Also it's possible to [spoof UDP packets](https://en.wikipedia.org/wiki/IP_address_spoofing) since `--endpoints` accepts any IPv4/IPv6 addresses.
+You can specify as many `--endpoints` options as you want to test multiple web servers concurrently, Anevicon will spawn one thread for each of endpoints.
 
-### Test intensity
-In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+### IP address spoofing
+Anevicon provides functionality for [IP spoofing](https://en.wikipedia.org/wiki/IP_address_spoofing) since the `--endpoints` option accepts any IPv4/IPv6 addresses. For example, you can specify your source address as Google's:
 
 ```bash
-# Test example.com:80 waiting for 270 microseconds after each sendmmsg call
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-periodicity=270us
+# Test example.com:80 using the Google's IP (172.217.18.14:80) as a source
+$ anevicon --endpoints="172.217.18.14:80&93.184.216.34:80"
 ```
+
+### Logging options
+Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is done by the `--verbosity` option. There is also the `--date-time-format` option which tells Anevicon to use your custom date-time format.
+
+```bash
+# Use a custom date-time format and the last verbosity level
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --date-time-format="%F" --verbosity=5
+```
+
+Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
+
+| | Errors | Warnings | Notifications | Debugs | Traces |
+|-|--------|----------|---------------|--------|--------|
+| Zero (0) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| First (1) | ✔ | ❌ | ❌ | ❌ | ❌ |
+| Second (2) | ✔ | ✔ | ❌ | ❌ | ❌ |
+| Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
+| Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
+| Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
+
 
 ### Exit conditions
 Note that the command above might not work on your system due to the security reasons. To make your test deterministic, there are two end conditions called `--test-duration` and `--packets-count` (a test duration and a packets count, respectively):
@@ -174,24 +195,13 @@ Also, you are able to specify one or more random packets with your own lengths u
 $ anevicon -e="192.168.1.41:0&93.184.216.34:80" --random-packet=1454 --random-packet=29400
 ```
 
-### Logging options
-Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is done by the `--verbosity` option. There is also the `--date-time-format` option which tells Anevicon to use your custom date-time format.
+### Test intensity
+In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
 
 ```bash
-# Use a custom date-time format and the last verbosity level
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --date-time-format="%F" --verbosity=5
+# Test example.com:80 waiting for 270 microseconds after each sendmmsg call
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-periodicity=270us
 ```
-
-Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
-
-| | Errors | Warnings | Notifications | Debugs | Traces |
-|-|--------|----------|---------------|--------|--------|
-| Zero (0) | ❌ | ❌ | ❌ | ❌ | ❌ |
-| First (1) | ✔ | ❌ | ❌ | ❌ | ❌ |
-| Second (2) | ✔ | ✔ | ❌ | ❌ | ❌ |
-| Third (3) | ✔ | ✔ | ✔ | ❌ | ❌ |
-| Fourth (4) | ✔ | ✔ | ✔ | ✔ | ❌ |
-| Fifth (5) | ✔ | ✔ | ✔ | ✔ | ✔ |
 
 ### Multiple messages
 [v5.2.0](https://github.com/Gymmasssorla/anevicon/releases/tag/v5.2.0) introduced the multiple messages functionality, which means that you can specify several messages to be sent to a tested web server (but order is not guaranteed).
