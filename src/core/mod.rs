@@ -82,9 +82,11 @@ fn current_receiver() -> String {
 
 fn current_endpoints() -> String {
     format!(
-        "{sender} ===> {receiver}",
+        "{sender} {yellow}===>{reset_color} {receiver}",
         sender = current_sender(),
         receiver = current_receiver(),
+        yellow = color::Fg(color::Yellow),
+        reset_color = color::Fg(color::Reset),
     )
 }
 
