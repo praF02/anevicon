@@ -68,7 +68,7 @@ impl<'a> UdpSender<'a> {
         capacity: NonZeroUsize,
         config: &SocketsConfig,
     ) -> nix::Result<Self> {
-        let fd = unsafe {
+        let fd = match unsafe {
             libc::socket(
                 match dest.ip() {
                     IpAddr::V4(_) => libc::AF_INET,
@@ -77,10 +77,10 @@ impl<'a> UdpSender<'a> {
                 libc::SOCK_RAW,
                 libc::IPPROTO_RAW,
             )
+        } {
+            -1 => return Err(nix::Error::last()),
+            value => value,
         };
-        if fd == -1 {
-            return Err(nix::Error::last());
-        }
 
         nix::sys::socket::connect(fd, &SockAddr::Inet(InetAddr::from_std(dest)))?;
         helpers::set_socket_options(fd, config);
