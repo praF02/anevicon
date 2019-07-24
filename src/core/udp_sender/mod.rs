@@ -51,7 +51,7 @@ pub struct UdpSender<'a> {
     fd: libc::c_int,
 
     /// The buffer capacity equals to a number of packets transmitted per a
-    /// system call (`--packets-per-syscall`). When this buffer is full, then it
+    /// system call (`--buffer-capacity`). When this buffer is full, then it
     /// will be flushed to an endpoint using `libc::sendmmsg`.
     buffer: Vec<DataPortion<'a>>,
 }

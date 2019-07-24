@@ -21,6 +21,8 @@ use std::fmt::{self, Display, Formatter};
 use std::net::{AddrParseError, SocketAddr, SocketAddrV4, SocketAddrV6};
 use std::str::FromStr;
 
+use termion::{color, style};
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Endpoints {
     V4 {
@@ -45,8 +47,12 @@ impl Display for ParseEndpointsError {
         match self {
             ParseEndpointsError::InvalidFormat => write!(
                 fmt,
-                "The `--endpoints` option must be specified as \
-                 `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string `<IP>:<PORT>`"
+                "{green}{italic}--endpoints{reset_color}{reset_style} must be specified as \
+                 `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string `<IP>:<PORT>`",
+                green = color::Fg(color::Green),
+                reset_color = color::Fg(color::Reset),
+                italic = style::Italic,
+                reset_style = style::Reset,
             ),
             ParseEndpointsError::DifferentIpVersions => write!(
                 fmt,

@@ -27,15 +27,13 @@ use std::thread;
 use std::thread::JoinHandle;
 use std::time::Duration;
 
-use humantime::format_duration;
 use termion::color;
 
 use construct_payload::construct_payload;
 use statistics::TestSummary;
+use udp_sender::{SupplyResult, UdpSender};
 
 use crate::config::{ArgsConfig, Endpoints};
-use crate::core::construct_packets::ip_udp_packet;
-use crate::core::udp_sender::{SupplyResult, UdpSender};
 
 mod construct_packets;
 mod construct_payload;
@@ -43,27 +41,51 @@ mod statistics;
 mod udp_sender;
 
 thread_local! {
+    /// A colored sender name for this thread.
+    static SENDER: RefCell<String> = RefCell::new(
+        format!("{cyan}Undefined{reset}", cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset)));
+
     /// A colored receiver name for this thread.
-    static ENDPOINTS: RefCell<String> = RefCell::new(
-        format!("sender={cyan}Undefined{reset} & receiver={cyan}Undefined{reset}",
-            cyan = color::Fg(color::Cyan),
-            reset = color::Fg(color::Reset),));
+    static RECEIVER: RefCell<String> = RefCell::new(
+        format!("{cyan}Undefined{reset}", cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset)));
 }
 
 fn init_endpoints(value: Endpoints) {
-    ENDPOINTS.with(|receiver| {
-        *receiver.borrow_mut() = format!(
-            "sender={cyan}{sender}{reset} & receiver={cyan}{receiver}{reset}",
-            receiver = value.receiver(),
+    SENDER.with(|sender| {
+        *sender.borrow_mut() = format!(
+            "{cyan}{sender}{reset}",
             sender = value.sender(),
+            cyan = color::Fg(color::Cyan),
+            reset = color::Fg(color::Reset),
+        )
+    });
+
+    RECEIVER.with(|receiver| {
+        *receiver.borrow_mut() = format!(
+            "{cyan}{receiver}{reset}",
+            receiver = value.receiver(),
             cyan = color::Fg(color::Cyan),
             reset = color::Fg(color::Reset),
         )
     });
 }
 
+fn current_sender() -> String {
+    SENDER.with(|string| string.borrow().clone())
+}
+
+fn current_receiver() -> String {
+    RECEIVER.with(|string| string.borrow().clone())
+}
+
 fn current_endpoints() -> String {
-    ENDPOINTS.with(|string| string.borrow().clone())
+    format!(
+        "{sender} ===> {receiver}",
+        sender = current_sender(),
+        receiver = current_receiver(),
+    )
 }
 
 /// This is the key function which accepts a whole `ArgsConfig` and returns
@@ -126,7 +148,9 @@ fn run_tester(
 ) -> Result<TestSummary, RunTesterError> {
     let packets = payload
         .iter()
-        .map(|payload| ip_udp_packet(&endpoints, payload, config.packets_config.ip_ttl))
+        .map(|payload| {
+            construct_packets::ip_udp_packet(&endpoints, payload, config.packets_config.ip_ttl)
+        })
         .collect::<Vec<Vec<u8>>>();
     let mut summary = TestSummary::default();
     let mut sender = UdpSender::new(
@@ -207,9 +231,11 @@ fn resend_packets(
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
-        "trying to resend {cyan}{count}{reset} packets to {receiver} that haven't been sent yet...",
+        "trying to resend {cyan}{count}{reset} packets to {receiver} from {sender} that haven't \
+         been sent yet...",
         count = packets.len(),
-        receiver = current_endpoints(),
+        receiver = current_receiver(),
+        sender = current_sender(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
@@ -221,17 +247,20 @@ fn resend_packets(
 
         while let Err(error) = sender.send_one(summary, packet) {
             error!(
-                "failed to send a packet to {receiver} >>> {error}! Retrying the operation...",
-                receiver = current_endpoints(),
+                "failed to send a packet to {receiver} from {sender} >>> {error}! Retrying the \
+                 operation...",
+                receiver = current_receiver(),
+                sender = current_sender(),
                 error = error,
             );
         }
     }
 
     info!(
-        "{cyan}{count}{reset} packets have been resent to {receiver}.",
+        "{cyan}{count}{reset} packets have been resent to {receiver} from {sender}.",
         count = packets.len(),
-        receiver = current_endpoints(),
+        receiver = current_receiver(),
+        sender = current_sender(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
@@ -244,9 +273,9 @@ fn wait(config: &ArgsConfig) {
         "waiting {cyan}{time}{reset} and then starting to execute the tests until \
          {cyan}{packets}{reset} packets will be sent or {cyan}{duration}{reset} duration will be \
          passed...",
-        time = format_duration(config.wait),
+        time = humantime::format_duration(config.wait),
         packets = config.exit_config.packets_count,
-        duration = format_duration(config.exit_config.test_duration),
+        duration = humantime::format_duration(config.exit_config.test_duration),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
@@ -255,15 +284,17 @@ fn wait(config: &ArgsConfig) {
 
 fn display_expired_time() {
     info!(
-        "the allotted time has passed for {receiver}.",
-        receiver = current_endpoints(),
+        "the allotted time has passed for {receiver} receiver and {sender} sender.",
+        receiver = current_receiver(),
+        sender = current_sender(),
     );
 }
 
 fn display_packets_sent() {
     info!(
-        "all the packets have been sent to {receiver}.",
-        receiver = current_endpoints(),
+        "all the packets have been sent to {receiver} from {sender}.",
+        receiver = current_receiver(),
+        sender = current_sender(),
     );
 }
 
@@ -282,7 +313,7 @@ fn display_summary(summary: &TestSummary) {
             packets_per_sec = summary.packets_per_sec(),
             mbps = summary.megabites_per_sec(),
         ),
-        time_passed = format_duration(summary.time_passed()),
+        time_passed = humantime::format_duration(summary.time_passed()),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
@@ -290,8 +321,9 @@ fn display_summary(summary: &TestSummary) {
 
 fn send_multiple_error<E: Display>(error: E) {
     error!(
-        "failed to send packets to {receiver} >>> {error}!",
-        receiver = current_endpoints(),
+        "failed to send packets to {receiver} from {sender} >>> {error}!",
+        receiver = current_receiver(),
+        sender = current_sender(),
         error = error,
     );
 }
