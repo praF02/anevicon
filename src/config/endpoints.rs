@@ -23,7 +23,7 @@ use std::str::FromStr;
 
 use termion::{color, style};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub enum Endpoints {
     V4 {
         sender: SocketAddrV4,

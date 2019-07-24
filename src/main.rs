@@ -19,6 +19,7 @@
 #[macro_use]
 extern crate log;
 
+use std::collections::HashSet;
 use std::convert::TryInto;
 
 use termion::{color, style, terminal_size};
@@ -54,6 +55,24 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
         );
 
         return Err(());
+    }
+
+    let mut keys = HashSet::new();
+    for next_endpoints in &config.packets_config.endpoints {
+        if keys.contains(next_endpoints) {
+            error!(
+                "all endpoints must be uniquely specified, but \
+                 {cyan}{sender}{reset}&{cyan}{receiver}{reset} has been specified several times!",
+                sender = next_endpoints.sender(),
+                receiver = next_endpoints.receiver(),
+                cyan = color::Fg(color::Cyan),
+                reset = color::Fg(color::Reset),
+            );
+
+            return Err(());
+        } else {
+            keys.insert(next_endpoints);
+        }
     }
 
     Ok(())

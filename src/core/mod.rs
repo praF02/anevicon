@@ -321,7 +321,7 @@ fn display_summary(summary: &TestSummary) {
     );
 }
 
-fn send_multiple_error<E: Display>(error: E) {
+fn send_multiple_error<E: Error>(error: E) {
     error!(
         "failed to send packets to {receiver} from {sender} >>> {error}!",
         receiver = current_receiver(),
