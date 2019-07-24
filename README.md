@@ -141,7 +141,7 @@ $ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
 
 ### Multiple endpoints
-You can specify as many endpoints as you want to test multiple web servers in separate threads. Test both `176.34.155.23:80` (DuckDuckGo), `93.184.216.34:80` (Example.com), and `216.58.205.238:80` (Google):
+You can specify as many endpoints as you want to test several receivers in separate threads. Test both `176.34.155.23:80` (DuckDuckGo), `93.184.216.34:80` (Example.com), and `216.58.205.238:80` (Google):
 
 ```bash
 # Test duckduckgo.com:80, example.com:80, and google.com:80 concurrently
