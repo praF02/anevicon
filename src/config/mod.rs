@@ -217,7 +217,8 @@ pub struct PacketsConfig {
         takes_value = true,
         value_name = "SENDER&RECEIVER",
         multiple = true,
-        number_of_values = 1
+        number_of_values = 1,
+        required = true
     )]
     pub endpoints: Vec<Endpoints>,
 

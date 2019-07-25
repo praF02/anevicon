@@ -8,11 +8,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config/endpoints.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/endpoints.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
     </list>
@@ -31,40 +29,6 @@
         <option value="Rust File" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>packet-</find>
-      <find>waiting</find>
-      <find>exit</find>
-      <find>for</find>
-      <find>a new</find>
-      <find>megabites</find>
-      <find>select_if</find>
-      <find>print-</find>
-      <find>packet</find>
-      <find>select</find>
-      <find>porti</find>
-      <find>portion</find>
-      <find>PacketsBu</find>
-      <find>sender</find>
-      <find>Packet</find>
-      <find>PacketDa</find>
-      <find>receiver</find>
-      <find>parallel</find>
-      <find>conflicts</find>
-      <find>parse_non</find>
-      <find>parse_dura</find>
-      <find>packets_per</find>
-      <find>buffer-</find>
-      <find>sendmmsg</find>
-      <find>current_endpoints</find>
-      <find>current_receiver</find>
-      <find>packets-</find>
-      <find>packets-per</find>
-      <find>--</find>
-      <find>current_rece</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
