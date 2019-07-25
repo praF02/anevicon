@@ -193,7 +193,8 @@ mod tests {
 
     use lazy_static::lazy_static;
 
-    use crate::core::construct_packets::ipv4_udp_packet;
+    use crate::config::EndpointsV4;
+    use crate::core::construct_packets;
     use crate::core::statistics::TestSummary;
     use crate::core::udp_sender::helpers::set_socket_options;
 
@@ -211,7 +212,14 @@ mod tests {
                 Ipv4Addr::new(127, 0, 0, 1),
                 UDP_SERVER.local_addr().unwrap().port(),
             );
-            ipv4_udp_packet(&address, &address, b"Our packet", 8)
+            construct_packets::ipv4_udp_packet(
+                &EndpointsV4 {
+                    sender: address,
+                    receiver: address,
+                },
+                b"Our packet",
+                8,
+            )
         };
     }
 

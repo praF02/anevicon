@@ -16,33 +16,24 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::net::{SocketAddrV4, SocketAddrV6};
-
 use etherparse::PacketBuilder;
 
-use crate::config::Endpoints;
+use crate::config::{Endpoints, EndpointsV4, EndpointsV6};
 
 pub fn ip_udp_packet(endpoints: &Endpoints, payload: &[u8], time_to_live: u8) -> Vec<u8> {
     match endpoints {
-        Endpoints::V4 {
-            sender: sender_v4,
-            receiver: receiver_v4,
-        } => ipv4_udp_packet(sender_v4, receiver_v4, payload, time_to_live),
-        Endpoints::V6 {
-            sender: sender_v6,
-            receiver: receiver_v6,
-        } => ipv6_udp_packet(sender_v6, receiver_v6, payload, time_to_live),
+        Endpoints::V4(endpoints_v4) => ipv4_udp_packet(endpoints_v4, payload, time_to_live),
+        Endpoints::V6(endpoints_v6) => ipv6_udp_packet(endpoints_v6, payload, time_to_live),
     }
 }
 
-pub fn ipv4_udp_packet(
-    source: &SocketAddrV4,
-    dest: &SocketAddrV4,
-    payload: &[u8],
-    time_to_live: u8,
-) -> Vec<u8> {
-    let builder = PacketBuilder::ipv4(source.ip().octets(), dest.ip().octets(), time_to_live)
-        .udp(source.port(), dest.port());
+pub fn ipv4_udp_packet(endpoints: &EndpointsV4, payload: &[u8], time_to_live: u8) -> Vec<u8> {
+    let builder = PacketBuilder::ipv4(
+        endpoints.sender.ip().octets(),
+        endpoints.receiver.ip().octets(),
+        time_to_live,
+    )
+    .udp(endpoints.sender.port(), endpoints.receiver.port());
     let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
     builder
         .write(&mut serialized, payload)
@@ -50,14 +41,13 @@ pub fn ipv4_udp_packet(
     serialized
 }
 
-pub fn ipv6_udp_packet(
-    source: &SocketAddrV6,
-    dest: &SocketAddrV6,
-    payload: &[u8],
-    time_to_live: u8,
-) -> Vec<u8> {
-    let builder = PacketBuilder::ipv6(source.ip().octets(), dest.ip().octets(), time_to_live)
-        .udp(source.port(), dest.port());
+pub fn ipv6_udp_packet(endpoints: &EndpointsV6, payload: &[u8], time_to_live: u8) -> Vec<u8> {
+    let builder = PacketBuilder::ipv6(
+        endpoints.sender.ip().octets(),
+        endpoints.receiver.ip().octets(),
+        time_to_live,
+    )
+    .udp(endpoints.sender.port(), endpoints.receiver.port());
     let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
     builder
         .write(&mut serialized, payload)

@@ -24,15 +24,21 @@ use std::str::FromStr;
 use termion::{color, style};
 
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
+pub struct EndpointsV4 {
+    pub sender: SocketAddrV4,
+    pub receiver: SocketAddrV4,
+}
+
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
+pub struct EndpointsV6 {
+    pub sender: SocketAddrV6,
+    pub receiver: SocketAddrV6,
+}
+
+#[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub enum Endpoints {
-    V4 {
-        sender: SocketAddrV4,
-        receiver: SocketAddrV4,
-    },
-    V6 {
-        sender: SocketAddrV6,
-        receiver: SocketAddrV6,
-    },
+    V4(EndpointsV4),
+    V6(EndpointsV6),
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -68,25 +74,15 @@ impl Error for ParseEndpointsError {}
 impl Endpoints {
     pub fn sender(&self) -> SocketAddr {
         match self {
-            Endpoints::V4 {
-                sender: sender_v4, ..
-            } => SocketAddr::V4(*sender_v4),
-            Endpoints::V6 {
-                sender: sender_v6, ..
-            } => SocketAddr::V6(*sender_v6),
+            Endpoints::V4(v4) => SocketAddr::V4(v4.sender),
+            Endpoints::V6(v6) => SocketAddr::V6(v6.sender),
         }
     }
 
     pub fn receiver(&self) -> SocketAddr {
         match self {
-            Endpoints::V4 {
-                receiver: receiver_v4,
-                ..
-            } => SocketAddr::V4(*receiver_v4),
-            Endpoints::V6 {
-                receiver: receiver_v6,
-                ..
-            } => SocketAddr::V6(*receiver_v6),
+            Endpoints::V4(v4) => SocketAddr::V4(v4.receiver),
+            Endpoints::V6(v6) => SocketAddr::V6(v6.receiver),
         }
     }
 }
@@ -96,7 +92,6 @@ impl FromStr for Endpoints {
 
     fn from_str(format: &str) -> Result<Self, ParseEndpointsError> {
         let addresses = format.split('&').collect::<Vec<&str>>();
-
         if addresses.len() != 2 {
             return Err(ParseEndpointsError::InvalidFormat);
         }
@@ -110,17 +105,17 @@ impl FromStr for Endpoints {
 
         match sender {
             SocketAddr::V4(sender_v4) => match receiver {
-                SocketAddr::V4(receiver_v4) => Ok(Endpoints::V4 {
+                SocketAddr::V4(receiver_v4) => Ok(Endpoints::V4(EndpointsV4 {
                     sender: sender_v4,
                     receiver: receiver_v4,
-                }),
+                })),
                 _ => Err(ParseEndpointsError::DifferentIpVersions),
             },
             SocketAddr::V6(sender_v6) => match receiver {
-                SocketAddr::V6(receiver_v6) => Ok(Endpoints::V6 {
+                SocketAddr::V6(receiver_v6) => Ok(Endpoints::V6(EndpointsV6 {
                     sender: sender_v6,
                     receiver: receiver_v6,
-                }),
+                })),
                 _ => Err(ParseEndpointsError::DifferentIpVersions),
             },
         }
@@ -135,33 +130,41 @@ mod tests {
 
     #[test]
     fn check_endpoints_v4() {
-        let sender = SocketAddrV4::new(Ipv4Addr::new(32, 43, 35, 211), 1921);
-        let receiver = SocketAddrV4::new(Ipv4Addr::new(63, 222, 66, 14), 1939);
-        let endpoints = Endpoints::V4 { sender, receiver };
+        let v4 = EndpointsV4 {
+            sender: SocketAddrV4::new(Ipv4Addr::new(32, 43, 35, 211), 1921),
+            receiver: SocketAddrV4::new(Ipv4Addr::new(63, 222, 66, 14), 1939),
+        };
+        let endpoints = Endpoints::V4(v4);
 
-        assert_eq!(endpoints.sender(), SocketAddr::V4(sender));
-        assert_eq!(endpoints.receiver(), SocketAddr::V4(receiver));
+        assert_eq!(endpoints.sender(), SocketAddr::V4(v4.sender));
+        assert_eq!(endpoints.receiver(), SocketAddr::V4(v4.receiver));
     }
 
     #[test]
     fn check_endpoints_v6() {
-        let sender = SocketAddrV6::new(Ipv6Addr::new(32, 43, 35, 211, 53, 25, 9, 213), 1921, 0, 0);
-        let receiver =
-            SocketAddrV6::new(Ipv6Addr::new(63, 222, 66, 14, 66, 24, 111, 20), 1939, 0, 0);
-        let endpoints = Endpoints::V6 { sender, receiver };
+        let v6 = EndpointsV6 {
+            sender: SocketAddrV6::new(Ipv6Addr::new(32, 43, 35, 211, 53, 25, 9, 213), 1921, 0, 0),
+            receiver: SocketAddrV6::new(
+                Ipv6Addr::new(63, 222, 66, 14, 66, 24, 111, 20),
+                1939,
+                0,
+                0,
+            ),
+        };
+        let endpoints = Endpoints::V6(v6);
 
-        assert_eq!(endpoints.sender(), SocketAddr::V6(sender));
-        assert_eq!(endpoints.receiver(), SocketAddr::V6(receiver));
+        assert_eq!(endpoints.sender(), SocketAddr::V6(v6.sender));
+        assert_eq!(endpoints.receiver(), SocketAddr::V6(v6.receiver));
     }
 
     #[test]
     fn parses_valid_v4() {
         assert_eq!(
             Endpoints::from_str("233.43.24.53:34&29.32.45.111:9191"),
-            Ok(Endpoints::V4 {
+            Ok(Endpoints::V4(EndpointsV4 {
                 sender: SocketAddrV4::from_str("233.43.24.53:34").unwrap(),
                 receiver: SocketAddrV4::from_str("29.32.45.111:9191").unwrap(),
-            })
+            }))
         );
     }
 
@@ -172,11 +175,11 @@ mod tests {
                 "[2001:db8:85a3:0:0:8a2e:370:7334]:18281&[2001:0db8:85a3:0000:0000:8a2e:0370:\
                  7334]:9191"
             ),
-            Ok(Endpoints::V6 {
+            Ok(Endpoints::V6(EndpointsV6 {
                 sender: SocketAddrV6::from_str("[2001:db8:85a3:0:0:8a2e:370:7334]:18281").unwrap(),
                 receiver: SocketAddrV6::from_str("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:9191")
                     .unwrap(),
-            })
+            }))
         );
     }
 

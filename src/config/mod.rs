@@ -25,7 +25,7 @@ use std::time::Duration;
 
 use structopt::StructOpt;
 
-pub use endpoints::{Endpoints, ParseEndpointsError};
+pub use endpoints::{Endpoints, EndpointsV4, EndpointsV6, ParseEndpointsError};
 
 mod endpoints;
 
