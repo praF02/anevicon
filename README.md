@@ -134,11 +134,9 @@ $ PATH+=":/home/gymmasssorla/.cargo/bin"
 All you need is to provide a source address and a server address, each of which consists of an IP address and a port number, separated by the colon character. You must specify them as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`:
 
 ```bash
-# Test example.com:80 on a local network interface 192.168.1.41
+# Test example.com:80 with the 192.168.1.41:0 source address
 $ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
 ```
-
-Here we have `192.168.1.41:0` as a source address (my local network interface given by [ifconfig](https://en.wikipedia.org/wiki/Ifconfig)) and `93.184.216.34:80` (port 80 of http://example.com/) as a receiver of all generated traffic.
 
 ### Multiple endpoints
 You can specify as many endpoints as you want to test several receivers in separate threads. Test both `176.34.155.23:80` (DuckDuckGo), `93.184.216.34:80` (Example.com), and `216.58.205.238:80` (Google):
