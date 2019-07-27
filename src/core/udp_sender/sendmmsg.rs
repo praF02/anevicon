@@ -16,6 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+/// Minimal safe bindings to `libc::sendmmsg`.
 use std::io;
 use std::io::IoSlice;
 use std::mem;

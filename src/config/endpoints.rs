@@ -16,6 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+/// The structures representing user-specified communication endpoints.
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::net::{AddrParseError, SocketAddr, SocketAddrV4, SocketAddrV6};

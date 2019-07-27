@@ -7,12 +7,10 @@
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config/endpoints.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/endpoints.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/construct_payload.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_payload.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -42,6 +40,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8.0_191" />
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
+    <property name="org.rust.hideDetachedFileNotifications/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon/src/core/udp_sender/handle_icmp.rs" value="true" />
     <property name="org.rust.hideDetachedFileNotifications/media/gymmasssorla/772CF8924BEBB279/Documents/rust/anevicon/src/core/udp_sender/test.rs" value="true" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>

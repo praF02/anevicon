@@ -16,6 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+/// This file is used to send raw UDP/IP messages to a web server.
 use std::io;
 use std::io::IoSlice;
 use std::net::{IpAddr, SocketAddr};
