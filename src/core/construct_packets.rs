@@ -16,7 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-/// Some functions to construct raw UDP/IP packets (headers + data).
+//! Some functions to construct raw UDP/IP packets (headers + data).
+
 use etherparse::PacketBuilder;
 
 use crate::config::{Endpoints, EndpointsV4, EndpointsV6};

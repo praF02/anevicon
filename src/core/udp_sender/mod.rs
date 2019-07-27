@@ -16,7 +16,8 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-/// This file is used to send raw UDP/IP messages to a web server.
+//! This file is used to send raw UDP/IP messages to a web server.
+
 use std::io;
 use std::io::IoSlice;
 use std::net::{IpAddr, SocketAddr};
@@ -30,6 +31,7 @@ use sendmmsg::sendmmsg;
 use crate::config::SocketsConfig;
 use crate::core::statistics::{SummaryPortion, TestSummary};
 
+mod handle_icmp;
 mod sendmmsg;
 
 /// A type alias that represents a portion to be sent. `transmitted` is a
@@ -151,6 +153,7 @@ impl<'a> UdpSender<'a> {
             self.buffer.clear();
         }
 
+        handle_icmp::extract_icmp(self.fd, summary)?;
         Ok(())
     }
 }

@@ -16,6 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+use std::collections::HashMap;
 use std::ops::{Add, AddAssign};
 use std::time::{Duration, Instant};
 
@@ -23,26 +24,36 @@ use crate::core::statistics::SummaryPortion;
 
 /// The structure which represents a whole test execution result by
 /// concatenating `SummaryPortion` instances.
-#[derive(Debug, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TestSummary {
     bytes_expected: usize,
     bytes_sent: usize,
     packets_expected: usize,
     packets_sent: usize,
     initial_time: Instant,
+
+    /// Incoming ICMP error-messages. A key is represented as `(type, code)` and
+    /// a value is a number of occurrences.
+    incoming_icmp: HashMap<(u8, u8), usize>,
 }
 
 impl TestSummary {
     /// Updates the test summary by an performing an addition of the specified
     /// `SummaryPortion` to itself. You can also consider the addition operators
     /// defined as `summary += portion` and `summary + portion`.
-    #[inline]
     pub fn update(&mut self, portion: SummaryPortion) {
         self.bytes_expected += portion.bytes_expected();
         self.bytes_sent += portion.bytes_sent();
 
         self.packets_expected += portion.packets_expected();
         self.packets_sent += portion.packets_sent();
+    }
+
+    #[inline]
+    pub fn update_icmp(&mut self, icmp_type: u8, icmp_code: u8) {
+        let key = (icmp_type, icmp_code);
+        self.incoming_icmp
+            .insert(key, self.incoming_icmp.get(&key).unwrap_or(&0usize) + 1);
     }
 
     #[inline]
@@ -124,6 +135,7 @@ impl Default for TestSummary {
             packets_expected: 0,
             packets_sent: 0,
             initial_time: Instant::now(),
+            incoming_icmp: HashMap::new(),
         }
     }
 }
