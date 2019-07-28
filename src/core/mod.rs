@@ -19,8 +19,9 @@
 //! A module containing the key function `run` which does the main work.
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::error::Error;
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Display, Formatter, Write};
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 use std::thread::JoinHandle;
@@ -303,7 +304,7 @@ fn display_packets_sent() {
 fn display_summary(summary: &TestSummary) {
     info!(
         "stats for {endpoints}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage Speed: \
-         {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
+         {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}{icmp_messages}",
         endpoints = current_endpoints(),
         data_sent = format!(
             "{packets} packets ({megabytes} MB)",
@@ -316,9 +317,33 @@ fn display_summary(summary: &TestSummary) {
             mbps = summary.megabites_per_sec(),
         ),
         time_passed = humantime::format_duration(summary.time_passed()),
+        icmp_messages = format_icmp_messages(summary.icmp_messages()),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
+}
+
+fn format_icmp_messages(messages: &HashMap<(u8, u8), usize>) -> String {
+    let mut text = String::new();
+
+    if messages.is_empty() {
+        text
+    } else {
+        for ((icmp_type, icmp_code), count) in messages {
+            write!(
+                &mut text,
+                "\n\t{red}{count}{reset} ICMP messages with {icmp_type} type and {icmp_code} code",
+                count = count,
+                icmp_type = icmp_type,
+                icmp_code = icmp_code,
+                red = color::Fg(color::Red),
+                reset = color::Fg(color::Reset),
+            )
+            .unwrap();
+        }
+
+        text
+    }
 }
 
 fn send_multiple_error<E: Error>(error: E) {

@@ -74,6 +74,7 @@ pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
             -1 => {
                 let error = io::Error::last_os_error();
                 if error.kind() == io::ErrorKind::WouldBlock {
+                    dbg!("WouldBlock");
                     Ok(())
                 } else {
                     Err(error)

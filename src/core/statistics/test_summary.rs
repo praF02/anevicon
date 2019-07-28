@@ -57,6 +57,17 @@ impl TestSummary {
     }
 
     #[inline]
+    pub fn icmp_messages(&self) -> &HashMap<(u8, u8), usize> {
+        &self.incoming_icmp
+    }
+
+    #[inline]
+    #[allow(dead_code)]
+    pub fn icmp_messages_mut(&mut self) -> &mut HashMap<(u8, u8), usize> {
+        &mut self.incoming_icmp
+    }
+
+    #[inline]
     #[allow(dead_code)]
     pub fn megabytes_expected(&self) -> usize {
         self.bytes_expected / 1024 / 1024
