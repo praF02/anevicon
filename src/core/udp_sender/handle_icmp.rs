@@ -16,7 +16,7 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-//! This file is used to handle incoming ICMP error-messages.
+//! This file is used to handle incoming ICMP error-messages. Further reading: https://linux.die.net/man/2/recvfrom (`MSG_ERRQUEUE` section).
 
 use std::convert::TryInto;
 use std::io;
@@ -29,11 +29,13 @@ use lazy_static::lazy_static;
 
 use crate::core::statistics::TestSummary;
 
-const MSG_CONTROLLEN: usize = 4096;
-
-// For Linux
-const SO_EE_ORIGIN_ICMP: i32 = 0;
-const IP_RECVERR: i32 = 11;
+#[allow(dead_code)]
+const SO_EE_ORIGIN_NONE: i32 = 0;
+#[allow(dead_code)]
+const SO_EE_ORIGIN_LOCAL: i32 = 1;
+const SO_EE_ORIGIN_ICMP: i32 = 2;
+#[allow(dead_code)]
+const SO_EE_ORIGIN_ICMP6: i32 = 3;
 
 #[repr(C)]
 struct sock_extended_err {
@@ -46,10 +48,11 @@ struct sock_extended_err {
     ee_data: u32,
 }
 
+#[allow(clippy::cast_ptr_alignment)]
 pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
     lazy_static! {
         static ref MSG_CONTROL: Arc<Mutex<Vec<u8>>> =
-            Arc::new(Mutex::new(Vec::with_capacity(MSG_CONTROLLEN)));
+            Arc::new(Mutex::new(Vec::with_capacity(4096)));
     };
 
     let mut msg_control = MSG_CONTROL
@@ -62,13 +65,20 @@ pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
         msg_iov: ptr::null_mut(),
         msg_iovlen: 0,
         msg_control: msg_control.as_mut_ptr() as *mut _ as *mut c_void,
-        msg_controllen: MSG_CONTROLLEN,
+        msg_controllen: msg_control.capacity(),
         msg_flags: 0,
     };
 
     unsafe {
-        match libc::recvmsg(fd, &mut msg_header, libc::MSG_ERRQUEUE | libc::MSG_DONTWAIT) {
-            -1 => Err(io::Error::last_os_error()),
+        match libc::recvmsg(fd, &mut msg_header, libc::MSG_ERRQUEUE) {
+            -1 => {
+                let error = io::Error::last_os_error();
+                if error.kind() == io::ErrorKind::WouldBlock {
+                    Ok(())
+                } else {
+                    Err(error)
+                }
+            }
             _ => {
                 let mut cmsg_header: *const libc::cmsghdr;
                 let mut errors: *const sock_extended_err;
@@ -79,7 +89,8 @@ pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
                         libc::CMSG_NXTHDR(&msg_header as *const libc::msghdr, cmsg_header);
 
                     if (*cmsg_header).cmsg_level == libc::IPPROTO_IP
-                        && (*cmsg_header).cmsg_type == IP_RECVERR
+                        && (*cmsg_header).cmsg_type == 11
+                    // TODO: libc::IP_RECVERR == 11
                     {
                         errors = libc::CMSG_DATA(cmsg_header) as *const sock_extended_err;
                         if (*errors).ee_origin == SO_EE_ORIGIN_ICMP.try_into().unwrap() {

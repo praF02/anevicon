@@ -23,9 +23,9 @@ use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::num::NonZeroUsize;
 use std::sync::Arc;
-use std::thread;
 use std::thread::JoinHandle;
 use std::time::Duration;
+use std::{io, thread};
 
 use termion::color;
 
@@ -128,15 +128,15 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
     Ok(())
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug)]
 pub enum RunTesterError {
-    NixError(nix::Error),
+    IoError(io::Error),
 }
 
 impl Display for RunTesterError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            RunTesterError::NixError(err) => err.fmt(fmt),
+            RunTesterError::IoError(err) => err.fmt(fmt),
         }
     }
 }
@@ -160,7 +160,7 @@ fn run_tester(
         config.buffer_capacity,
         &config.sockets_config,
     )
-    .map_err(RunTesterError::NixError)?;
+    .map_err(RunTesterError::IoError)?;
 
     // Run the main cycle for the current worker, and exit if the allotted time
     // expires or all required packets will be sent (whichever happens first)

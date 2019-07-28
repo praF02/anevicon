@@ -5,18 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/core/udp_sender/handle_icmp.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/endpoints.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/endpoints.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/construct_payload.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_payload.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/handle_icmp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/handle_icmp.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,6 +38,7 @@
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8.0_191" />
@@ -185,17 +179,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="Test config::endpoints::tests::check_invalid_address_format" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
-      <option name="channel" value="DEFAULT" />
-      <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests::check_invalid_address_format -- --exact" />
-      <option name="allFeatures" value="false" />
-      <option name="nocapture" value="false" />
-      <option name="emulateTerminal" value="false" />
-      <option name="backtrace" value="SHORT" />
-      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="Test config::endpoints::tests::check_invalid_format" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests::check_invalid_format -- --exact" />
@@ -229,6 +212,17 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="Test core::statistics::test_summary::tests::update_icmp_works" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="channel" value="DEFAULT" />
+      <option name="command" value="test --package anevicon --bin anevicon core::statistics::test_summary::tests::update_icmp_works -- --exact" />
+      <option name="allFeatures" value="false" />
+      <option name="nocapture" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="backtrace" value="SHORT" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="Test endpoints::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="channel" value="DEFAULT" />
       <option name="command" value="test --package anevicon --bin anevicon config::endpoints::tests" />
@@ -240,6 +234,11 @@
       <envs />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo Command.Test core::statistics::test_summary::tests::update_icmp_works" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
@@ -279,5 +278,8 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>

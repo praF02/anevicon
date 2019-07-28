@@ -18,10 +18,13 @@
 
 //! This file is used to send raw UDP/IP messages to a web server.
 
-use std::io;
+use std::convert::TryInto;
 use std::io::IoSlice;
 use std::net::{IpAddr, SocketAddr};
 use std::num::NonZeroUsize;
+use std::os::raw::c_void;
+use std::os::unix::io::RawFd;
+use std::{io, mem};
 
 use nix::sys::socket::MsgFlags;
 use nix::sys::socket::{InetAddr, SockAddr};
@@ -70,7 +73,7 @@ impl<'a> UdpSender<'a> {
         dest: &SocketAddr,
         capacity: NonZeroUsize,
         config: &SocketsConfig,
-    ) -> nix::Result<Self> {
+    ) -> io::Result<Self> {
         let fd = match unsafe {
             libc::socket(
                 match dest.ip() {
@@ -81,12 +84,39 @@ impl<'a> UdpSender<'a> {
                 libc::IPPROTO_RAW,
             )
         } {
-            -1 => return Err(nix::Error::last()),
+            -1 => return Err(io::Error::last_os_error()),
             value => value,
         };
 
-        nix::sys::socket::connect(fd, &SockAddr::Inet(InetAddr::from_std(dest)))?;
-        helpers::set_socket_options(fd, config);
+        set_socket_option_safe(
+            fd,
+            libc::SOL_SOCKET,
+            libc::SO_SNDTIMEO,
+            &libc::timeval {
+                tv_sec: config.send_timeout.as_secs() as libc::time_t,
+                tv_usec: i64::from(config.send_timeout.subsec_micros()),
+            },
+        )?;
+
+        set_socket_option_safe(
+            fd,
+            libc::SOL_SOCKET,
+            libc::SO_BROADCAST,
+            if config.broadcast { &1 } else { &0 },
+        )?;
+
+        set_socket_option_safe(
+            fd,
+            match dest.ip() {
+                IpAddr::V4(_) => libc::SOL_IP,
+                IpAddr::V6(_) => libc::SOL_IPV6,
+            },
+            11, // TODO: libc::IP_RECVERR == 11
+            &1,
+        )?;
+
+        nix::sys::socket::connect(fd, &SockAddr::Inet(InetAddr::from_std(dest)))
+            .map_err(|err| io::Error::from(err.as_errno().unwrap()))?;
 
         Ok(UdpSender {
             fd,
@@ -121,11 +151,11 @@ impl<'a> UdpSender<'a> {
 
     /// Sends the a specified `packet` immediately (without buffering),
     /// returning a number of bytes send successfully, or `nix::Error`.
-    pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> nix::Result<usize> {
+    pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> io::Result<usize> {
         match nix::sys::socket::send(self.fd, packet, MsgFlags::empty()) {
             Err(err) => {
                 summary.update(SummaryPortion::new(packet.len(), 0, 1, 0));
-                Err(err)
+                Err(io::Error::from(err.as_errno().unwrap()))
             }
             Ok(res) => {
                 summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
@@ -164,43 +194,36 @@ impl<'a> Drop for UdpSender<'a> {
     }
 }
 
-mod helpers {
-    use nix::sys::socket::setsockopt;
-    use nix::sys::socket::sockopt::{Broadcast, SendTimeout};
-    use nix::sys::time::TimeVal;
-
-    use super::*;
-
-    pub fn set_socket_options(fd: libc::c_int, config: &SocketsConfig) {
-        // Set the SO_BROADCAST option
-        if let Err(err) = setsockopt(fd, Broadcast, &config.broadcast) {
-            panic!("Failed to set the SO_BROADCAST option >>> {}", err);
-        }
-
-        // Set the SO_SNDTIMEO option
-        let send_timeout = TimeVal::from(libc::timeval {
-            tv_sec: config.send_timeout.as_secs() as libc::time_t,
-            tv_usec: i64::from(config.send_timeout.subsec_micros()),
-        });
-        if let Err(err) = setsockopt(fd, SendTimeout, &send_timeout) {
-            panic!("Failed to set the SO_SNDTIMEO option >>> {}", err);
-        }
+fn set_socket_option_safe<T>(
+    fd: RawFd,
+    level: libc::c_int,
+    name: libc::c_int,
+    value: &T,
+) -> io::Result<()> {
+    match unsafe {
+        libc::setsockopt(
+            fd,
+            level,
+            name,
+            value as *const _ as *const c_void,
+            mem::size_of_val(value).try_into().unwrap(),
+        )
+    } {
+        -1 => Err(io::Error::last_os_error()),
+        _ => Ok(()),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::net::{Ipv4Addr, SocketAddrV4, UdpSocket};
+    use std::net::UdpSocket;
     use std::ops::Deref;
-    use std::os::unix::io::AsRawFd;
     use std::time::Duration;
 
     use lazy_static::lazy_static;
 
-    use crate::config::EndpointsV4;
     use crate::core::construct_packets;
     use crate::core::statistics::TestSummary;
-    use crate::core::udp_sender::helpers::set_socket_options;
 
     use super::*;
 
@@ -212,15 +235,10 @@ mod tests {
         static ref UDP_SERVER: UdpSocket =
             UdpSocket::bind("127.0.0.1:0").expect("Failed to setup UDP_SERVER");
         static ref TEST_UDP_PACKET: Vec<u8> = {
-            let address = SocketAddrV4::new(
-                Ipv4Addr::new(127, 0, 0, 1),
-                UDP_SERVER.local_addr().unwrap().port(),
-            );
-            construct_packets::ipv4_udp_packet(
-                &EndpointsV4 {
-                    sender: address,
-                    receiver: address,
-                },
+            construct_packets::ip_udp_packet(
+                &format!("{0}&{0}", UDP_SERVER.local_addr().unwrap().to_string())
+                    .parse()
+                    .unwrap(),
                 b"Our packet",
                 8,
             )
@@ -304,37 +322,6 @@ mod tests {
             summary.packets_expected() == summary.packets_sent()
                 && summary.packets_sent() == SUPPLY_COUNT
         );
-    }
-
-    #[test]
-    fn test_set_socket_options() {
-        let socket = UdpSocket::bind("127.0.0.1:0").expect("Failed to bind UdpSocket");
-
-        let check = |config: &SocketsConfig| {
-            assert_eq!(
-                socket.broadcast().expect("Failed to get SO_BROADCAST"),
-                config.broadcast
-            );
-
-            // We don't check SO_SNDTIMEO because a Linux kernel can assign a quite
-            // different timeout than we gave.
-        };
-
-        // The first check
-        let config = SocketsConfig {
-            broadcast: true,
-            send_timeout: Duration::from_millis(5174),
-        };
-        set_socket_options(socket.as_raw_fd(), &config);
-        check(&config);
-
-        // The second check
-        let config = SocketsConfig {
-            broadcast: false,
-            send_timeout: Duration::from_millis(7183),
-        };
-        set_socket_options(socket.as_raw_fd(), &config);
-        check(&config);
     }
 
     #[test]

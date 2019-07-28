@@ -173,6 +173,8 @@ mod tests {
 
         assert_eq!(summary.packets_expected(), 0);
         assert_eq!(summary.packets_sent(), 0);
+
+        assert!(summary.incoming_icmp.is_empty());
     }
 
     #[test]
@@ -275,5 +277,41 @@ mod tests {
         }
 
         assert!(summary.time_passed() >= initial_time.elapsed());
+    }
+
+    #[test]
+    fn update_icmp_works() {
+        let mut summary = TestSummary::default();
+
+        summary.update_icmp(13, 54);
+        summary.update_icmp(13, 54);
+
+        summary.update_icmp(44, 11);
+
+        summary.update_icmp(5, 21);
+        summary.update_icmp(5, 21);
+        summary.update_icmp(5, 21);
+
+        assert_eq!(
+            summary
+                .incoming_icmp
+                .get(&(13, 54))
+                .expect("The key (13, 54) doesn't exist"),
+            &2usize
+        );
+        assert_eq!(
+            summary
+                .incoming_icmp
+                .get(&(44, 11))
+                .expect("The key (44, 11) doesn't exist"),
+            &1usize
+        );
+        assert_eq!(
+            summary
+                .incoming_icmp
+                .get(&(5, 21))
+                .expect("The key (5, 21) doesn't exist"),
+            &3usize
+        );
     }
 }
