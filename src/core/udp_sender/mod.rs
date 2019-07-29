@@ -223,47 +223,45 @@ fn set_socket_option_safe<T>(
 }
 
 fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
-    unsafe {
-        let ret = match dest {
-            SocketAddr::V4(dest_v4) => {
-                let addr_v4 = libc::sockaddr_in {
-                    sin_family: libc::AF_INET.try_into().unwrap(),
-                    sin_port: dest.port().to_be(),
-                    sin_addr: libc::in_addr {
-                        s_addr: u32::from_ne_bytes(dest_v4.ip().octets()).to_be(),
-                    },
-                    ..mem::zeroed()
-                };
+    let ret = match dest {
+        SocketAddr::V4(dest_v4) => {
+            let addr_v4 = libc::sockaddr_in {
+                sin_family: libc::AF_INET.try_into().unwrap(),
+                sin_port: dest.port().to_be(),
+                sin_addr: libc::in_addr {
+                    s_addr: u32::from_ne_bytes(dest_v4.ip().octets()).to_be(),
+                },
+                ..unsafe { mem::zeroed() }
+            };
 
-                libc::connect(
-                    fd,
-                    &addr_v4 as *const _ as *const libc::sockaddr,
-                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
-                )
-            }
-            SocketAddr::V6(dest_v6) => {
-                let addr_v6 = libc::sockaddr_in6 {
-                    sin6_family: libc::AF_INET6.try_into().unwrap(),
-                    sin6_port: dest.port().to_be(),
-                    sin6_addr: libc::in6_addr {
-                        s6_addr: dest_v6.ip().octets(),
-                    },
-                    sin6_flowinfo: dest_v6.flowinfo(),
-                    sin6_scope_id: dest_v6.scope_id(),
-                };
-
-                libc::connect(
-                    fd,
-                    &addr_v6 as *const _ as *const libc::sockaddr,
-                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
-                )
-            }
-        };
-
-        match ret {
-            -1 => Err(io::Error::last_os_error()),
-            _ => Ok(()),
+            libc::connect(
+                fd,
+                &addr_v4 as *const _ as *const libc::sockaddr,
+                mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+            )
         }
+        SocketAddr::V6(dest_v6) => {
+            let addr_v6 = libc::sockaddr_in6 {
+                sin6_family: libc::AF_INET6.try_into().unwrap(),
+                sin6_port: dest.port().to_be(),
+                sin6_addr: libc::in6_addr {
+                    s6_addr: dest_v6.ip().octets(),
+                },
+                sin6_flowinfo: dest_v6.flowinfo(),
+                sin6_scope_id: dest_v6.scope_id(),
+            };
+
+            libc::connect(
+                fd,
+                &addr_v6 as *const _ as *const libc::sockaddr,
+                mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+            )
+        }
+    };
+
+    match ret {
+        -1 => Err(io::Error::last_os_error()),
+        _ => Ok(()),
     }
 }
 
