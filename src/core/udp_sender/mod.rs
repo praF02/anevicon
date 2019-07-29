@@ -26,9 +26,6 @@ use std::os::raw::c_void;
 use std::os::unix::io::RawFd;
 use std::{io, mem};
 
-use nix::sys::socket::MsgFlags;
-use nix::sys::socket::{InetAddr, SockAddr};
-
 use sendmmsg::sendmmsg;
 
 use crate::config::SocketsConfig;
@@ -115,8 +112,7 @@ impl<'a> UdpSender<'a> {
             &1,
         )?;
 
-        nix::sys::socket::connect(fd, &SockAddr::Inet(InetAddr::from_std(dest)))
-            .map_err(|err| io::Error::from(err.as_errno().unwrap()))?;
+        connect_socket_safe(fd, dest)?;
 
         Ok(UdpSender {
             fd,
@@ -150,14 +146,22 @@ impl<'a> UdpSender<'a> {
     }
 
     /// Sends the a specified `packet` immediately (without buffering),
-    /// returning a number of bytes send successfully, or `nix::Error`.
+    /// returning a number of bytes send successfully, or `io::Error`.
     pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> io::Result<usize> {
-        match nix::sys::socket::send(self.fd, packet, MsgFlags::empty()) {
-            Err(err) => {
+        match unsafe {
+            libc::send(
+                self.fd,
+                packet as *const _ as *const c_void,
+                packet.len(),
+                0,
+            )
+        } {
+            -1 => {
                 summary.update(SummaryPortion::new(packet.len(), 0, 1, 0));
-                Err(io::Error::from(err.as_errno().unwrap()))
+                Err(io::Error::last_os_error())
             }
-            Ok(res) => {
+            res => {
+                let res = res as usize;
                 summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
                 Ok(res)
             }
@@ -190,7 +194,11 @@ impl<'a> UdpSender<'a> {
 
 impl<'a> Drop for UdpSender<'a> {
     fn drop(&mut self) {
-        nix::unistd::close(self.fd).expect("Failed to drop UdpSender");
+        unsafe {
+            if libc::close(self.fd) == -1 {
+                panic!("Failed to drop UdpSender");
+            }
+        }
     }
 }
 
@@ -211,6 +219,51 @@ fn set_socket_option_safe<T>(
     } {
         -1 => Err(io::Error::last_os_error()),
         _ => Ok(()),
+    }
+}
+
+fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
+    unsafe {
+        let ret = match dest {
+            SocketAddr::V4(dest_v4) => {
+                let addr_v4 = libc::sockaddr_in {
+                    sin_family: libc::AF_INET.try_into().unwrap(),
+                    sin_port: dest.port().to_be(),
+                    sin_addr: libc::in_addr {
+                        s_addr: u32::from_ne_bytes(dest_v4.ip().octets()).to_be(),
+                    },
+                    ..mem::zeroed()
+                };
+
+                libc::connect(
+                    fd,
+                    &addr_v4 as *const _ as *const libc::sockaddr,
+                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                )
+            }
+            SocketAddr::V6(dest_v6) => {
+                let addr_v6 = libc::sockaddr_in6 {
+                    sin6_family: libc::AF_INET6.try_into().unwrap(),
+                    sin6_port: dest.port().to_be(),
+                    sin6_addr: libc::in6_addr {
+                        s6_addr: dest_v6.ip().octets(),
+                    },
+                    sin6_flowinfo: dest_v6.flowinfo(),
+                    sin6_scope_id: dest_v6.scope_id(),
+                };
+
+                libc::connect(
+                    fd,
+                    &addr_v6 as *const _ as *const libc::sockaddr,
+                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                )
+            }
+        };
+
+        match ret {
+            -1 => Err(io::Error::last_os_error()),
+            _ => Ok(()),
+        }
     }
 }
 
