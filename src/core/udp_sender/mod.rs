@@ -234,11 +234,13 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
                 ..unsafe { mem::zeroed() }
             };
 
-            libc::connect(
-                fd,
-                &addr_v4 as *const _ as *const libc::sockaddr,
-                mem::size_of::<libc::sockaddr>().try_into().unwrap(),
-            )
+            unsafe {
+                libc::connect(
+                    fd,
+                    &addr_v4 as *const _ as *const libc::sockaddr,
+                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                )
+            }
         }
         SocketAddr::V6(dest_v6) => {
             let addr_v6 = libc::sockaddr_in6 {
@@ -251,11 +253,13 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
                 sin6_scope_id: dest_v6.scope_id(),
             };
 
-            libc::connect(
-                fd,
-                &addr_v6 as *const _ as *const libc::sockaddr,
-                mem::size_of::<libc::sockaddr>().try_into().unwrap(),
-            )
+            unsafe {
+                libc::connect(
+                    fd,
+                    &addr_v6 as *const _ as *const libc::sockaddr,
+                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                )
+            }
         }
     };
 
