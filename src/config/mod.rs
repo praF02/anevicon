@@ -27,6 +27,8 @@ use structopt::StructOpt;
 
 pub use endpoints::{Endpoints, EndpointsV4, EndpointsV6, ParseEndpointsError};
 
+const DEFAULT_RANDOM_PACKET_SIZE: usize = 1024;
+
 mod endpoints;
 
 #[derive(Debug, Clone, Eq, PartialEq, StructOpt)]
@@ -88,7 +90,7 @@ pub struct SocketsConfig {
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct PayloadConfig {
     /// Repeatedly send a random-generated packet with a specified bytes length.
-    /// The default is 32768
+    /// The default is 1024
     #[structopt(
         short = "l",
         long = "random-packet",
@@ -229,7 +231,7 @@ impl ArgsConfig {
                 .is_empty()
         {
             matches.packets_config.payload_config.random_packets =
-                vec![unsafe { NonZeroUsize::new_unchecked(32768) }];
+                vec![unsafe { NonZeroUsize::new_unchecked(DEFAULT_RANDOM_PACKET_SIZE) }];
         }
 
         matches

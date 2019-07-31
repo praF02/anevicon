@@ -110,7 +110,7 @@ Name | Value | Default | Explanation
 `-e, --endpoints` | String | None | Two endpoints specified as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string of a `<IP>:<PORT>` format.<br><br>A sender and a receiver can be absolutely any valid IPv4/IPv6 addresses (which is used to send spoofed packets sometimes).<br><br>This option can be specified several times to identically test multiple web servers in concurrent mode.
 `--ip-ttl` | Unsigned integer | `64` | Specifies the `IP_TTL` value for all future sockets. Usually this value equals a number of routers that a packet can go through
 `-p, --packets-count` | Positive integer | `18 '446 '744 '073 '709 '551 '615` | A count of packets for sending. When this limit is reached, then the program will immediately stop its execution
-`--random-packet` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
+`--random-packet` | Positive integer | `1024` | Repeatedly send a random-generated packet with a specified bytes length
 `-f, --send-file` | Filename | None | Interpret the specified file content as a single packet and repeatedly send it to each receiver
 `-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
 `-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will immediately stop its execution
@@ -184,7 +184,7 @@ $ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-duration=3min --packets-c
 ```
 
 ### Custom messages
-By default, Anevicon will generate a random packet with a default size (32768). In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
+By default, Anevicon will generate a random packet with a default size (1024). In some kinds of UDP-based tests, packet content makes sense, and this is how you can specify it using the `--send-file` or `--send-message` options:
 
 ```bash
 # Test example.com:80 with the custom file 'message.txt'
