@@ -201,11 +201,11 @@ $ anevicon -e="192.168.1.41:0&93.184.216.34:80" --random-packet=1454 --random-pa
 ```
 
 ### Test intensity
-In some situations, you don't need to transmit the maximum possible amount of packets, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--send-periodicity`.
+In some situations, you don't need to transmit the maximum possible amount of packets per second, you might want to decrease the intensity of packets sending. To do so, there is one more straightforward option called `--test-intensity`.
 
 ```bash
-# Test example.com:80 waiting for 270 microseconds after each sendmmsg call
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-periodicity=270us
+# Test example.com:80 sending maximum 500 packets per second
+$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-intensity=500
 ```
 
 ### Multiple messages
