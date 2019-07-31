@@ -18,7 +18,6 @@
 
 //! This file is used to handle incoming ICMP error-messages. Further reading: https://linux.die.net/man/2/recvfrom (`MSG_ERRQUEUE` section).
 
-use std::convert::TryInto;
 use std::io;
 use std::os::raw::c_void;
 use std::os::unix::io::RawFd;
@@ -30,12 +29,12 @@ use lazy_static::lazy_static;
 use crate::core::statistics::TestSummary;
 
 #[allow(dead_code)]
-const SO_EE_ORIGIN_NONE: i32 = 0;
+const SO_EE_ORIGIN_NONE: u8 = 0;
 #[allow(dead_code)]
-const SO_EE_ORIGIN_LOCAL: i32 = 1;
-const SO_EE_ORIGIN_ICMP: i32 = 2;
+const SO_EE_ORIGIN_LOCAL: u8 = 1;
+const SO_EE_ORIGIN_ICMP: u8 = 2;
 #[allow(dead_code)]
-const SO_EE_ORIGIN_ICMP6: i32 = 3;
+const SO_EE_ORIGIN_ICMP6: u8 = 3;
 
 #[repr(C)]
 struct sock_extended_err {
@@ -48,7 +47,6 @@ struct sock_extended_err {
     ee_data: u32,
 }
 
-#[allow(clippy::cast_ptr_alignment)]
 pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
     lazy_static! {
         static ref MSG_CONTROL: Arc<Mutex<Vec<u8>>> =
@@ -59,7 +57,7 @@ pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
         .lock()
         .expect("Another thread has panicked while holding MSG_CONTROL");
 
-    let mut msg_header = libc::msghdr {
+    let mut msghdr = libc::msghdr {
         msg_name: ptr::null_mut(),
         msg_namelen: 0,
         msg_iov: ptr::null_mut(),
@@ -69,39 +67,36 @@ pub fn extract_icmp(fd: RawFd, summary: &mut TestSummary) -> io::Result<()> {
         msg_flags: 0,
     };
 
-    unsafe {
-        match libc::recvmsg(fd, &mut msg_header, libc::MSG_ERRQUEUE) {
-            -1 => {
-                let error = io::Error::last_os_error();
-                if error.kind() == io::ErrorKind::WouldBlock {
-                    dbg!("WouldBlock");
-                    Ok(())
-                } else {
-                    Err(error)
-                }
-            }
-            _ => {
-                let mut cmsg_header: *const libc::cmsghdr;
-                let mut errors: *const sock_extended_err;
-
-                cmsg_header = libc::CMSG_FIRSTHDR(&msg_header as *const libc::msghdr);
-                while !cmsg_header.is_null() {
-                    cmsg_header =
-                        libc::CMSG_NXTHDR(&msg_header as *const libc::msghdr, cmsg_header);
-
-                    if (*cmsg_header).cmsg_level == libc::IPPROTO_IP
-                        && (*cmsg_header).cmsg_type == 11
-                    // TODO: libc::IP_RECVERR == 11
-                    {
-                        errors = libc::CMSG_DATA(cmsg_header) as *const sock_extended_err;
-                        if (*errors).ee_origin == SO_EE_ORIGIN_ICMP.try_into().unwrap() {
-                            summary.update_icmp((*errors).ee_type, (*errors).ee_code);
-                        }
-                    }
-                }
-
+    match unsafe { libc::recvmsg(fd, &mut msghdr, libc::MSG_ERRQUEUE) } {
+        -1 => {
+            let error = io::Error::last_os_error();
+            if error.kind() == io::ErrorKind::WouldBlock {
+                dbg!("WouldBlock");
                 Ok(())
+            } else {
+                Err(error)
             }
         }
+        _ => {
+            unsafe { parse_msghdr(&msghdr as *const libc::msghdr, summary) };
+            Ok(())
+        }
+    }
+}
+
+unsafe fn parse_msghdr(msghdr: *const libc::msghdr, summary: &mut TestSummary) {
+    let mut cmsghdr = libc::CMSG_FIRSTHDR(msghdr);
+
+    while !cmsghdr.is_null() {
+        if (*cmsghdr).cmsg_level == libc::IPPROTO_IP && (*cmsghdr).cmsg_type == super::IP_RECVERR {
+            #[allow(clippy::cast_ptr_alignment)]
+            let error = libc::CMSG_DATA(cmsghdr) as *const sock_extended_err;
+
+            if (*error).ee_origin == SO_EE_ORIGIN_ICMP {
+                summary.update_icmp((*error).ee_type, (*error).ee_code);
+            }
+        }
+
+        cmsghdr = libc::CMSG_NXTHDR(msghdr, cmsghdr);
     }
 }

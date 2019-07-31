@@ -44,19 +44,6 @@ fn main() -> Result<(), ()> {
 }
 
 fn check_config(config: &ArgsConfig) -> Result<(), ()> {
-    if config.buffer_capacity > config.exit_config.packets_count {
-        error!(
-            "a value of {green}{italic}--packets-count{reset_color}{reset_style} must be higher \
-             or equal to a value of {green}{italic}--buffer-capacity{reset_color}{reset_style}!",
-            green = color::Fg(color::Green),
-            reset_color = color::Fg(color::Reset),
-            italic = style::Italic,
-            reset_style = style::Reset,
-        );
-
-        return Err(());
-    }
-
     let mut keys = HashSet::new();
     for next_endpoints in &config.packets_config.endpoints {
         if keys.contains(next_endpoints) {

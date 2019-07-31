@@ -30,14 +30,12 @@ use std::{io, thread};
 
 use termion::color;
 
-use construct_payload::construct_payload;
 use statistics::TestSummary;
 use udp_sender::{SupplyResult, UdpSender};
 
 use crate::config::{ArgsConfig, Endpoints};
 
-mod construct_packets;
-mod construct_payload;
+mod craft_datagrams;
 mod statistics;
 mod udp_sender;
 
@@ -94,27 +92,30 @@ fn current_endpoints() -> String {
 /// This is the key function which accepts a whole `ArgsConfig` and returns
 /// `Result<(), ()>` that needs to be returned out of `main()`.
 pub fn run(config: ArgsConfig) -> Result<(), ()> {
-    let payload = match construct_payload(&config.packets_config.payload_config) {
+    let datagrams = match craft_datagrams::craft_all(&config.packets_config) {
         Err(err) => {
-            error!("failed to construct payload >>> {}!", err);
+            error!("failed to construct datagrams >>> {}!", err);
             return Err(());
         }
-        Ok(payload) => payload,
+        Ok(datagrams) => datagrams,
     };
 
     wait(&config);
 
-    let payload = Arc::new(payload);
     let config = Arc::new(config);
     let mut workers = Vec::with_capacity(config.packets_config.endpoints.len());
 
-    for &endpoints in &config.packets_config.endpoints {
-        let payload = payload.clone();
+    for (&endpoints, datagrams) in config
+        .packets_config
+        .endpoints
+        .iter()
+        .zip(datagrams.into_iter())
+    {
         let config = config.clone();
 
         workers.push(thread::spawn(move || {
             init_endpoints(endpoints);
-            run_tester(config, payload, endpoints)?;
+            run_tester(config, datagrams.collect(), endpoints)?;
             Ok(())
         }));
     }
@@ -146,31 +147,25 @@ impl Error for RunTesterError {}
 
 fn run_tester(
     config: Arc<ArgsConfig>,
-    payload: Arc<Vec<Vec<u8>>>,
+    datagrams: Vec<Vec<u8>>,
     endpoints: Endpoints,
 ) -> Result<TestSummary, RunTesterError> {
-    let packets = payload
-        .iter()
-        .map(|payload| {
-            construct_packets::ip_udp_packet(&endpoints, payload, config.packets_config.ip_ttl)
-        })
-        .collect::<Vec<Vec<u8>>>();
     let mut summary = TestSummary::default();
     let mut sender = UdpSender::new(
+        config.test_intensity,
         &endpoints.receiver(),
-        config.buffer_capacity,
-        &config.sockets_config,
+        config.sockets_config.broadcast,
     )
     .map_err(RunTesterError::IoError)?;
 
     // Run the main cycle for the current worker, and exit if the allotted time
     // expires or all required packets will be sent (whichever happens first)
-    for (packet, _) in packets
+    for (datagram, _) in datagrams
         .iter()
         .cycle()
         .zip(0..config.exit_config.packets_count.get())
     {
-        match sender.supply(&mut summary, packet) {
+        match sender.supply(&mut summary, datagram) {
             Err(err) => send_multiple_error(err),
             Ok(res) => {
                 if res == SupplyResult::Flushed {
@@ -183,8 +178,6 @@ fn run_tester(
             display_expired_time();
             return Ok(summary);
         }
-
-        thread::sleep(config.send_periodicity);
     }
 
     if let Err(err) = sender.flush(&mut summary) {
@@ -200,7 +193,7 @@ fn run_tester(
         match resend_packets(
             &mut sender,
             &mut summary,
-            &packets
+            &datagrams
                 .iter()
                 .cycle()
                 .take(unsent.get())
@@ -230,20 +223,20 @@ enum ResendPacketsResult {
 fn resend_packets(
     sender: &mut UdpSender,
     summary: &mut TestSummary,
-    packets: &[&[u8]],
+    datagrams: &[&[u8]],
     limit: Duration,
 ) -> ResendPacketsResult {
     info!(
         "trying to resend {cyan}{count}{reset} packets to {receiver} from {sender} that haven't \
          been sent yet...",
-        count = packets.len(),
+        count = datagrams.len(),
         receiver = current_receiver(),
         sender = current_sender(),
         cyan = color::Fg(color::Cyan),
         reset = color::Fg(color::Reset),
     );
 
-    for &packet in packets {
+    for &packet in datagrams {
         if summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
@@ -261,7 +254,7 @@ fn resend_packets(
 
     info!(
         "{cyan}{count}{reset} packets have been resent to {receiver} from {sender}.",
-        count = packets.len(),
+        count = datagrams.len(),
         receiver = current_receiver(),
         sender = current_sender(),
         cyan = color::Fg(color::Cyan),

@@ -24,15 +24,17 @@ use std::net::{IpAddr, SocketAddr};
 use std::num::NonZeroUsize;
 use std::os::raw::c_void;
 use std::os::unix::io::RawFd;
-use std::{io, mem};
+use std::time::{Duration, Instant};
+use std::{io, mem, thread};
 
 use sendmmsg::sendmmsg;
 
-use crate::config::SocketsConfig;
 use crate::core::statistics::{SummaryPortion, TestSummary};
 
-mod handle_icmp;
+mod icmp;
 mod sendmmsg;
+
+const IP_RECVERR: libc::c_int = 11;
 
 /// A type alias that represents a portion to be sent. `transmitted` is a
 /// number of bytes sent, and `slice` is a packet to be sent.
@@ -54,7 +56,7 @@ pub struct UdpSender<'a> {
     fd: libc::c_int,
 
     /// The buffer capacity equals to a number of packets transmitted per a
-    /// system call (`--buffer-capacity`). When this buffer is full, then it
+    /// system call (`--test-intensity`). When this buffer is full, then it
     /// will be flushed to an endpoint using `libc::sendmmsg`.
     buffer: Vec<DataPortion<'a>>,
 }
@@ -67,9 +69,9 @@ impl<'a> UdpSender<'a> {
     /// This associated function panics if your OS cannot create a raw IPv4/IPv6
     /// socket or correctly set one of the socket options.
     pub fn new(
+        test_intensity: NonZeroUsize,
         dest: &SocketAddr,
-        capacity: NonZeroUsize,
-        config: &SocketsConfig,
+        broadcast: bool,
     ) -> io::Result<Self> {
         let fd = match unsafe {
             libc::socket(
@@ -90,8 +92,8 @@ impl<'a> UdpSender<'a> {
             libc::SOL_SOCKET,
             libc::SO_SNDTIMEO,
             &libc::timeval {
-                tv_sec: config.send_timeout.as_secs() as libc::time_t,
-                tv_usec: i64::from(config.send_timeout.subsec_micros()),
+                tv_sec: 1,
+                tv_usec: 0,
             },
         )?;
 
@@ -99,7 +101,7 @@ impl<'a> UdpSender<'a> {
             fd,
             libc::SOL_SOCKET,
             libc::SO_BROADCAST,
-            if config.broadcast { &1 } else { &0 },
+            if broadcast { &1 } else { &0 },
         )?;
 
         set_socket_option_safe(
@@ -108,7 +110,7 @@ impl<'a> UdpSender<'a> {
                 IpAddr::V4(_) => libc::SOL_IP,
                 IpAddr::V6(_) => libc::SOL_IPV6,
             },
-            11, // TODO: libc::IP_RECVERR == 11
+            IP_RECVERR,
             &1,
         )?;
 
@@ -118,7 +120,7 @@ impl<'a> UdpSender<'a> {
             fd,
             buffer: {
                 let mut packets = Vec::new();
-                packets.reserve_exact(capacity.get());
+                packets.reserve_exact(test_intensity.get());
                 packets
             },
         })
@@ -148,7 +150,7 @@ impl<'a> UdpSender<'a> {
     /// Sends the a specified `packet` immediately (without buffering),
     /// returning a number of bytes send successfully, or `io::Error`.
     pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> io::Result<usize> {
-        match unsafe {
+        let res = match unsafe {
             libc::send(
                 self.fd,
                 packet as *const _ as *const c_void,
@@ -165,7 +167,10 @@ impl<'a> UdpSender<'a> {
                 summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
                 Ok(res)
             }
-        }
+        };
+
+        icmp::extract_icmp(self.fd, summary)?;
+        res
     }
 
     /// Flushes contents of an inner buffer (sends data to an endpoint),
@@ -173,6 +178,8 @@ impl<'a> UdpSender<'a> {
     /// empty after this operation.
     pub fn flush(&mut self, summary: &mut TestSummary) -> io::Result<()> {
         if !self.buffer.is_empty() {
+            let start = Instant::now();
+
             let packets_sent = sendmmsg(self.fd, self.buffer.as_mut_slice())?;
 
             let mut bytes_expected = 0usize;
@@ -185,9 +192,15 @@ impl<'a> UdpSender<'a> {
             *summary +=
                 SummaryPortion::new(bytes_expected, bytes_sent, self.buffer.len(), packets_sent);
             self.buffer.clear();
+
+            // If the operation took less than a second, then sleep the rest of time
+            // according `--test-intensity`:
+            if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
+                thread::sleep(wait);
+            }
         }
 
-        handle_icmp::extract_icmp(self.fd, summary)?;
+        icmp::extract_icmp(self.fd, summary)?;
         Ok(())
     }
 }
@@ -271,41 +284,48 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use std::net::Ipv4Addr;
     use std::net::UdpSocket;
     use std::ops::Deref;
-    use std::time::Duration;
+
+    use etherparse::PacketBuilder;
 
     use lazy_static::lazy_static;
 
-    use crate::core::construct_packets;
     use crate::core::statistics::TestSummary;
 
     use super::*;
 
     lazy_static! {
-        static ref DEFAULT_SOCKETS_CONFIG: SocketsConfig = SocketsConfig {
-            broadcast: false,
-            send_timeout: Duration::from_secs(3),
-        };
         static ref UDP_SERVER: UdpSocket =
-            UdpSocket::bind("127.0.0.1:0").expect("Failed to setup UDP_SERVER");
+            UdpSocket::bind("localhost:0").expect("Failed to setup UDP_SERVER");
         static ref TEST_UDP_PACKET: Vec<u8> = {
-            construct_packets::ip_udp_packet(
-                &format!("{0}&{0}", UDP_SERVER.local_addr().unwrap().to_string())
-                    .parse()
-                    .unwrap(),
-                b"Our packet",
+            let payload = b"Our packet";
+
+            let builder = PacketBuilder::ipv4(
+                Ipv4Addr::LOCALHOST.octets(),
+                Ipv4Addr::LOCALHOST.octets(),
                 8,
             )
+            .udp(
+                UDP_SERVER.local_addr().unwrap().port(),
+                UDP_SERVER.local_addr().unwrap().port(),
+            );
+
+            let mut serialized = Vec::<u8>::with_capacity(builder.size(payload.len()));
+            builder
+                .write(&mut serialized, payload)
+                .expect("Failed to serialize a UDP/IPv4 packet into Vec<u8>");
+            serialized
         };
     }
 
     #[test]
     fn constructs_buffer() {
         let buffer = UdpSender::new(
-            &UDP_SERVER.local_addr().unwrap(),
             NonZeroUsize::new(354).unwrap(),
-            &DEFAULT_SOCKETS_CONFIG,
+            &UDP_SERVER.local_addr().unwrap(),
+            false,
         )
         .expect("UdpSender::new(...) failed");
 
@@ -319,9 +339,9 @@ mod tests {
 
         let mut summary = TestSummary::default();
         let mut buffer = UdpSender::new(
-            &UDP_SERVER.local_addr().unwrap(),
             NonZeroUsize::new(4).unwrap(),
-            &DEFAULT_SOCKETS_CONFIG,
+            &UDP_SERVER.local_addr().unwrap(),
+            false,
         )
         .expect("UdpSender::new(...) failed");
 
@@ -383,9 +403,9 @@ mod tests {
     fn test_send_one() {
         let mut summary = TestSummary::default();
         let mut sender = UdpSender::new(
-            &UDP_SERVER.local_addr().unwrap(),
             NonZeroUsize::new(1).unwrap(),
-            &DEFAULT_SOCKETS_CONFIG,
+            &UDP_SERVER.local_addr().unwrap(),
+            false,
         )
         .expect("UdpSender::new(...) failed");
         dbg!();

@@ -54,118 +54,35 @@ pub struct ArgsConfig {
     )]
     pub wait: Duration,
 
-    /// A time interval between sendmmsg system calls. This option can be used
-    /// to modify test intensity
+    /// A maximum number of packets transmitted per a second. It's guaranteed
+    /// that a number of packets sent per a second will never exceed this value
     #[structopt(
-        long = "send-periodicity",
+        long = "test-intensity",
         takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "0secs",
-        parse(try_from_str = "humantime::parse_duration")
+        value_name = "PACKETS",
+        default_value = "1000"
     )]
-    pub send_periodicity: Duration,
-
-    /// A count of packets which the program will send using only one system
-    /// call. After the operation completed, a test summary will have been
-    /// printed
-    #[structopt(
-        long = "buffer-capacity",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        default_value = "600"
-    )]
-    pub buffer_capacity: NonZeroUsize,
-
-    #[structopt(flatten)]
-    pub exit_config: ExitConfig,
+    pub test_intensity: NonZeroUsize,
 
     #[structopt(flatten)]
     pub sockets_config: SocketsConfig,
 
     #[structopt(flatten)]
+    pub packets_config: PacketsConfig,
+
+    #[structopt(flatten)]
     pub logging_config: LoggingConfig,
 
     #[structopt(flatten)]
-    pub packets_config: PacketsConfig,
+    pub exit_config: ExitConfig,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
 pub struct SocketsConfig {
-    /// A timeout of sending every single packet. If a timeout is reached, then
-    /// a packet will be sent later
-    #[structopt(
-        short = "t",
-        long = "send-timeout",
-        takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "10secs",
-        parse(try_from_str = "humantime::parse_duration")
-    )]
-    pub send_timeout: Duration,
-
     /// Allow sockets to send packets to a broadcast address specified using the
-    /// `--receiver` option
+    /// `--endpoints` option
     #[structopt(short = "b", long = "allow-broadcast", takes_value = false)]
     pub broadcast: bool,
-}
-
-#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct LoggingConfig {
-    /// Enable one of the possible verbosity levels. The zero level doesn't
-    /// print anything, and the last level prints everything.
-    ///
-    /// Note that specifying the 4 and 5 verbosity levels might decrease
-    /// performance, do it only for debugging.
-    #[structopt(
-        short = "v",
-        long = "verbosity",
-        takes_value = true,
-        value_name = "LEVEL",
-        default_value = "3",
-        raw(possible_values = r#"&["0", "1", "2", "3", "4", "5"]"#)
-    )]
-    pub verbosity: i32,
-
-    /// A format for displaying local date and time in log messages. Type `man
-    /// strftime` to see the format specification
-    #[structopt(
-        long = "date-time-format",
-        takes_value = true,
-        value_name = "STRING",
-        default_value = "%X",
-        raw(validator = "validate_date_time_format")
-    )]
-    pub date_time_format: String,
-}
-
-#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
-pub struct ExitConfig {
-    /// A count of packets for sending. When this limit is reached, then the
-    /// program will exit
-    #[structopt(
-        short = "p",
-        long = "packets-count",
-        takes_value = true,
-        value_name = "POSITIVE-INTEGER",
-        default_value = "18446744073709551615"
-    )]
-    pub packets_count: NonZeroUsize,
-
-    /// A whole test duration. When this limit is reached, then the program will
-    /// exit.
-    ///
-    /// Exit might occur a few seconds later because of long sendmmsg system
-    /// calls. For more precision, decrease the `--buffer-capacity`
-    /// value.
-    #[structopt(
-        short = "d",
-        long = "test-duration",
-        takes_value = true,
-        value_name = "TIME-SPAN",
-        default_value = "64years 64hours 64secs",
-        parse(try_from_str = "humantime::parse_duration")
-    )]
-    pub test_duration: Duration,
 }
 
 #[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
@@ -234,6 +151,61 @@ pub struct PacketsConfig {
 
     #[structopt(flatten)]
     pub payload_config: PayloadConfig,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct LoggingConfig {
+    /// Enable one of the possible verbosity levels. The zero level doesn't
+    /// print anything, and the last level prints everything.
+    ///
+    /// Note that specifying the 4 and 5 verbosity levels might decrease
+    /// performance, do it only for debugging.
+    #[structopt(
+        short = "v",
+        long = "verbosity",
+        takes_value = true,
+        value_name = "LEVEL",
+        default_value = "3",
+        raw(possible_values = r#"&["0", "1", "2", "3", "4", "5"]"#)
+    )]
+    pub verbosity: i32,
+
+    /// A format for displaying local date and time in log messages. Type `man
+    /// strftime` to see the format specification
+    #[structopt(
+        long = "date-time-format",
+        takes_value = true,
+        value_name = "STRING",
+        default_value = "%X",
+        raw(validator = "validate_date_time_format")
+    )]
+    pub date_time_format: String,
+}
+
+#[derive(StructOpt, Debug, Clone, Eq, PartialEq)]
+pub struct ExitConfig {
+    /// A count of packets for sending. When this limit is reached, then the
+    /// program will immediately stop its execution
+    #[structopt(
+        short = "p",
+        long = "packets-count",
+        takes_value = true,
+        value_name = "POSITIVE-INTEGER",
+        default_value = "18446744073709551615"
+    )]
+    pub packets_count: NonZeroUsize,
+
+    /// A whole test duration. When this limit is reached, then the program will
+    /// immediately stop its execution
+    #[structopt(
+        short = "d",
+        long = "test-duration",
+        takes_value = true,
+        value_name = "TIME-SPAN",
+        default_value = "64years 64hours 64secs",
+        parse(try_from_str = "humantime::parse_duration")
+    )]
+    pub test_duration: Duration,
 }
 
 impl ArgsConfig {

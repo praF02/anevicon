@@ -35,7 +35,7 @@ use crate::config::PayloadConfig;
 /// Note that this function constructs **ONLY** payload without
 /// protocol-specific headers and etc. Just payload that a user has specified by
 /// `--send-file`, `--send-message`, `--random-packet`.
-pub fn construct_payload(config: &PayloadConfig) -> Result<Vec<Vec<u8>>, ConstructPayloadError> {
+pub fn craft_all(config: &PayloadConfig) -> Result<Vec<Vec<u8>>, CraftPayloadError> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
@@ -67,34 +67,34 @@ fn random_payload(length: NonZeroUsize) -> Vec<u8> {
     buffer
 }
 
-fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, ConstructPayloadError> {
-    let content = fs::read(path).map_err(ConstructPayloadError::ReadFailed)?;
+fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, CraftPayloadError> {
+    let content = fs::read(path).map_err(CraftPayloadError::ReadFailed)?;
 
     if content.is_empty() {
-        return Err(ConstructPayloadError::ZeroSize);
+        return Err(CraftPayloadError::ZeroSize);
     }
 
     Ok(content)
 }
 
 #[derive(Debug)]
-pub enum ConstructPayloadError {
+pub enum CraftPayloadError {
     ReadFailed(io::Error),
     ZeroSize,
 }
 
-impl Display for ConstructPayloadError {
+impl Display for CraftPayloadError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            ConstructPayloadError::ReadFailed(error) => {
+            CraftPayloadError::ReadFailed(error) => {
                 write!(fmt, "Error while reading the file >>> {}", error)
             }
-            ConstructPayloadError::ZeroSize => write!(fmt, "Zero packet size"),
+            CraftPayloadError::ZeroSize => write!(fmt, "Zero packet size"),
         }
     }
 }
 
-impl Error for ConstructPayloadError {}
+impl Error for CraftPayloadError {}
 
 #[cfg(test)]
 mod tests {
@@ -130,7 +130,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
-        if let Err(ConstructPayloadError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
+        if let Err(CraftPayloadError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
             panic!("Zero packet size");
         } else {
             panic!("Must return the 'ZeroSize' error");
@@ -140,7 +140,7 @@ mod tests {
     #[test]
     fn test_choose_random_payload() {
         let packet_length = NonZeroUsize::new(24550).unwrap();
-        let packets = construct_payload(&PayloadConfig {
+        let packets = craft_all(&PayloadConfig {
             send_files: Vec::new(),
             random_packets: vec![packet_length],
             send_messages: Vec::new(),
@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_choose_file_payload() {
-        let packets = construct_payload(&PayloadConfig {
+        let packets = craft_all(&PayloadConfig {
             send_files: vec![PACKET_FILE.clone()],
             random_packets: Vec::new(),
             send_messages: Vec::new(),
@@ -171,7 +171,7 @@ mod tests {
     fn test_choose_text_message() {
         let message = String::from("Generals gathered in their masses");
 
-        let packets = construct_payload(&PayloadConfig {
+        let packets = craft_all(&PayloadConfig {
             send_files: Vec::new(),
             random_packets: Vec::new(),
             send_messages: vec![message.clone()],
@@ -193,7 +193,7 @@ mod tests {
         let random_first = NonZeroUsize::new(3566).unwrap();
         let random_second = NonZeroUsize::new(9385).unwrap();
 
-        let packets = construct_payload(&PayloadConfig {
+        let packets = craft_all(&PayloadConfig {
             send_files: vec![PACKET_FILE.clone(), SECOND_PACKET_FILE.clone()],
             random_packets: vec![random_first, random_second],
             send_messages: vec![first_message.clone(), second_message.clone()],

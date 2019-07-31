@@ -5,14 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e56e5c85-c688-4183-8ee7-ea32000ebdcb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/core/craft_datagrams/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config/endpoints.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/endpoints.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/construct_packets.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/construct_packets.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/craft_datagrams/craft_packets.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/construct_payload.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/craft_datagrams/craft_payload.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/summary_portion.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/statistics/test_summary.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/handle_icmp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/icmp.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/udp_sender/sendmmsg.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/logging.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/logging.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -52,11 +59,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/core/datagrams_crafter" />
       <recent name="$PROJECT_DIR$/src/config" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/core/statistics" />
       <recent name="$PROJECT_DIR$/src/core" />
-      <recent name="$PROJECT_DIR$/src/core/construct_packets" />
     </key>
   </component>
   <component name="RunDashboard">

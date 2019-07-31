@@ -29,7 +29,7 @@ pub fn ip_udp_packet(endpoints: &Endpoints, payload: &[u8], time_to_live: u8) ->
     }
 }
 
-pub fn ipv4_udp_packet(endpoints: &EndpointsV4, payload: &[u8], time_to_live: u8) -> Vec<u8> {
+fn ipv4_udp_packet(endpoints: &EndpointsV4, payload: &[u8], time_to_live: u8) -> Vec<u8> {
     let builder = PacketBuilder::ipv4(
         endpoints.sender.ip().octets(),
         endpoints.receiver.ip().octets(),
@@ -43,7 +43,7 @@ pub fn ipv4_udp_packet(endpoints: &EndpointsV4, payload: &[u8], time_to_live: u8
     serialized
 }
 
-pub fn ipv6_udp_packet(endpoints: &EndpointsV6, payload: &[u8], time_to_live: u8) -> Vec<u8> {
+fn ipv6_udp_packet(endpoints: &EndpointsV6, payload: &[u8], time_to_live: u8) -> Vec<u8> {
     let builder = PacketBuilder::ipv6(
         endpoints.sender.ip().octets(),
         endpoints.receiver.ip().octets(),
