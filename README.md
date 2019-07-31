@@ -99,7 +99,7 @@ $ chmod a+x anevicon-x86_64-linux
 ### Flags
 Name | Explanation
 -----|------------
-`-b, --allow-broadcast`| Allow sockets to send packets to a broadcast address specified using the `--receiver` option
+`-b, --allow-broadcast`| Allow sockets to send packets to a broadcast address specified using the `--endpoints` option
 `-h, --help` | Prints help information
 `-V, --version` | Prints version information
 
@@ -109,14 +109,12 @@ Name | Value | Default | Explanation
 `--date-time-format` | String | `%X` | A format for displaying local date and time in log messages. Type `man strftime` to see the format specification
 `-e, --endpoints` | String | None | Two endpoints specified as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string of a `<IP>:<PORT>` format.<br><br>A sender and a receiver can be absolutely any valid IPv4/IPv6 addresses (which is used to send spoofed packets sometimes).<br><br>This option can be specified several times to identically test multiple web servers in concurrent mode.
 `--ip-ttl` | Unsigned integer | `64` | Specifies the `IP_TTL` value for all future sockets. Usually this value equals a number of routers that a packet can go through
+`-p, --packets-count` | Positive integer | `18 '446 '744 '073 '709 '551 '615` | A count of packets for sending. When this limit is reached, then the program will immediately stop its execution
 `--random-packet` | Positive integer | `32768` | Repeatedly send a random-generated packet with a specified bytes length
-`-p, --packets-count` | Positive integer | `18 '446 '744 '073 '709 '551 '615` | A count of packets for sending. When this limit is reached, then the program will exit
-`--buffer-capacity` | Positive integer | `600` | A count of packets which the program will send using only one system call. After the operation completed, a test summary will have been printed
 `-f, --send-file` | Filename | None | Interpret the specified file content as a single packet and repeatedly send it to each receiver
 `-m, --send-message` | String | None | Interpret the specified UTF-8 encoded text message as a single packet and repeatedly send it to each receiver
-`--send-periodicity` | Time span | `0secs` | A time interval between `sendmmsg` system calls. This option can be used to modify test intensity
-`-t, --send-timeout` | Time span | `10secs` | A timeout of sending every single packet. If a timeout is reached, then a packet will be sent later
-`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will exit.<br><br>Exit might occur a few seconds later because of long `sendmmsg` system calls. For more precision, decrease the `--buffer-capacity` value.
+`-d, --test-duration` | Time span | `64years 64hours 64secs` | A whole test duration. When this limit is reached, then the program will immediately stop its execution
+`--test-intensity` | Packets | `1000` | A maximum number of packets transmitted per a second. It's guaranteed that a number of packets sent per a second will never exceed this value
 `-v, --verbosity` | From 0 to 5 | `3` | Enable one of the possible verbosity levels. The zero level doesn't print anything, and the last level prints everything.<br><br>Note that specifying the 4 and 5 verbosity levels might decrease performance, do it only for debugging.
 `-w, --wait` | Time span | `5secs` | A waiting time span before a test execution used to prevent a launch of an erroneous (unwanted) test
 
