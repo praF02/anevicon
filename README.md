@@ -141,7 +141,7 @@ You can specify as many endpoints as you want to test several receivers in separ
 ```bash
 # Test duckduckgo.com:80, example.com:80, and google.com:80 concurrently
 $ anevicon \
---endpoints="192.168.1.41:0&176.34.155.23:80:80" \
+--endpoints="192.168.1.41:0&176.34.155.23:80" \
 --endpoints="192.168.1.41:0&93.184.216.34:80" \
 --endpoints="192.168.1.41:0&216.58.205.238:80"
 ```
