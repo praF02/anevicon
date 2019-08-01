@@ -231,7 +231,7 @@ impl ArgsConfig {
                 .is_empty()
         {
             matches.packets_config.payload_config.random_packets =
-                vec![unsafe { NonZeroUsize::new_unchecked(DEFAULT_RANDOM_PACKET_SIZE) }];
+                vec![NonZeroUsize::new(DEFAULT_RANDOM_PACKET_SIZE).unwrap()];
         }
 
         matches
