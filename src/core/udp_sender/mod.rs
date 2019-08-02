@@ -33,8 +33,6 @@ use crate::core::statistics::{SummaryPortion, TestSummary};
 
 mod sendmmsg;
 
-const IP_RECVERR: libc::c_int = 11;
-
 /// A type alias that represents a portion to be sent. `transmitted` is a
 /// number of bytes sent, and `slice` is a packet to be sent.
 #[derive(Debug)]
@@ -101,16 +99,6 @@ impl<'a> UdpSender<'a> {
             libc::SOL_SOCKET,
             libc::SO_BROADCAST,
             if broadcast { &1 } else { &0 },
-        )?;
-
-        set_socket_option_safe(
-            fd,
-            match dest.ip() {
-                IpAddr::V4(_) => libc::SOL_IP,
-                IpAddr::V6(_) => libc::SOL_IPV6,
-            },
-            IP_RECVERR,
-            &1,
         )?;
 
         connect_socket_safe(fd, dest)?;
