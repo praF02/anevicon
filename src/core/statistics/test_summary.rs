@@ -16,7 +16,6 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::collections::HashMap;
 use std::ops::{Add, AddAssign};
 use std::time::{Duration, Instant};
 
@@ -31,10 +30,6 @@ pub struct TestSummary {
     packets_expected: usize,
     packets_sent: usize,
     initial_time: Instant,
-
-    /// Incoming ICMP error-messages. A key is represented as `(type, code)` and
-    /// a value is a number of occurrences.
-    incoming_icmp: HashMap<(u8, u8), usize>,
 }
 
 impl TestSummary {
@@ -47,24 +42,6 @@ impl TestSummary {
 
         self.packets_expected += portion.packets_expected();
         self.packets_sent += portion.packets_sent();
-    }
-
-    #[inline]
-    pub fn update_icmp(&mut self, icmp_type: u8, icmp_code: u8) {
-        let key = (icmp_type, icmp_code);
-        self.incoming_icmp
-            .insert(key, self.incoming_icmp.get(&key).unwrap_or(&0usize) + 1);
-    }
-
-    #[inline]
-    pub fn icmp_messages(&self) -> &HashMap<(u8, u8), usize> {
-        &self.incoming_icmp
-    }
-
-    #[inline]
-    #[allow(dead_code)]
-    pub fn icmp_messages_mut(&mut self) -> &mut HashMap<(u8, u8), usize> {
-        &mut self.incoming_icmp
     }
 
     #[inline]
@@ -146,7 +123,6 @@ impl Default for TestSummary {
             packets_expected: 0,
             packets_sent: 0,
             initial_time: Instant::now(),
-            incoming_icmp: HashMap::new(),
         }
     }
 }
@@ -184,8 +160,6 @@ mod tests {
 
         assert_eq!(summary.packets_expected(), 0);
         assert_eq!(summary.packets_sent(), 0);
-
-        assert!(summary.incoming_icmp.is_empty());
     }
 
     #[test]
@@ -288,41 +262,5 @@ mod tests {
         }
 
         assert!(summary.time_passed() >= initial_time.elapsed());
-    }
-
-    #[test]
-    fn update_icmp_works() {
-        let mut summary = TestSummary::default();
-
-        summary.update_icmp(13, 54);
-        summary.update_icmp(13, 54);
-
-        summary.update_icmp(44, 11);
-
-        summary.update_icmp(5, 21);
-        summary.update_icmp(5, 21);
-        summary.update_icmp(5, 21);
-
-        assert_eq!(
-            summary
-                .incoming_icmp
-                .get(&(13, 54))
-                .expect("The key (13, 54) doesn't exist"),
-            &2usize
-        );
-        assert_eq!(
-            summary
-                .incoming_icmp
-                .get(&(44, 11))
-                .expect("The key (44, 11) doesn't exist"),
-            &1usize
-        );
-        assert_eq!(
-            summary
-                .incoming_icmp
-                .get(&(5, 21))
-                .expect("The key (5, 21) doesn't exist"),
-            &3usize
-        );
     }
 }

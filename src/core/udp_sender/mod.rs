@@ -31,7 +31,6 @@ use sendmmsg::sendmmsg;
 
 use crate::core::statistics::{SummaryPortion, TestSummary};
 
-mod icmp;
 mod sendmmsg;
 
 const IP_RECVERR: libc::c_int = 11;
@@ -150,7 +149,7 @@ impl<'a> UdpSender<'a> {
     /// Sends the a specified `packet` immediately (without buffering),
     /// returning a number of bytes send successfully, or `io::Error`.
     pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> io::Result<usize> {
-        let res = match unsafe {
+        match unsafe {
             libc::send(
                 self.fd,
                 packet as *const _ as *const c_void,
@@ -167,10 +166,7 @@ impl<'a> UdpSender<'a> {
                 summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
                 Ok(res)
             }
-        };
-
-        icmp::extract_icmp(self.fd, summary)?;
-        res
+        }
     }
 
     /// Flushes contents of an inner buffer (sends data to an endpoint),
@@ -200,7 +196,6 @@ impl<'a> UdpSender<'a> {
             }
         }
 
-        icmp::extract_icmp(self.fd, summary)?;
         Ok(())
     }
 }
@@ -245,10 +240,10 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
                 sin_port: dest.port().to_be(),
                 sin_addr: libc::in_addr {
                     s_addr: u32::to_be(
-                        ((octets[0] as u32) << 24)
-                            | ((octets[1] as u32) << 16)
-                            | ((octets[2] as u32) << 8)
-                            | (octets[3] as u32),
+                        (u32::from(octets[0]) << 24)
+                            | (u32::from(octets[1]) << 16)
+                            | (u32::from(octets[2]) << 8)
+                            | u32::from(octets[3]),
                     ),
                 },
                 ..unsafe { mem::zeroed() }
