@@ -238,11 +238,18 @@ fn set_socket_option_safe<T>(
 fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
     let ret = match dest {
         SocketAddr::V4(dest_v4) => {
+            let octets = dest_v4.ip().octets();
+
             let addr_v4 = libc::sockaddr_in {
                 sin_family: libc::AF_INET.try_into().unwrap(),
                 sin_port: dest.port().to_be(),
                 sin_addr: libc::in_addr {
-                    s_addr: u32::from_ne_bytes(dest_v4.ip().octets()).to_be(),
+                    s_addr: u32::to_be(
+                        ((octets[0] as u32) << 24)
+                            | ((octets[1] as u32) << 16)
+                            | ((octets[2] as u32) << 8)
+                            | (octets[3] as u32),
+                    ),
                 },
                 ..unsafe { mem::zeroed() }
             };
