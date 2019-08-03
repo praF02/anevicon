@@ -18,7 +18,6 @@
 
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
-use std::io;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -26,7 +25,7 @@ use termion::color;
 
 use crate::config::{ArgsConfig, Endpoints};
 use crate::core::statistics::TestSummary;
-use crate::core::udp_sender::{SupplyResult, UdpSender};
+use crate::core::udp_sender::{CreateUdpSenderError, SupplyResult, UdpSender};
 
 pub fn run_tester(
     config: Arc<ArgsConfig>,
@@ -34,12 +33,13 @@ pub fn run_tester(
     endpoints: Endpoints,
 ) -> Result<TestSummary, RunTesterError> {
     let mut summary = TestSummary::default();
+    let current_receiver = endpoints.receiver();
     let mut sender = UdpSender::new(
         config.test_intensity,
-        &endpoints.receiver(),
+        &current_receiver,
         config.sockets_config.broadcast,
     )
-    .map_err(RunTesterError::IoError)?;
+    .map_err(RunTesterError::UdpSenderError)?;
 
     // Run the main cycle for the current worker, and exit if the allotted time
     // expires or all required packets will be sent (whichever happens first)
@@ -94,13 +94,13 @@ pub fn run_tester(
 
 #[derive(Debug)]
 pub enum RunTesterError {
-    IoError(io::Error),
+    UdpSenderError(CreateUdpSenderError),
 }
 
 impl Display for RunTesterError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            RunTesterError::IoError(err) => err.fmt(fmt),
+            RunTesterError::UdpSenderError(err) => err.fmt(fmt),
         }
     }
 }

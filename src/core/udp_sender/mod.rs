@@ -19,6 +19,8 @@
 //! This file is used to send raw UDP/IP messages to a web server.
 
 use std::convert::TryInto;
+use std::error::Error;
+use std::fmt::{self, Display, Formatter};
 use std::io::IoSlice;
 use std::net::{IpAddr, SocketAddr};
 use std::num::NonZeroUsize;
@@ -26,6 +28,8 @@ use std::os::raw::c_void;
 use std::os::unix::io::RawFd;
 use std::time::{Duration, Instant};
 use std::{io, mem, thread};
+
+use termion::color;
 
 use sendmmsg::sendmmsg;
 
@@ -46,6 +50,47 @@ pub enum SupplyResult {
     Flushed,
     NotFlushed,
 }
+
+#[derive(Debug)]
+pub enum CreateUdpSenderError {
+    CreateSocket(io::Error),
+    SetSocketOption {
+        error: io::Error,
+        option: String,
+    },
+    ConnectSocket {
+        error: io::Error,
+        address: SocketAddr,
+    },
+}
+
+impl Display for CreateUdpSenderError {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        match self {
+            CreateUdpSenderError::CreateSocket(err) => {
+                write!(fmt, "Cannot create a socket >>> {}!", err)
+            }
+            CreateUdpSenderError::SetSocketOption { error, option } => write!(
+                fmt,
+                "Cannot set the {cyan}{option}{reset} socket option >>> {err}!",
+                option = option,
+                err = error,
+                cyan = color::Fg(color::Cyan),
+                reset = color::Fg(color::Reset)
+            ),
+            CreateUdpSenderError::ConnectSocket { error, address } => write!(
+                fmt,
+                "Cannot connect a socket to {cyan}{address}{reset} >>> {err}!",
+                address = address,
+                err = error,
+                cyan = color::Fg(color::Cyan),
+                reset = color::Fg(color::Reset)
+            ),
+        }
+    }
+}
+
+impl Error for CreateUdpSenderError {}
 
 /// A structure representing a raw IPv4/IPv6 socket with a buffer. The buffer is
 /// described below, see the `buffer` field.
@@ -69,7 +114,7 @@ impl<'a> UdpSender<'a> {
         test_intensity: NonZeroUsize,
         dest: &SocketAddr,
         broadcast: bool,
-    ) -> io::Result<Self> {
+    ) -> Result<UdpSender, CreateUdpSenderError> {
         let fd = match unsafe {
             libc::socket(
                 match dest.ip() {
@@ -80,7 +125,11 @@ impl<'a> UdpSender<'a> {
                 libc::IPPROTO_RAW,
             )
         } {
-            -1 => return Err(io::Error::last_os_error()),
+            -1 => {
+                return Err(CreateUdpSenderError::CreateSocket(
+                    io::Error::last_os_error(),
+                ));
+            }
             value => value,
         };
 
@@ -92,16 +141,27 @@ impl<'a> UdpSender<'a> {
                 tv_sec: 1,
                 tv_usec: 0,
             },
-        )?;
+        )
+        .map_err(|err| CreateUdpSenderError::SetSocketOption {
+            error: err,
+            option: String::from("SO_SNDTIMEO"),
+        })?;
 
         set_socket_option_safe(
             fd,
             libc::SOL_SOCKET,
             libc::SO_BROADCAST,
             if broadcast { &1 } else { &0 },
-        )?;
+        )
+        .map_err(|err| CreateUdpSenderError::SetSocketOption {
+            error: err,
+            option: String::from("SO_BROADCAST"),
+        })?;
 
-        connect_socket_safe(fd, dest)?;
+        connect_socket_safe(fd, dest).map_err(|err| CreateUdpSenderError::ConnectSocket {
+            error: err,
+            address: *dest,
+        })?;
 
         Ok(UdpSender {
             fd,
@@ -241,7 +301,7 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
                 libc::connect(
                     fd,
                     &addr_v4 as *const _ as *const libc::sockaddr,
-                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                    mem::size_of_val(&addr_v4).try_into().unwrap(),
                 )
             }
         }
@@ -260,7 +320,7 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
                 libc::connect(
                     fd,
                     &addr_v6 as *const _ as *const libc::sockaddr,
-                    mem::size_of::<libc::sockaddr>().try_into().unwrap(),
+                    mem::size_of_val(&addr_v6).try_into().unwrap(),
                 )
             }
         }
