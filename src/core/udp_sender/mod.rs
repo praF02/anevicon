@@ -372,12 +372,9 @@ mod tests {
 
     #[test]
     fn constructs_buffer() {
-        let buffer = UdpSender::new(
-            NonZeroUsize::new(354).unwrap(),
-            &UDP_SERVER.local_addr().unwrap(),
-            false,
-        )
-        .expect("UdpSender::new(...) failed");
+        let local_addr = UDP_SERVER.local_addr().unwrap();
+        let buffer = UdpSender::new(NonZeroUsize::new(354).unwrap(), &local_addr, false)
+            .expect("UdpSender::new(...) failed");
 
         assert_eq!(buffer.buffer.capacity(), 354);
         assert_eq!(buffer.buffer.len(), 0);
@@ -386,14 +383,11 @@ mod tests {
     #[test]
     fn test_packets_buffer() {
         const SUPPLY_COUNT: usize = 6;
+        let local_addr = UDP_SERVER.local_addr().unwrap();
 
         let mut summary = TestSummary::default();
-        let mut buffer = UdpSender::new(
-            NonZeroUsize::new(4).unwrap(),
-            &UDP_SERVER.local_addr().unwrap(),
-            false,
-        )
-        .expect("UdpSender::new(...) failed");
+        let mut buffer = UdpSender::new(NonZeroUsize::new(4).unwrap(), &local_addr, false)
+            .expect("UdpSender::new(...) failed");
 
         let check = |buffer: &UdpSender| {
             assert_eq!(buffer.buffer.capacity(), 4);
@@ -451,13 +445,10 @@ mod tests {
 
     #[test]
     fn test_send_one() {
+        let local_addr = UDP_SERVER.local_addr().unwrap();
         let mut summary = TestSummary::default();
-        let mut sender = UdpSender::new(
-            NonZeroUsize::new(1).unwrap(),
-            &UDP_SERVER.local_addr().unwrap(),
-            false,
-        )
-        .expect("UdpSender::new(...) failed");
+        let mut sender = UdpSender::new(NonZeroUsize::new(1).unwrap(), &local_addr, false)
+            .expect("UdpSender::new(...) failed");
         dbg!();
         assert_eq!(summary.megabytes_expected(), 0);
         assert_eq!(summary.megabytes_sent(), 0);
