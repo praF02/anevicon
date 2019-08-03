@@ -18,8 +18,10 @@
 
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
+use std::num::NonZeroUsize;
 use std::sync::Arc;
-use std::time::Duration;
+use std::thread;
+use std::time::{Duration, Instant};
 
 use termion::color;
 
@@ -81,6 +83,7 @@ pub fn run_tester(
                 .map(|packet| packet.as_slice())
                 .collect::<Vec<&[u8]>>(),
             config.exit_config.test_duration,
+            config.test_intensity,
         ) {
             ResendPacketsResult::Completed => display_packets_sent(),
             ResendPacketsResult::TimeExpired => display_expired_time(),
@@ -115,6 +118,7 @@ fn resend_packets(
     summary: &mut TestSummary,
     datagrams: &[&[u8]],
     limit: Duration,
+    test_intensity: NonZeroUsize,
 ) -> ResendPacketsResult {
     info!(
         "trying to resend {cyan}{count}{reset} packets to {receiver} from {sender} that haven't \
@@ -126,19 +130,34 @@ fn resend_packets(
         reset = color::Fg(color::Reset),
     );
 
+    let mut start = Instant::now();
+    let mut packets_sent = 0usize;
+
     for &packet in datagrams {
         if summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
 
-        while let Err(error) = sender.send_one(summary, packet) {
-            error!(
+        match sender.send_one(summary, packet) {
+            Err(error) => error!(
                 "failed to send a packet to {receiver} from {sender} >>> {error}! Retrying the \
                  operation...",
                 receiver = super::current_receiver(),
                 sender = super::current_sender(),
                 error = error,
-            );
+            ),
+            Ok(_) => packets_sent += 1,
+        }
+
+        // If we sent `test_intenity` packets in less than a second, then sleep the rest
+        // of time according `--test-intensity`:
+        if packets_sent == test_intensity.get() {
+            if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
+                thread::sleep(wait);
+                display_summary(summary);
+                start = Instant::now();
+                packets_sent = 0usize;
+            }
         }
     }
 
