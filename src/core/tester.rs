@@ -76,7 +76,7 @@ pub fn run_tester(
         match resend_packets(
             &mut sender,
             &mut summary,
-            &datagrams
+            datagrams
                 .iter()
                 .cycle()
                 .take(unsent)
@@ -116,7 +116,7 @@ impl Error for RunTesterError {}
 fn resend_packets(
     sender: &mut UdpSender,
     summary: &mut TestSummary,
-    datagrams: &[&[u8]],
+    datagrams: Vec<&[u8]>,
     limit: Duration,
     test_intensity: NonZeroUsize,
 ) -> ResendPacketsResult {
@@ -133,7 +133,7 @@ fn resend_packets(
     let mut start = Instant::now();
     let mut packets_sent = 0usize;
 
-    for &packet in datagrams {
+    for &packet in &datagrams {
         if summary.time_passed() >= limit {
             return ResendPacketsResult::TimeExpired;
         }
@@ -223,4 +223,53 @@ fn send_multiple_error<E: Error>(error: E) {
         sender = super::current_sender(),
         error = error,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use std::net::UdpSocket;
+
+    use structopt::StructOpt;
+
+    use crate::core::craft_datagrams;
+
+    use super::*;
+
+    #[test]
+    fn test_run_tester() {
+        let socket = UdpSocket::bind("127.0.0.1:0").expect("UdpSocket::bind(...) failed");
+
+        let config = ArgsConfig::from_iter(&[
+            "anevicon",
+            "--endpoints",
+            &format!("{0}&{0}", socket.local_addr().unwrap()),
+            "--packets-count",
+            "1000",
+            "--test-intensity",
+            "42",
+            "--send-message",
+            "My first message",
+            "--send-message",
+            "My second message",
+            "--send-message",
+            "My third message",
+            "--send-file",
+            "files/packet.txt",
+            "--wait",
+            "0secs",
+        ]);
+
+        let packets_expected = config.exit_config.packets_count.get();
+        let datagrams = craft_datagrams::craft_all(&config.packets_config)
+            .expect("Cannot construct datagarms")
+            .remove(0)
+            .collect::<Vec<Vec<u8>>>();
+
+        let endpoints = config.packets_config.endpoints[0];
+        let summary =
+            run_tester(Arc::new(config), datagrams, endpoints).expect("Failed to run a tester");
+
+        assert_eq!(summary.packets_expected(), packets_expected);
+        assert_eq!(summary.packets_sent(), packets_expected);
+    }
 }
