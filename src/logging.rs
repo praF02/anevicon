@@ -28,14 +28,12 @@ use time;
 
 use super::config::LoggingConfig;
 
-/// Setups the logging system from `LoggingConfig`. Before this function,
-/// neither of log's macros such as `info!` won't work.
+/// Setups the logging system from `LoggingConfig`. Before this function, none
+/// of log's macros such as `info!` will work.
 pub fn setup_logging(logging_config: &LoggingConfig) {
     let dt_format = logging_config.date_time_format.clone();
 
     Dispatch::new()
-        // Print fancy colored output to a terminal without a record date
-        // and the program name
         .format(move |out, message, record| {
             out.finish(format_args!(
                 "[{underline}{level_color}{level}{reset_color}{reset_style}] \
