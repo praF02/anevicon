@@ -225,10 +225,12 @@ fn display_summary(summary: &TestSummary) {
 
 fn send_multiple_error<E: Error>(error: E) {
     error!(
-        "failed to send packets to {receiver} from {sender} >>> {error}!",
+        "failed to send packets to {receiver} from {sender} {red}>>>{reset} {error}!",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
         error = error,
+        red = color::Fg(color::Red),
+        reset = color::Fg(color::Reset),
     );
 }
 

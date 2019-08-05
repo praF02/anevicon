@@ -88,7 +88,12 @@ fn current_endpoints() -> String {
 pub fn run(config: ArgsConfig) -> Result<(), ()> {
     let datagrams = match craft_datagrams::craft_all(&config.packets_config) {
         Err(err) => {
-            error!("failed to construct datagrams >>> {}!", err);
+            error!(
+                "failed to construct datagrams {red}>>>{reset} {error}!",
+                error = err,
+                red = color::Fg(color::Red),
+                reset = color::Fg(color::Reset),
+            );
             return Err(());
         }
         Ok(datagrams) => datagrams,
@@ -118,7 +123,12 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
         .into_iter()
         .for_each(|worker: JoinHandle<Result<_, RunTesterError>>| {
             if let Err(err) = worker.join().expect("A child thread has panicked") {
-                error!("a tester exited unexpectedly >>> {}!", err);
+                error!(
+                    "a tester exited unexpectedly {red}>>>{reset} {error}!",
+                    error = err,
+                    red = color::Fg(color::Red),
+                    reset = color::Fg(color::Reset),
+                );
             }
         });
     Ok(())

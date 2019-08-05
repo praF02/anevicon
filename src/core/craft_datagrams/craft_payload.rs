@@ -26,6 +26,7 @@ use std::num::NonZeroUsize;
 use std::path::Path;
 
 use rand::{thread_rng, RngCore};
+use termion::color;
 
 use crate::config::PayloadConfig;
 
@@ -86,9 +87,13 @@ pub enum CraftPayloadError {
 impl Display for CraftPayloadError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            CraftPayloadError::ReadFailed(error) => {
-                write!(fmt, "Error while reading the file >>> {}", error)
-            }
+            CraftPayloadError::ReadFailed(err) => write!(
+                fmt,
+                "Error while reading the file {red}>>>{reset} {error}",
+                error = err,
+                red = color::Fg(color::Red),
+                reset = color::Fg(color::Reset),
+            ),
             CraftPayloadError::ZeroSize => write!(fmt, "Zero packet size"),
         }
     }
