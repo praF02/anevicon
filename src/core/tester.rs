@@ -149,15 +149,22 @@ fn resend_packets(
             Ok(_) => packets_sent += 1,
         }
 
-        // If we sent `test_intenity` packets in less than a second, then sleep the rest
-        // of time according `--test-intensity`:
-        if packets_sent == test_intensity.get() {
+        // If we have sent `--test-intensity` datagrams but a whole second has passed,
+        // then display TestSummary and reset the counters:
+        if start.elapsed() >= Duration::from_secs(1) {
+            display_summary(summary);
+            start = Instant::now();
+            packets_sent = 0usize;
+        } else if packets_sent == test_intensity.get() {
+            // If we have sent exactly `--test-intensity` datagrams in less than a second,
+            // then sleep the rest of time and reset the counters
             if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
                 thread::sleep(wait);
-                display_summary(summary);
-                start = Instant::now();
-                packets_sent = 0usize;
             }
+
+            display_summary(summary);
+            start = Instant::now();
+            packets_sent = 0usize;
         }
     }
 
