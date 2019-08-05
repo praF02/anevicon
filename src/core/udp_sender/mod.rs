@@ -68,11 +68,11 @@ impl Display for CreateUdpSenderError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
             CreateUdpSenderError::CreateSocket(err) => {
-                write!(fmt, "Cannot create a socket >>> {}!", err)
+                write!(fmt, "Cannot create a socket >>> {}", err)
             }
             CreateUdpSenderError::SetSocketOption { error, option } => write!(
                 fmt,
-                "Cannot set the {cyan}{option}{reset} socket option >>> {err}!",
+                "Cannot set the {cyan}{option}{reset} socket option >>> {err}",
                 option = option,
                 err = error,
                 cyan = color::Fg(color::Cyan),
@@ -80,7 +80,7 @@ impl Display for CreateUdpSenderError {
             ),
             CreateUdpSenderError::ConnectSocket { error, address } => write!(
                 fmt,
-                "Cannot connect a socket to {cyan}{address}{reset} >>> {err}!",
+                "Cannot connect a socket to {cyan}{address}{reset} >>> {err}",
                 address = address,
                 err = error,
                 cyan = color::Fg(color::Cyan),
