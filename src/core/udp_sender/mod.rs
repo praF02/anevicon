@@ -238,7 +238,7 @@ impl<'a> UdpSender<'a> {
             self.buffer.clear();
 
             // If the operation took less than a second, then sleep the rest of time
-            // according `--test-intensity`:
+            // according to `--test-intensity`:
             if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
                 thread::sleep(wait);
             }

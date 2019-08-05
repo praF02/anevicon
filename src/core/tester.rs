@@ -157,7 +157,7 @@ fn resend_packets(
             packets_sent = 0usize;
         } else if packets_sent == test_intensity.get() {
             // If we have sent exactly `--test-intensity` datagrams in less than a second,
-            // then sleep the rest of time and reset the counters
+            // then sleep the rest of time and reset the counters:
             if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
                 thread::sleep(wait);
             }
