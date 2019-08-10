@@ -20,14 +20,27 @@ use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::num::NonZeroUsize;
 use std::sync::Arc;
-use std::thread;
-use std::time::{Duration, Instant};
 
 use termion::color;
 
 use crate::config::{ArgsConfig, Endpoints};
 use crate::core::statistics::TestSummary;
 use crate::core::udp_sender::{CreateUdpSenderError, SupplyResult, UdpSender};
+
+#[derive(Debug)]
+pub enum RunTesterError {
+    UdpSenderError(CreateUdpSenderError),
+}
+
+impl Display for RunTesterError {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        match self {
+            RunTesterError::UdpSenderError(err) => err.fmt(fmt),
+        }
+    }
+}
+
+impl Error for RunTesterError {}
 
 pub fn run_tester(
     config: Arc<ArgsConfig>,
@@ -45,145 +58,40 @@ pub fn run_tester(
 
     // Run the main cycle for the current worker, and exit if the allotted time
     // expires or all required packets will be sent (whichever happens first)
-    for (datagram, _) in datagrams
-        .iter()
-        .cycle()
-        .zip(0..config.exit_config.packets_count.get())
-    {
-        match sender.supply(&mut summary, datagram) {
-            Err(err) => send_multiple_error(err),
-            Ok(res) => {
-                if res == SupplyResult::Flushed {
-                    display_summary(&summary);
+    let mut packets_to_send = config.exit_config.packets_count.get();
+    loop {
+        for (datagram, _) in datagrams.iter().cycle().zip(0..packets_to_send) {
+            match sender.supply(&mut summary, datagram) {
+                Err(err) => send_multiple_error(err),
+                Ok(res) => {
+                    if res == SupplyResult::Flushed {
+                        display_summary(&summary);
+                    }
                 }
+            }
+
+            if summary.time_passed() >= config.exit_config.test_duration {
+                display_expired_time();
+                return Ok(summary);
             }
         }
 
-        if summary.time_passed() >= config.exit_config.test_duration {
-            display_expired_time();
-            return Ok(summary);
+        if let Err(err) = sender.flush(&mut summary) {
+            send_multiple_error(err);
         }
-    }
 
-    if let Err(err) = sender.flush(&mut summary) {
-        send_multiple_error(err);
-    }
-
-    // We might have a situation when not all the required packets are sent, so
-    // resend them again
-    let unsent = summary.packets_expected() - summary.packets_sent();
-    if unsent != 0 {
-        match resend_packets(
-            &mut sender,
-            &mut summary,
-            datagrams
-                .iter()
-                .cycle()
-                .take(unsent)
-                .map(|packet| packet.as_slice())
-                .collect::<Vec<&[u8]>>(),
-            config.exit_config.test_duration,
-            config.test_intensity,
-        ) {
-            ResendPacketsResult::Completed => display_packets_sent(),
-            ResendPacketsResult::TimeExpired => display_expired_time(),
+        // We might have a situation when not all the required packets are sent, so
+        // resend them again
+        let unsent = summary.packets_expected() - summary.packets_sent();
+        if unsent != 0 {
+            packets_to_send = unsent;
+        } else {
+            display_packets_sent(config.exit_config.packets_count);
+            break;
         }
-    } else {
-        display_packets_sent();
     }
 
     Ok(summary)
-}
-
-#[derive(Debug)]
-pub enum RunTesterError {
-    UdpSenderError(CreateUdpSenderError),
-}
-
-impl Display for RunTesterError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            RunTesterError::UdpSenderError(err) => err.fmt(fmt),
-        }
-    }
-}
-
-impl Error for RunTesterError {}
-
-/// Sends `count` packets using the given `summary`. If the `limit` is reached,
-/// it will return `ResendPacketsResult::TimeExpired`, otherwise,
-/// `ResendPacketsResult::Completed`.
-fn resend_packets(
-    sender: &mut UdpSender,
-    summary: &mut TestSummary,
-    datagrams: Vec<&[u8]>,
-    limit: Duration,
-    test_intensity: NonZeroUsize,
-) -> ResendPacketsResult {
-    log::info!(
-        "trying to resend {cyan}{count}{reset} packets to {receiver} from {sender} that haven't \
-         been sent yet...",
-        count = datagrams.len(),
-        receiver = super::current_receiver(),
-        sender = super::current_sender(),
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
-    );
-
-    let mut start = Instant::now();
-    let mut packets_sent = 0usize;
-
-    for &packet in &datagrams {
-        if summary.time_passed() >= limit {
-            return ResendPacketsResult::TimeExpired;
-        }
-
-        match sender.send_one(summary, packet) {
-            Err(error) => log::error!(
-                "failed to send a packet to {receiver} from {sender} >>> {error}! Retrying the \
-                 operation...",
-                receiver = super::current_receiver(),
-                sender = super::current_sender(),
-                error = error,
-            ),
-            Ok(_) => packets_sent += 1,
-        }
-
-        // If we have sent some amount of datagrams but a whole second has passed, then
-        // display TestSummary and reset the counters:
-        if start.elapsed() >= Duration::from_secs(1) {
-            display_summary(summary);
-            start = Instant::now();
-            packets_sent = 0usize;
-        } else if packets_sent == test_intensity.get() {
-            // If we have sent exactly `--test-intensity` datagrams in less than a second,
-            // then sleep the rest of time and reset the counters:
-            if let Some(wait) = Duration::from_secs(1).checked_sub(start.elapsed()) {
-                thread::sleep(wait);
-            }
-
-            display_summary(summary);
-            start = Instant::now();
-            packets_sent = 0usize;
-        }
-    }
-
-    log::info!(
-        "{cyan}{count}{reset} packets have been resent to {receiver} from {sender}.",
-        count = datagrams.len(),
-        receiver = super::current_receiver(),
-        sender = super::current_sender(),
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
-    );
-
-    ResendPacketsResult::Completed
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-enum ResendPacketsResult {
-    Completed,
-    TimeExpired,
 }
 
 fn display_expired_time() {
@@ -194,11 +102,14 @@ fn display_expired_time() {
     );
 }
 
-fn display_packets_sent() {
+fn display_packets_sent(packets_count: NonZeroUsize) {
     log::info!(
-        "all the packets have been sent to {receiver} from {sender}.",
+        "{cyan}{packets_count}{reset} packets have been sent to {receiver} from {sender}.",
+        packets_count = packets_count,
         receiver = super::current_receiver(),
         sender = super::current_sender(),
+        cyan = color::Fg(color::Cyan),
+        reset = color::Fg(color::Reset),
     );
 }
 

@@ -202,6 +202,7 @@ impl<'a> UdpSender<'a> {
 
     /// Sends the a specified `packet` immediately (without buffering),
     /// returning a number of bytes send successfully, or `io::Error`.
+    #[allow(dead_code)]
     pub fn send_one(&mut self, summary: &mut TestSummary, packet: &[u8]) -> io::Result<usize> {
         match unsafe {
             libc::send(
