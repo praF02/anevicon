@@ -149,8 +149,8 @@ fn resend_packets(
             Ok(_) => packets_sent += 1,
         }
 
-        // If we have sent `--test-intensity` datagrams but a whole second has passed,
-        // then display TestSummary and reset the counters:
+        // If we have sent some amount of datagrams but a whole second has passed, then
+        // display TestSummary and reset the counters:
         if start.elapsed() >= Duration::from_secs(1) {
             display_summary(summary);
             start = Instant::now();
