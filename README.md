@@ -51,6 +51,7 @@ numerous UDP packets which lets you test your server against the abnormaly high 
    - [Custom messages](https://github.com/Gymmasssorla/anevicon#custom-messages)
    - [Test intensity](https://github.com/Gymmasssorla/anevicon#test-intensity)
    - [Multiple messages](https://github.com/Gymmasssorla/anevicon#multiple-messages)
+ - [Important notes](https://github.com/Gymmasssorla/anevicon#important-notes)
  - [Contributing](https://github.com/Gymmasssorla/anevicon#contributing)
  - [Legal disclaimer](https://github.com/Gymmasssorla/anevicon#legal-disclaimer)
  - [Contacts](https://github.com/Gymmasssorla/anevicon#contacts)
@@ -227,6 +228,13 @@ $ anevicon --endpoints="192.168.1.41:17333&93.184.216.34:80" \
 --random-packet=5355 \
 --random-packet=2222
 ```
+
+----------
+
+## Important notes
+ - Use the concrete source port number (17333 in the above examples) instead of the unspecified port because UDP packets with the unspecified port might be dropped by your router.
+ 
+ - Anevicon does not reserve port numbers of your computer and does not handle incoming traffic, it only sends UDP/IPv4 or UDP/IPv6 (at your option) datagrams to a specified web server.
 
 ----------
 
