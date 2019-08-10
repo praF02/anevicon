@@ -131,8 +131,8 @@ $ PATH+=":/home/gymmasssorla/.cargo/bin"
 All you need is to provide a source address and a server address, each of which consists of an IP address and a port number, separated by the colon character. You must specify them as `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`:
 
 ```bash
-# Test example.com:80 with the 192.168.1.41:0 source address
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80"
+# Test example.com:80 with the 192.168.1.41:17333 source address
+$ anevicon --endpoints="192.168.1.41:17333&93.184.216.34:80"
 ```
 
 ### Multiple endpoints
@@ -141,9 +141,9 @@ You can specify as many endpoints as you want to test several receivers in separ
 ```bash
 # Test duckduckgo.com:80, example.com:80, and google.com:80 concurrently
 $ anevicon \
---endpoints="192.168.1.41:0&176.34.155.23:80" \
---endpoints="192.168.1.41:0&93.184.216.34:80" \
---endpoints="192.168.1.41:0&216.58.205.238:80"
+--endpoints="192.168.1.41:17333&176.34.155.23:80" \
+--endpoints="192.168.1.41:17333&93.184.216.34:80" \
+--endpoints="192.168.1.41:17333&216.58.205.238:80"
 ```
 
 ### IP address spoofing
@@ -159,7 +159,7 @@ Consider specifying a custom verbosity level from 0 to 5 (inclusively), which is
 
 ```bash
 # Use a custom date-time format and the last verbosity level
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --date-time-format="%F" --verbosity=5
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --date-time-format="%F" --verbosity=5
 ```
 
 Different verbosity levels print different logging types. As you can see in the table below, the zero verbosity level prints nothing, and the last one prints everything. The levels in the middle print logs selectively:
@@ -179,7 +179,7 @@ Note that the command above might not work on your system due to the security re
 
 ```bash
 # Test example.com:80 with the two limit options
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-duration=3min --packets-count=7000
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --test-duration=3min --packets-count=7000
 ```
 
 ### Custom messages
@@ -187,17 +187,17 @@ By default, Anevicon will generate a random packet with a default size (1024). I
 
 ```bash
 # Test example.com:80 with the custom file 'message.txt'
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-file="message.txt"
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --send-file="message.txt"
 
 # Test example.com:80 with the custom text message
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --send-message="How do you do?"
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --send-message="How do you do?"
 ```
 
 Also, you are able to specify one or more random packets with your own lengths using the `--random-packet` option. This example specifies two random-generated packets with the sizes 1454 and 29400:
 
 ```bash
 # Test example.com:80 with two random packets
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --random-packet=1454 --random-packet=29400
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --random-packet=1454 --random-packet=29400
 ```
 
 ### Test intensity
@@ -205,7 +205,7 @@ In some situations, you don't need to transmit the maximum possible amount of pa
 
 ```bash
 # Test example.com:80 sending maximum 500 packets per second
-$ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-intensity=500
+$ anevicon -e="192.168.1.41:17333&93.184.216.34:80" --test-intensity=500
 ```
 
 ### Multiple messages
@@ -219,7 +219,7 @@ $ anevicon -e="192.168.1.41:0&93.184.216.34:80" --test-intensity=500
 #   4) A text message "Goodbye, Albret! You're my best friend.";
 #   5) A random packet of 5355 bytes;
 #   6) A random packet of 2222 bytes.
-$ anevicon --endpoints="192.168.1.41:0&93.184.216.34:80" \
+$ anevicon --endpoints="192.168.1.41:17333&93.184.216.34:80" \
 --send-file="file.txt" \
 --send-message="Hello, Pitty! You're my worst friend." \
 --send-message="Hello, Scott! This is just a test." \
