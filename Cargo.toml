@@ -10,7 +10,7 @@ categories = ["command-line-utilities", "simulation", "network-programming"]
 readme = "README.md"
 license = "GPL-3.0-only"
 edition = "2018"
-exclude = ["DEMO.png", "media/PROCESS.png"]
+exclude = ["DEMO.png"]
 
 [dependencies]
 etherparse = "0.8.2"
