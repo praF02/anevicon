@@ -16,9 +16,6 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-#[macro_use]
-extern crate log;
-
 use std::collections::HashSet;
 use std::convert::TryInto;
 
@@ -37,7 +34,7 @@ fn main() -> Result<(), ()> {
     title();
 
     logging::setup_logging(&config.logging_config);
-    trace!("{:?}", config);
+    log::trace!("{:?}", config);
 
     check_config(&config)?;
     core::run(config)
@@ -47,7 +44,7 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     let mut keys = HashSet::new();
     for next_endpoints in &config.packets_config.endpoints {
         if keys.contains(next_endpoints) {
-            error!(
+            log::error!(
                 "all endpoints must be uniquely specified, but \
                  {cyan}{sender}{reset}&{cyan}{receiver}{reset} has been specified several times!",
                 sender = next_endpoints.sender(),
@@ -67,12 +64,12 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
 
 fn setup_ctrlc_handler() {
     ctrlc::set_handler(move || {
-        info!("cancellation has been received. Exiting the program...");
+        log::info!("cancellation has been received. Exiting the program...");
         std::process::exit(0);
     })
     .expect("Error while setting the Ctrl-C handler");
 
-    trace!("the Ctrl-C handler has been configured.");
+    log::trace!("the Ctrl-C handler has been configured.");
 }
 
 fn title() {

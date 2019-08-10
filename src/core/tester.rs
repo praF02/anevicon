@@ -120,7 +120,7 @@ fn resend_packets(
     limit: Duration,
     test_intensity: NonZeroUsize,
 ) -> ResendPacketsResult {
-    info!(
+    log::info!(
         "trying to resend {cyan}{count}{reset} packets to {receiver} from {sender} that haven't \
          been sent yet...",
         count = datagrams.len(),
@@ -139,7 +139,7 @@ fn resend_packets(
         }
 
         match sender.send_one(summary, packet) {
-            Err(error) => error!(
+            Err(error) => log::error!(
                 "failed to send a packet to {receiver} from {sender} >>> {error}! Retrying the \
                  operation...",
                 receiver = super::current_receiver(),
@@ -168,7 +168,7 @@ fn resend_packets(
         }
     }
 
-    info!(
+    log::info!(
         "{cyan}{count}{reset} packets have been resent to {receiver} from {sender}.",
         count = datagrams.len(),
         receiver = super::current_receiver(),
@@ -187,7 +187,7 @@ enum ResendPacketsResult {
 }
 
 fn display_expired_time() {
-    info!(
+    log::info!(
         "the allotted time has passed for {receiver} receiver and {sender} sender.",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
@@ -195,7 +195,7 @@ fn display_expired_time() {
 }
 
 fn display_packets_sent() {
-    info!(
+    log::info!(
         "all the packets have been sent to {receiver} from {sender}.",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
@@ -203,7 +203,7 @@ fn display_packets_sent() {
 }
 
 fn display_summary(summary: &TestSummary) {
-    info!(
+    log::info!(
         "stats for {endpoints}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage Speed: \
          {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
         endpoints = super::current_endpoints(),
@@ -224,7 +224,7 @@ fn display_summary(summary: &TestSummary) {
 }
 
 fn send_multiple_error<E: Error>(error: E) {
-    error!(
+    log::error!(
         "failed to send packets to {receiver} from {sender} {red}>>>{reset} {error}!",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
