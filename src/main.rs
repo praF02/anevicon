@@ -43,6 +43,16 @@ fn main() -> Result<(), ()> {
 fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     let mut keys = HashSet::new();
     for next_endpoints in &config.packets_config.endpoints {
+        if next_endpoints.sender().port() == 0 {
+            log::warn!(
+                "datagrams with the unspecified source port number might be dropped by a router \
+                 (caused by {cyan}{source_address}{reset})!",
+                source_address = next_endpoints.sender(),
+                cyan = color::Fg(color::Cyan),
+                reset = color::Fg(color::Reset),
+            );
+        }
+
         if keys.contains(next_endpoints) {
             log::error!(
                 "all endpoints must be uniquely specified, but \
