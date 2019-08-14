@@ -378,7 +378,7 @@ mod tests {
     }
 
     #[test]
-    fn constructs_buffer() {
+    fn are_correct_initial_values() {
         let local_addr = UDP_SERVER.local_addr().unwrap();
         let buffer = UdpSender::new(NonZeroUsize::new(354).unwrap(), &local_addr, false)
             .expect("UdpSender::new(...) failed");
@@ -388,7 +388,7 @@ mod tests {
     }
 
     #[test]
-    fn test_packets_buffer() {
+    fn packets_buffer_works_correctly() {
         const SUPPLY_COUNT: usize = 6;
         let local_addr = UDP_SERVER.local_addr().unwrap();
 
@@ -451,7 +451,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_one() {
+    fn transmits_one_datagram_corectly() {
         let local_addr = UDP_SERVER.local_addr().unwrap();
         let mut summary = TestSummary::default();
         let mut sender = UdpSender::new(NonZeroUsize::new(1).unwrap(), &local_addr, false)
