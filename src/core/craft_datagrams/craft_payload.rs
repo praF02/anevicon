@@ -18,6 +18,7 @@
 
 //! This file is used to construct user's payload.
 
+use std::cell::RefCell;
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::fs;
@@ -25,7 +26,8 @@ use std::io;
 use std::num::NonZeroUsize;
 use std::path::Path;
 
-use rand::{thread_rng, RngCore};
+use rand::rngs::ThreadRng;
+use rand::Rng;
 use termion::color;
 
 use crate::config::PayloadConfig;
@@ -57,14 +59,16 @@ pub fn craft_all(config: &PayloadConfig) -> Result<Vec<Vec<u8>>, CraftPayloadErr
 }
 
 fn random_payload(length: NonZeroUsize) -> Vec<u8> {
-    // Don't do unnecessary initialization because we'll fill this buffer with
-    // random values
-    let mut buffer = Vec::with_capacity(length.get());
-    unsafe {
-        buffer.set_len(length.get());
+    thread_local! {
+        static PRNG: RefCell<ThreadRng> = RefCell::new(rand::thread_rng());
     }
 
-    thread_rng().fill_bytes(buffer.as_mut_slice());
+    let mut buffer = Vec::with_capacity(length.get());
+    PRNG.with(|generator| {
+        for _ in 0..length.get() {
+            buffer.push(generator.borrow_mut().gen::<u8>());
+        }
+    });
     buffer
 }
 
