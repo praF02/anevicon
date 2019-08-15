@@ -14,7 +14,6 @@ exclude = ["DEMO.png"]
 
 [dependencies]
 etherparse = "0.8.2"
-ctrlc = "3.1.2"
 time = "0.1.42"
 humantime = "1.2.0"
 termion = "1.5.2"

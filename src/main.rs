@@ -28,8 +28,6 @@ mod core;
 mod logging;
 
 fn main() -> Result<(), ()> {
-    setup_ctrlc_handler();
-
     let config = ArgsConfig::setup();
     title();
 
@@ -70,16 +68,6 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     }
 
     Ok(())
-}
-
-fn setup_ctrlc_handler() {
-    ctrlc::set_handler(move || {
-        log::info!("cancellation has been received. Exiting the program...");
-        std::process::exit(0);
-    })
-    .expect("Error while setting the Ctrl-C handler");
-
-    log::trace!("the Ctrl-C handler has been configured.");
 }
 
 fn title() {
