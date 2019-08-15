@@ -35,7 +35,7 @@ pub enum RunTesterError {
 impl Display for RunTesterError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            RunTesterError::UdpSenderError(err) => err.fmt(fmt),
+            Self::UdpSenderError(err) => err.fmt(fmt),
         }
     }
 }

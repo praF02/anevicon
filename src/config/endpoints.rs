@@ -53,7 +53,7 @@ pub enum ParseEndpointsError {
 impl Display for ParseEndpointsError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            ParseEndpointsError::InvalidFormat => write!(
+            Self::InvalidFormat => write!(
                 fmt,
                 "{green}{italic}--endpoints{reset_color}{reset_style} must be specified as \
                  `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string `<IP>:<PORT>`",
@@ -62,11 +62,11 @@ impl Display for ParseEndpointsError {
                 italic = style::Italic,
                 reset_style = style::Reset,
             ),
-            ParseEndpointsError::DifferentIpVersions => write!(
+            Self::DifferentIpVersions => write!(
                 fmt,
                 "Both a sender and a receiver must be of the same IP version (either IPv4 or IPv6)"
             ),
-            ParseEndpointsError::InvalidAddressFormat(err) => err.fmt(fmt),
+            Self::InvalidAddressFormat(err) => err.fmt(fmt),
         }
     }
 }
@@ -76,15 +76,15 @@ impl Error for ParseEndpointsError {}
 impl Endpoints {
     pub fn sender(&self) -> SocketAddr {
         match self {
-            Endpoints::V4(v4) => SocketAddr::V4(v4.sender),
-            Endpoints::V6(v6) => SocketAddr::V6(v6.sender),
+            Self::V4(v4) => SocketAddr::V4(v4.sender),
+            Self::V6(v6) => SocketAddr::V6(v6.sender),
         }
     }
 
     pub fn receiver(&self) -> SocketAddr {
         match self {
-            Endpoints::V4(v4) => SocketAddr::V4(v4.receiver),
-            Endpoints::V6(v6) => SocketAddr::V6(v6.receiver),
+            Self::V4(v4) => SocketAddr::V4(v4.receiver),
+            Self::V6(v6) => SocketAddr::V6(v6.receiver),
         }
     }
 }

@@ -24,8 +24,8 @@ use crate::config::{Endpoints, EndpointsV4, EndpointsV6};
 
 pub fn ip_udp_packet(endpoints: &Endpoints, payload: &[u8], time_to_live: u8) -> Vec<u8> {
     match endpoints {
-        Endpoints::V4(endpoints_v4) => ipv4_udp_packet(endpoints_v4, payload, time_to_live),
-        Endpoints::V6(endpoints_v6) => ipv6_udp_packet(endpoints_v6, payload, time_to_live),
+        Self::V4(endpoints_v4) => ipv4_udp_packet(endpoints_v4, payload, time_to_live),
+        Self::V6(endpoints_v6) => ipv6_udp_packet(endpoints_v6, payload, time_to_live),
     }
 }
 

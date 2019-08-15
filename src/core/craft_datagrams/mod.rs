@@ -65,7 +65,7 @@ pub enum CraftDatagramsError {
 impl Display for CraftDatagramsError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            CraftDatagramsError::PayloadError(err) => err.fmt(fmt),
+            Self::PayloadError(err) => err.fmt(fmt),
         }
     }
 }

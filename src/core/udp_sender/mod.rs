@@ -67,14 +67,14 @@ pub enum CreateUdpSenderError {
 impl Display for CreateUdpSenderError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            CreateUdpSenderError::CreateSocket(error) => write!(
+            Self::CreateSocket(error) => write!(
                 fmt,
                 "Cannot create a socket {red}>>>{reset} {error}",
                 error = error,
                 red = color::Fg(color::Red),
                 reset = color::Fg(color::Reset),
             ),
-            CreateUdpSenderError::SetSocketOption { error, option } => write!(
+            Self::SetSocketOption { error, option } => write!(
                 fmt,
                 "Cannot set the {cyan}{option}{reset} socket option {red}>>>{reset} {error}",
                 option = option,
@@ -83,7 +83,7 @@ impl Display for CreateUdpSenderError {
                 red = color::Fg(color::Red),
                 reset = color::Fg(color::Reset),
             ),
-            CreateUdpSenderError::ConnectSocket { error, address } => write!(
+            Self::ConnectSocket { error, address } => write!(
                 fmt,
                 "Cannot connect a socket to {cyan}{address}{reset} {red}>>>{reset} {error}",
                 address = address,

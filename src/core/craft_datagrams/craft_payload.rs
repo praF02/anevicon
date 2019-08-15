@@ -91,14 +91,14 @@ pub enum CraftPayloadError {
 impl Display for CraftPayloadError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            CraftPayloadError::ReadFailed(err) => write!(
+            Self::ReadFailed(err) => write!(
                 fmt,
                 "Error while reading the file {red}>>>{reset} {error}",
                 error = err,
                 red = color::Fg(color::Red),
                 reset = color::Fg(color::Reset),
             ),
-            CraftPayloadError::ZeroSize => write!(fmt, "Zero packet size"),
+            Self::ZeroSize => write!(fmt, "Zero packet size"),
         }
     }
 }
