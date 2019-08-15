@@ -13,9 +13,6 @@
   <a href="https://crates.io/crates/anevicon">
     <img src="https://img.shields.io/badge/crates.io-v7.0.4-orange.svg">
   </a>
-  <a href="https://semver.org">
-    <img src="https://img.shields.io/badge/semver-follows-green.svg">
-  </a>
   
   <img src="https://github.com/Gymmasssorla/anevicon/raw/master/DEMO.png"><br>
   
