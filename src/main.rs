@@ -48,8 +48,8 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     for next_endpoints in &config.packets_config.endpoints {
         if next_endpoints.sender().port() == 0 {
             log::warn!(
-                "datagrams with the unspecified source port number might be dropped by a router \
-                 (caused by {cyan}{source_address}{reset})!",
+                "datagrams sent from {cyan}{source_address}{reset} might be dropped by a router \
+                 because of the unspecified source port!",
                 source_address = next_endpoints.sender(),
                 cyan = color::Fg(color::Cyan),
                 reset = color::Fg(color::Reset),

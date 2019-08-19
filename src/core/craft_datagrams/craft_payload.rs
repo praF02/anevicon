@@ -73,7 +73,14 @@ fn random_payload(length: NonZeroUsize) -> Vec<u8> {
 }
 
 fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, CraftPayloadError> {
-    let content = fs::read(path).map_err(CraftPayloadError::ReadFailed)?;
+    let content = fs::read(path.as_ref()).map_err(|err| CraftPayloadError::ReadFailed {
+        source: err,
+        filename: path
+            .as_ref()
+            .to_str()
+            .expect("Failed to get a filename")
+            .to_owned(),
+    })?;
 
     if content.is_empty() {
         return Err(CraftPayloadError::ZeroSize);
@@ -84,18 +91,20 @@ fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, CraftPayloadError> {
 
 #[derive(Debug)]
 pub enum CraftPayloadError {
-    ReadFailed(io::Error),
+    ReadFailed { source: io::Error, filename: String },
     ZeroSize,
 }
 
 impl Display for CraftPayloadError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self {
-            Self::ReadFailed(err) => write!(
+            Self::ReadFailed { source, filename } => write!(
                 fmt,
-                "Error while reading the file {red}>>>{reset} {error}",
-                error = err,
+                "Error while reading {cyan}{filename}{reset} {red}>>>{reset} {error}",
+                filename = filename,
+                error = source,
                 red = color::Fg(color::Red),
+                cyan = color::Fg(color::Cyan),
                 reset = color::Fg(color::Reset),
             ),
             Self::ZeroSize => write!(fmt, "Zero packet size"),
