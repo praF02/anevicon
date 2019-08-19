@@ -2,21 +2,20 @@
 Since Anevicon is a free (in sense of freedom) kind of software, you are always welcome to contribute! Please look through our [code of conduct](https://github.com/Gymmasssorla/anevicon/blob/master/CODE_OF_CONDUCT.md) and the liberal [GPLv3 license](https://github.com/Gymmasssorla/anevicon/blob/master/LICENSE), under which the product is distributed.
 
 ## Environment setup
-To setup your development environment for contribution, you need to [install the Rust toolchain](https://www.rust-lang.org/tools/install) using one convenient command below:
+To setup your development environment for contribution, you need to have a code editor or an IDE (or both). Then you need to [install the Rust toolchain](https://www.rust-lang.org/tools/install) using one convenient command below:
 
 ```bash
-# Setup all the rust programming language toolchain
+# Setup all the Rust programming language toolchain
 curl https://sh.rustup.rs -sSf | sh
 ```
-
-We use the [IntelliJ Rust](https://intellij-rust.github.io/) integrated development environment for comfortable development process. Just install it from the link above (or download [this plugin](https://plugins.jetbrains.com/plugin/8182-rust)) and open the cloned repository using it.
 
 ## Building and testing
 As it should be in correct projects, all the building and testing procedures are performed by [Travis CI](https://travis-ci.com/Gymmasssorla/anevicon). But, of course, you can do it by yourself using the following commands:
 
 ```bash
-$ cargo build --verbose --all
-$ cargo test --verbose --all
+$ cargo clippy --all
+$ cargo test --all
+$ cargo run -- <YOUR ARGUMENTS>
 ```
 
 ## Where to go?
