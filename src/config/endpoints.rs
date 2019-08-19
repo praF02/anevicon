@@ -56,7 +56,7 @@ impl Display for ParseEndpointsError {
             Self::InvalidFormat => write!(
                 fmt,
                 "{green}{italic}--endpoints{reset_color}{reset_style} must be specified as \
-                 `<SENDER-ADDRESS>&<RECEIVER-ADDRESS>`, where address is a string `<IP>:<PORT>`",
+                 <SENDER-ADDRESS>&<RECEIVER-ADDRESS>, where address is defined as <IP>:<PORT>",
                 green = color::Fg(color::Green),
                 reset_color = color::Fg(color::Reset),
                 italic = style::Italic,

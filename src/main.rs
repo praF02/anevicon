@@ -27,15 +27,20 @@ mod config;
 mod core;
 mod logging;
 
-fn main() -> Result<(), ()> {
+fn main() {
     let config = ArgsConfig::setup();
     title();
 
     logging::setup_logging(&config.logging_config);
     log::trace!("{:?}", config);
 
-    check_config(&config)?;
-    core::run(config)
+    if check_config(&config).is_err() {
+        std::process::exit(libc::EXIT_FAILURE);
+    }
+
+    if core::run(config).is_err() {
+        std::process::exit(libc::EXIT_FAILURE);
+    }
 }
 
 fn check_config(config: &ArgsConfig) -> Result<(), ()> {
