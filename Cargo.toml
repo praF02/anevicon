@@ -21,7 +21,6 @@ rand = "0.6.5"
 structopt = "0.2.16"
 fern = "0.5.8"
 log = "0.4.6"
-ipnetwork = "0.14.0"
 libc = "0.2.60"
 
 [dev-dependencies]
