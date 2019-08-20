@@ -128,13 +128,13 @@ impl<'a> UdpSender<'a> {
             libc::SO_BROADCAST,
             if broadcast { &1 } else { &0 },
         )
-        .map_err(|err| CreateUdpSenderError::SetSocketOption {
-            error: err,
+        .map_err(|error| CreateUdpSenderError::SetSocketOption {
+            error,
             option: String::from("SO_BROADCAST"),
         })?;
 
-        connect_socket_safe(fd, dest).map_err(|err| CreateUdpSenderError::ConnectSocket {
-            error: err,
+        connect_socket_safe(fd, dest).map_err(|error| CreateUdpSenderError::ConnectSocket {
+            error,
             address: *dest,
         })?;
 
@@ -155,7 +155,7 @@ impl<'a> UdpSender<'a> {
         summary: &mut TestSummary,
         packet: &'a [u8],
     ) -> io::Result<SupplyResult> {
-        let res = if self.buffer.len() == self.buffer.capacity() {
+        let result = if self.buffer.len() == self.buffer.capacity() {
             self.flush(summary)?;
             SupplyResult::Flushed
         } else {
@@ -166,7 +166,7 @@ impl<'a> UdpSender<'a> {
             transmitted: 0,
             slice: IoSlice::new(packet),
         });
-        Ok(res)
+        Ok(result)
     }
 
     /// Sends the a specified `packet` immediately (without buffering),
@@ -185,10 +185,10 @@ impl<'a> UdpSender<'a> {
                 summary.update(SummaryPortion::new(packet.len(), 0, 1, 0));
                 Err(io::Error::last_os_error())
             }
-            res => {
-                let res = res as usize;
-                summary.update(SummaryPortion::new(packet.len(), res, 1, 1));
-                Ok(res)
+            result => {
+                let result = result as usize;
+                summary.update(SummaryPortion::new(packet.len(), result, 1, 1));
+                Ok(result)
             }
         }
     }

@@ -34,7 +34,7 @@ use super::DataPortion;
 /// # References
 /// For more information please read https://linux.die.net/man/2/sendmmsg.
 pub fn sendmmsg(fd: libc::c_int, packets: &mut [DataPortion]) -> io::Result<usize> {
-    let mut messages: Vec<libc::mmsghdr> = prepare_messages(packets);
+    let mut messages: Vec<libc::mmsghdr> = prepare_mmsghdr_vector(packets);
 
     unsafe {
         match libc::sendmmsg(
@@ -59,7 +59,7 @@ pub fn sendmmsg(fd: libc::c_int, packets: &mut [DataPortion]) -> io::Result<usiz
 
 /// Converts an mutable slice of the `DataPortion` structure to a vector of
 /// `mmsghdr` that is able to be transmitted by `libc::sendmmsg`.
-fn prepare_messages(packets: &mut [DataPortion]) -> Vec<libc::mmsghdr> {
+fn prepare_mmsghdr_vector(packets: &mut [DataPortion]) -> Vec<libc::mmsghdr> {
     packets
         .iter_mut()
         .map(|packet| libc::mmsghdr {
@@ -132,7 +132,7 @@ mod test {
             },
         ];
 
-        let messages = prepare_messages(packets);
+        let messages = prepare_mmsghdr_vector(packets);
 
         for (headers, packet) in messages.iter().zip(packets.iter()) {
             assert_eq!(headers.msg_len, 0);
