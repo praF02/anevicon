@@ -249,7 +249,7 @@ fn set_socket_option_safe<T>(
             mem::size_of_val(value).try_into().unwrap(),
         )
     } {
-        -1 => Err(io::Error::last_os_error().into()),
+        -1 => Err(io::Error::last_os_error()),
         _ => Ok(()),
     }
 }
@@ -303,7 +303,7 @@ fn connect_socket_safe(fd: RawFd, dest: &SocketAddr) -> io::Result<()> {
     };
 
     match ret {
-        -1 => Err(io::Error::last_os_error().into()),
+        -1 => Err(io::Error::last_os_error()),
         _ => Ok(()),
     }
 }

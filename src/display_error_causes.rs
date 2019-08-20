@@ -30,8 +30,8 @@ pub fn display_error_causes(error: &failure::Error) -> String {
     let mut result = String::new();
 
     let causes = error.iter_chain().collect::<Vec<&dyn failure::Fail>>();
-    for i in 0..(causes.len() - 1) {
-        write!(result, "    Caused by: {}\n", causes[i]).unwrap();
+    for cause in causes.iter().take(causes.len() - 1) {
+        writeln!(result, "    Caused by: {}", cause).unwrap();
     }
     write!(result, "    Caused by: {}", causes[causes.len() - 1]).unwrap();
 
