@@ -25,6 +25,7 @@ use termion::color;
 use crate::config::{ArgsConfig, Endpoints};
 use crate::core::statistics::TestSummary;
 use crate::core::udp_sender::{SupplyResult, UdpSender};
+use crate::errors_utils;
 
 pub fn run_tester(
     config: Arc<ArgsConfig>,
@@ -122,7 +123,7 @@ fn send_multiple_error(error: &failure::Error) {
         "failed to send packets to {receiver} from {sender}!\n{causes}",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
-        causes = crate::display_error_causes(&error),
+        causes = errors_utils::display_error_causes(&error),
     );
 }
 

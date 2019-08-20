@@ -25,11 +25,10 @@ use std::convert::TryInto;
 use termion::{color, style, terminal_size};
 
 use config::ArgsConfig;
-use display_error_causes::display_error_causes;
 
 mod config;
 mod core;
-mod display_error_causes;
+mod errors_utils;
 mod logging;
 
 fn main() {
