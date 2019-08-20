@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v7.0.8] - 2019-08-21
+### Fixed
+ - Immediately exit a testing thread if a user has specified too big message (`EMSGSIZE` has been returned from `sendmmsg`) (https://github.com/Gymmasssorla/anevicon/commit/46deeacc094b81c9e2b6c7aeddb1936f74d16ce3).
+### Added
+ - Create `CHANGELOG.md` (https://github.com/Gymmasssorla/anevicon/commit/3416e6966fb2c371eeaaa92ca084096c84e5f209).
+ 
 ## [v7.0.7] - 2019-08-21
 ### Changed
  - Update `CONTRIBUTING.md` (https://github.com/Gymmasssorla/anevicon/commit/09036c1e7c4d9b09d8c5d374bb30d33aad4508cf).
