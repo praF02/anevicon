@@ -27,6 +27,8 @@ use crate::core::statistics::TestSummary;
 use crate::core::udp_sender::{SupplyResult, UdpSender};
 use crate::errors_utils;
 
+const MESSAGE_TOO_LONG_ERRNO_CODE: i32 = 90;
+
 pub fn run_tester(
     config: Arc<ArgsConfig>,
     datagrams: Vec<Vec<u8>>,
@@ -46,7 +48,17 @@ pub fn run_tester(
     loop {
         for (datagram, _) in datagrams.iter().cycle().zip(0..packets_to_send) {
             match sender.supply(&mut summary, datagram) {
-                Err(err) => send_multiple_error(&err),
+                Err(err) => {
+                    // If EMSGSIZE has occurred, then exit the current tester because next calls to
+                    // the OS will return the same error
+                    if err.raw_os_error().expect("Cannot get an errno's code")
+                        == MESSAGE_TOO_LONG_ERRNO_CODE
+                    {
+                        return Err(err.into());
+                    }
+
+                    send_multiple_error(&err.into());
+                }
                 Ok(res) => {
                     if res == SupplyResult::Flushed {
                         display_summary(&summary);

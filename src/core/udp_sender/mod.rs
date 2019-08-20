@@ -154,7 +154,7 @@ impl<'a> UdpSender<'a> {
         &mut self,
         summary: &mut TestSummary,
         packet: &'a [u8],
-    ) -> Fallible<SupplyResult> {
+    ) -> io::Result<SupplyResult> {
         let res = if self.buffer.len() == self.buffer.capacity() {
             self.flush(summary)?;
             SupplyResult::Flushed
