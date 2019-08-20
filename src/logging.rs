@@ -37,15 +37,16 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         .format(move |out, message, record| {
             out.finish(format_args!(
                 "[{underline}{level_color}{level}{reset_color}{reset_style}] \
-                 [{magenta}{time}{reset_color}]: {message}",
-                level = record.level(),
-                time = time::strftime(&dt_format, &time::now()).unwrap(),
-                message = message,
-                level_color = associated_color(record.level()),
-                magenta = color::Fg(color::Magenta),
-                reset_color = color::Fg(color::Reset),
+                 [{magenta}{time}{reset_color}]: {message_color}{message}{reset_color}",
                 underline = style::Underline,
+                level_color = associated_color_level(record.level()),
+                level = record.level(),
+                reset_color = color::Fg(color::Reset),
                 reset_style = style::Reset,
+                magenta = color::Fg(color::Magenta),
+                time = time::strftime(&dt_format, &time::now()).unwrap(),
+                message_color = associated_color_message(record.level()),
+                message = message,
             ));
         })
         // If the debug mode is on, then allow printing all debugging messages and
@@ -73,13 +74,23 @@ pub fn setup_logging(logging_config: &LoggingConfig) {
         .expect("Applying the fern::Dispatch has failed");
 }
 
-fn associated_color(level: Level) -> &'static str {
+fn associated_color_level(level: Level) -> &'static str {
     match level {
         Level::Info => color::Green.fg_str(),
         Level::Warn => color::Yellow.fg_str(),
         Level::Error => color::Red.fg_str(),
         Level::Debug => color::Magenta.fg_str(),
         Level::Trace => color::Cyan.fg_str(),
+    }
+}
+
+fn associated_color_message(level: Level) -> &'static str {
+    match level {
+        Level::Info => "",
+        Level::Warn => color::Yellow.fg_str(),
+        Level::Error => color::Red.fg_str(),
+        Level::Debug => "",
+        Level::Trace => "",
     }
 }
 

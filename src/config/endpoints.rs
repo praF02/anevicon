@@ -18,12 +18,8 @@
 
 //! The structures representing user-specified communication endpoints.
 
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
 use std::net::{AddrParseError, SocketAddr, SocketAddrV4, SocketAddrV6};
 use std::str::FromStr;
-
-use termion::{color, style};
 
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 pub struct EndpointsV4 {
@@ -43,35 +39,23 @@ pub enum Endpoints {
     V6(EndpointsV6),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Fail)]
 pub enum ParseEndpointsError {
+    #[fail(
+        display = "Endpoints must be specified as <SENDER-ADDRESS>&<RECEIVER-ADDRESS>, where \
+                   address is defined as <IP>:<PORT>"
+    )]
     InvalidFormat,
-    InvalidAddressFormat(AddrParseError),
+
+    #[fail(display = "{}", _0)]
+    InvalidAddressFormat(#[fail(cause)] AddrParseError),
+
+    #[fail(
+        display = "Endpoints must be specified as <SENDER-ADDRESS>&<RECEIVER-ADDRESS>, where \
+                   address is defined as <IP>:<PORT>"
+    )]
     DifferentIpVersions,
 }
-
-impl Display for ParseEndpointsError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            Self::InvalidFormat => write!(
-                fmt,
-                "{green}{italic}--endpoints{reset_color}{reset_style} must be specified as \
-                 <SENDER-ADDRESS>&<RECEIVER-ADDRESS>, where address is defined as <IP>:<PORT>",
-                green = color::Fg(color::Green),
-                reset_color = color::Fg(color::Reset),
-                italic = style::Italic,
-                reset_style = style::Reset,
-            ),
-            Self::DifferentIpVersions => write!(
-                fmt,
-                "Both a sender and a receiver must be of the same IP version (either IPv4 or IPv6)"
-            ),
-            Self::InvalidAddressFormat(err) => err.fmt(fmt),
-        }
-    }
-}
-
-impl Error for ParseEndpointsError {}
 
 impl Endpoints {
     pub fn sender(&self) -> SocketAddr {

@@ -23,10 +23,10 @@ use std::sync::Arc;
 use std::thread;
 use std::thread::JoinHandle;
 
+use failure::Fallible;
 use termion::color;
 
 use crate::config::{ArgsConfig, Endpoints};
-use crate::core::tester::RunTesterError;
 
 mod craft_datagrams;
 mod statistics;
@@ -34,35 +34,11 @@ mod tester;
 mod udp_sender;
 
 thread_local! {
-    /// A colored sender name for this thread.
-    static SENDER: RefCell<String> = RefCell::new(
-        format!("{cyan}Undefined{reset}", cyan = color::Fg(color::Cyan),
-            reset = color::Fg(color::Reset)));
+    /// A sender for this thread.
+    static SENDER: RefCell<String> = RefCell::new(String::from("Undefined"));
 
-    /// A colored receiver name for this thread.
-    static RECEIVER: RefCell<String> = RefCell::new(
-        format!("{cyan}Undefined{reset}", cyan = color::Fg(color::Cyan),
-            reset = color::Fg(color::Reset)));
-}
-
-fn init_endpoints(value: Endpoints) {
-    SENDER.with(|sender| {
-        *sender.borrow_mut() = format!(
-            "{cyan}{sender}{reset}",
-            sender = value.sender(),
-            cyan = color::Fg(color::Cyan),
-            reset = color::Fg(color::Reset),
-        )
-    });
-
-    RECEIVER.with(|receiver| {
-        *receiver.borrow_mut() = format!(
-            "{cyan}{receiver}{reset}",
-            receiver = value.receiver(),
-            cyan = color::Fg(color::Cyan),
-            reset = color::Fg(color::Reset),
-        )
-    });
+    /// A receiver for this thread.
+    static RECEIVER: RefCell<String> = RefCell::new(String::from("Undefined"));
 }
 
 fn current_sender() -> String {
@@ -73,7 +49,15 @@ fn current_receiver() -> String {
     RECEIVER.with(|string| string.borrow().clone())
 }
 
-fn current_endpoints() -> String {
+fn init_endpoints(value: Endpoints) {
+    SENDER.with(|sender| *sender.borrow_mut() = format!("{sender}", sender = value.sender(),));
+
+    RECEIVER.with(|receiver| {
+        *receiver.borrow_mut() = format!("{receiver}", receiver = value.receiver(),)
+    });
+}
+
+fn current_endpoints_colored() -> String {
     format!(
         "{sender} {yellow}~~~>{reset_color} {receiver}",
         sender = current_sender(),
@@ -89,10 +73,8 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
     let datagrams = match craft_datagrams::craft_all(&config.packets_config) {
         Err(err) => {
             log::error!(
-                "failed to construct datagrams {red}>>>{reset} {error}!",
-                error = err,
-                red = color::Fg(color::Red),
-                reset = color::Fg(color::Reset),
+                "failed to construct datagrams!\n{causes}",
+                causes = crate::display_error_causes(&err),
             );
             return Err(());
         }
@@ -102,7 +84,8 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
     wait(&config);
 
     let config = Arc::new(config);
-    let mut workers = Vec::with_capacity(config.packets_config.endpoints.len());
+    let mut workers =
+        Vec::<JoinHandle<Fallible<()>>>::with_capacity(config.packets_config.endpoints.len());
 
     for (&endpoints, datagrams) in config
         .packets_config
@@ -121,13 +104,11 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
 
     workers
         .into_iter()
-        .for_each(|worker: JoinHandle<Result<_, RunTesterError>>| {
+        .for_each(|worker: JoinHandle<Result<_, failure::Error>>| {
             if let Err(err) = worker.join().expect("A child thread has panicked") {
                 log::error!(
-                    "a tester exited unexpectedly {red}>>>{reset} {error}!",
-                    error = err,
-                    red = color::Fg(color::Red),
-                    reset = color::Fg(color::Reset),
+                    "a tester exited unexpectedly!\n{causes}",
+                    causes = crate::display_error_causes(&err),
                 );
             }
         });
@@ -136,14 +117,11 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
 
 fn wait(config: &ArgsConfig) {
     log::warn!(
-        "waiting {cyan}{time}{reset} and then starting to execute the tests until \
-         {cyan}{packets}{reset} packets will be sent or {cyan}{duration}{reset} duration will be \
-         passed...",
+        "waiting {time} and then starting to execute the tests until {packets} packets will be \
+         sent or {duration} duration will be passed...",
         time = humantime::format_duration(config.wait),
         packets = config.exit_config.packets_count,
-        duration = humantime::format_duration(config.exit_config.test_duration),
-        cyan = color::Fg(color::Cyan),
-        reset = color::Fg(color::Reset),
+        duration = humantime::format_duration(config.exit_config.test_duration)
     );
     thread::sleep(config.wait);
 }

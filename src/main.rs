@@ -16,15 +16,20 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
+#[macro_use]
+extern crate failure_derive;
+
 use std::collections::HashSet;
 use std::convert::TryInto;
 
 use termion::{color, style, terminal_size};
 
 use config::ArgsConfig;
+use display_error_causes::display_error_causes;
 
 mod config;
 mod core;
+mod display_error_causes;
 mod logging;
 
 fn main() {
@@ -48,22 +53,18 @@ fn check_config(config: &ArgsConfig) -> Result<(), ()> {
     for next_endpoints in &config.packets_config.endpoints {
         if next_endpoints.sender().port() == 0 {
             log::warn!(
-                "datagrams sent from {cyan}{source_address}{reset} might be dropped by a router \
-                 because of the unspecified source port!",
+                "datagrams sent from {source_address} might be dropped by a router because of the \
+                 unspecified source port!",
                 source_address = next_endpoints.sender(),
-                cyan = color::Fg(color::Cyan),
-                reset = color::Fg(color::Reset),
             );
         }
 
         if keys.contains(next_endpoints) {
             log::error!(
-                "all endpoints must be uniquely specified, but \
-                 {cyan}{sender}{reset}&{cyan}{receiver}{reset} has been specified several times!",
+                "all endpoints must be uniquely specified, but {sender}&{receiver} has been \
+                 specified several times!",
                 sender = next_endpoints.sender(),
                 receiver = next_endpoints.receiver(),
-                cyan = color::Fg(color::Cyan),
-                reset = color::Fg(color::Reset),
             );
 
             return Err(());

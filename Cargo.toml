@@ -13,14 +13,16 @@ edition = "2018"
 exclude = ["DEMO.png"]
 
 [dependencies]
+fern = "0.5.8"
+structopt = "0.2.16"
 rand = "0.6.5"
 etherparse = "0.8.2"
 time = "0.1.42"
 humantime = "1.2.0"
-fern = "0.5.8"
-structopt = "0.2.16"
 libc = "0.2.60"
+failure = "0.1.5"
 log = "0.4.6"
+failure_derive = "0.1.5"
 termion = "1.5.2"
 
 [dev-dependencies]

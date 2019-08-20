@@ -16,45 +16,28 @@
 //
 // For more information see <https://github.com/Gymmasssorla/anevicon>.
 
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 
+use failure::Fallible;
 use termion::color;
 
 use crate::config::{ArgsConfig, Endpoints};
 use crate::core::statistics::TestSummary;
-use crate::core::udp_sender::{CreateUdpSenderError, SupplyResult, UdpSender};
-
-#[derive(Debug)]
-pub enum RunTesterError {
-    UdpSenderError(CreateUdpSenderError),
-}
-
-impl Display for RunTesterError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            Self::UdpSenderError(err) => err.fmt(fmt),
-        }
-    }
-}
-
-impl Error for RunTesterError {}
+use crate::core::udp_sender::{SupplyResult, UdpSender};
 
 pub fn run_tester(
     config: Arc<ArgsConfig>,
     datagrams: Vec<Vec<u8>>,
     endpoints: Endpoints,
-) -> Result<TestSummary, RunTesterError> {
+) -> Fallible<TestSummary> {
     let mut summary = TestSummary::default();
     let current_receiver = endpoints.receiver();
     let mut sender = UdpSender::new(
         config.test_intensity,
         &current_receiver,
         config.sockets_config.broadcast,
-    )
-    .map_err(RunTesterError::UdpSenderError)?;
+    )?;
 
     // Run the main cycle for the current worker, and exit if the allotted time
     // expires or all required packets will be sent (whichever happens first)
@@ -62,7 +45,7 @@ pub fn run_tester(
     loop {
         for (datagram, _) in datagrams.iter().cycle().zip(0..packets_to_send) {
             match sender.supply(&mut summary, datagram) {
-                Err(err) => send_multiple_error(err),
+                Err(err) => send_multiple_error(&err),
                 Ok(res) => {
                     if res == SupplyResult::Flushed {
                         display_summary(&summary);
@@ -77,7 +60,7 @@ pub fn run_tester(
         }
 
         if let Err(err) = sender.flush(&mut summary) {
-            send_multiple_error(err);
+            send_multiple_error(&err.into());
         }
 
         // We might have a situation when not all the required packets are sent, so
@@ -117,7 +100,7 @@ fn display_summary(summary: &TestSummary) {
     log::info!(
         "stats for {endpoints}:\n\tData Sent:     {cyan}{data_sent}{reset}\n\tAverage Speed: \
          {cyan}{average_speed}{reset}\n\tTime Passed:   {cyan}{time_passed}{reset}",
-        endpoints = super::current_endpoints(),
+        endpoints = super::current_endpoints_colored(),
         data_sent = format!(
             "{packets} packets ({megabytes} MB)",
             packets = summary.packets_sent(),
@@ -134,14 +117,12 @@ fn display_summary(summary: &TestSummary) {
     );
 }
 
-fn send_multiple_error<E: Error>(error: E) {
+fn send_multiple_error(error: &failure::Error) {
     log::error!(
-        "failed to send packets to {receiver} from {sender} {red}>>>{reset} {error}!",
+        "failed to send packets to {receiver} from {sender}!\n{causes}",
         receiver = super::current_receiver(),
         sender = super::current_sender(),
-        error = error,
-        red = color::Fg(color::Red),
-        reset = color::Fg(color::Reset),
+        causes = crate::display_error_causes(&error),
     );
 }
 

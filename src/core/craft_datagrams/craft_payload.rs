@@ -19,16 +19,14 @@
 //! This file is used to construct user's payload.
 
 use std::cell::RefCell;
-use std::error::Error;
-use std::fmt::{self, Display, Formatter};
 use std::fs;
 use std::io;
 use std::num::NonZeroUsize;
 use std::path::Path;
 
+use failure::Fallible;
 use rand::rngs::ThreadRng;
 use rand::Rng;
-use termion::color;
 
 use crate::config::PayloadConfig;
 
@@ -38,7 +36,7 @@ use crate::config::PayloadConfig;
 /// Note that this function constructs **ONLY** payload without
 /// protocol-specific headers and etc. Just payload that a user has specified by
 /// `--send-file`, `--send-message`, `--random-packet`.
-pub fn craft_all(config: &PayloadConfig) -> Result<Vec<Vec<u8>>, CraftPayloadError> {
+pub fn craft_all(config: &PayloadConfig) -> Fallible<Vec<Vec<u8>>> {
     let mut packets = Vec::with_capacity(
         config.send_messages.len() + config.send_files.len() + config.random_packets.len(),
     );
@@ -72,7 +70,7 @@ fn random_payload(length: NonZeroUsize) -> Vec<u8> {
     buffer
 }
 
-fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, CraftPayloadError> {
+fn read_payload<P: AsRef<Path>>(path: P) -> Fallible<Vec<u8>> {
     let content = fs::read(path.as_ref()).map_err(|err| CraftPayloadError::ReadFailed {
         source: err,
         filename: path
@@ -83,36 +81,24 @@ fn read_payload<P: AsRef<Path>>(path: P) -> Result<Vec<u8>, CraftPayloadError> {
     })?;
 
     if content.is_empty() {
-        return Err(CraftPayloadError::ZeroSize);
+        return Err(CraftPayloadError::ZeroSize.into());
     }
 
     Ok(content)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Fail)]
 pub enum CraftPayloadError {
-    ReadFailed { source: io::Error, filename: String },
+    #[fail(display = "Each packet must have content")]
     ZeroSize,
-}
 
-impl Display for CraftPayloadError {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self {
-            Self::ReadFailed { source, filename } => write!(
-                fmt,
-                "Error while reading {cyan}{filename}{reset} {red}>>>{reset} {error}",
-                filename = filename,
-                error = source,
-                red = color::Fg(color::Red),
-                cyan = color::Fg(color::Cyan),
-                reset = color::Fg(color::Reset),
-            ),
-            Self::ZeroSize => write!(fmt, "Zero packet size"),
-        }
-    }
+    #[fail(display = "Error while reading the file")]
+    ReadFailed {
+        #[fail(cause)]
+        source: io::Error,
+        filename: String,
+    },
 }
-
-impl Error for CraftPayloadError {}
 
 #[cfg(test)]
 mod tests {
@@ -146,12 +132,14 @@ mod tests {
 
     /// Check that the function must return the 'ZeroSize' error.
     #[test]
-    #[should_panic(expected = "Zero packet size")]
     fn test_read_zero_file() {
-        if let Err(CraftPayloadError::ZeroSize) = read_payload(ZERO_FILE.to_str().unwrap()) {
-            panic!("Zero packet size");
-        } else {
-            panic!("Must return the 'ZeroSize' error");
+        let error = read_payload(ZERO_FILE.to_str().unwrap())
+            .unwrap_err()
+            .downcast::<CraftPayloadError>()
+            .expect("Returned non-CraftPayloadError");
+        match error {
+            CraftPayloadError::ZeroSize => (),
+            _ => panic!("Must return CraftPayloadError::ZeroSize"),
         }
     }
 
