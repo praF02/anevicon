@@ -72,10 +72,10 @@ fn current_endpoints_colored() -> String {
 /// `Result<(), ()>` that needs to be returned out of `main()`.
 pub fn run(config: ArgsConfig) -> Result<(), ()> {
     let datagrams = match craft_datagrams::craft_all(&config.packets_config) {
-        Err(err) => {
+        Err(error) => {
             log::error!(
                 "failed to construct datagrams!\n{causes}",
-                causes = helpers::format_failure(&err),
+                causes = helpers::format_failure(&error),
             );
             return Err(());
         }
@@ -106,10 +106,10 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
     workers
         .into_iter()
         .for_each(|worker: JoinHandle<Result<_, failure::Error>>| {
-            if let Err(err) = worker.join().expect("A child thread has panicked") {
+            if let Err(error) = worker.join().expect("A child thread has panicked") {
                 log::error!(
                     "a tester exited unexpectedly!\n{causes}",
-                    causes = helpers::format_failure(&err),
+                    causes = helpers::format_failure(&error),
                 );
             }
         });

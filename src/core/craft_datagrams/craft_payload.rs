@@ -71,8 +71,8 @@ fn random_payload(length: NonZeroUsize) -> Vec<u8> {
 }
 
 fn read_payload<P: AsRef<Path>>(path: P) -> Fallible<Vec<u8>> {
-    let content = fs::read(path.as_ref()).map_err(|err| CraftPayloadError::ReadFailed {
-        source: err,
+    let content = fs::read(path.as_ref()).map_err(|error| CraftPayloadError::ReadFailed {
+        source: error,
         filename: path
             .as_ref()
             .to_str()

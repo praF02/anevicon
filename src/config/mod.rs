@@ -242,7 +242,7 @@ fn validate_date_time_format(format: String) -> Result<(), String> {
     // If this call succeeds, `format` is correct
     time::strftime(&format, &time::now())
         .map(|_| ())
-        .map_err(|err| err.to_string())
+        .map_err(|error| error.to_string())
 }
 
 #[cfg(test)]

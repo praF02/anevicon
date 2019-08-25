@@ -117,8 +117,8 @@ impl<'a> UdpSender<'a> {
                 tv_usec: 0,
             },
         )
-        .map_err(|err| CreateUdpSenderError::SetSocketOption {
-            error: err,
+        .map_err(|error| CreateUdpSenderError::SetSocketOption {
+            error: error,
             option: String::from("SO_SNDTIMEO"),
         })?;
 
