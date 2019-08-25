@@ -89,8 +89,8 @@ fn associated_color_message(level: Level) -> &'static str {
         Level::Info => "",
         Level::Warn => color::Yellow.fg_str(),
         Level::Error => color::Red.fg_str(),
-        Level::Debug => "",
-        Level::Trace => "",
+        Level::Debug => color::Magenta.fg_str(),
+        Level::Trace => color::Cyan.fg_str(),
     }
 }
 
