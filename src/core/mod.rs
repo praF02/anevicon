@@ -27,7 +27,7 @@ use failure::Fallible;
 use termion::color;
 
 use crate::config::{ArgsConfig, Endpoints};
-use crate::errors_utils;
+use crate::helpers;
 
 mod craft_datagrams;
 mod statistics;
@@ -75,7 +75,7 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
         Err(err) => {
             log::error!(
                 "failed to construct datagrams!\n{causes}",
-                causes = errors_utils::display_error_causes(&err),
+                causes = helpers::format_failure(&err),
             );
             return Err(());
         }
@@ -109,7 +109,7 @@ pub fn run(config: ArgsConfig) -> Result<(), ()> {
             if let Err(err) = worker.join().expect("A child thread has panicked") {
                 log::error!(
                     "a tester exited unexpectedly!\n{causes}",
-                    causes = errors_utils::display_error_causes(&err),
+                    causes = helpers::format_failure(&err),
                 );
             }
         });

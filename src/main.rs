@@ -28,7 +28,7 @@ use config::ArgsConfig;
 
 mod config;
 mod core;
-mod errors_utils;
+mod helpers;
 mod logging;
 
 fn main() {

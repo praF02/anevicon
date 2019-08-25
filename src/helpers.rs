@@ -18,15 +18,15 @@
 
 use std::fmt::Write;
 
-/// Formats all error causes into `String` (including the error itself). Always
-/// use this function to display `failure::Error`. For example:
+/// Formats an error and all its causes into `String` (including the error
+/// itself). Always use this function to display `failure::Error`. For example:
 ///
 /// ```
 /// [ERROR] [23:21:00]: a tester exited unexpectedly!
 ///     Caused by: Failed to create a socket
 ///     Caused by: Operation not permitted (os error 1)
 /// ```
-pub fn display_error_causes(error: &failure::Error) -> String {
+pub fn format_failure(error: &failure::Error) -> String {
     let mut result = String::new();
 
     let causes = error.iter_chain().collect::<Vec<&dyn failure::Fail>>();
