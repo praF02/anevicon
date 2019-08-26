@@ -147,10 +147,7 @@ impl<'a> UdpSender<'a> {
             },
         });
 
-        log::trace!(
-            "a new UdpSender has been successfully created (fd = {fd}).",
-            fd = fd
-        );
+        log::trace!("a new UdpSender::new has succeed (fd = {fd}).", fd = fd);
         result
     }
 
@@ -189,11 +186,18 @@ impl<'a> UdpSender<'a> {
         } {
             -1 => {
                 summary.update(SummaryPortion::new(packet.len(), 0, 1, 0));
-                Err(io::Error::last_os_error())
+                let error = io::Error::last_os_error();
+                log::trace!(
+                    "UdpSender::send_one has failed (fd = {fd}, error = {error}).",
+                    fd = self.fd,
+                    error = error
+                );
+                Err(error)
             }
             result => {
                 let result = result as usize;
                 summary.update(SummaryPortion::new(packet.len(), result, 1, 1));
+                log::trace!("UdpSender::send_one has succeed (fd = {fd}).", fd = self.fd);
                 Ok(result)
             }
         }
@@ -226,10 +230,7 @@ impl<'a> UdpSender<'a> {
             }
         }
 
-        log::trace!(
-            "UdpSender::flush has been finished successfully (fd = {fd}).",
-            fd = self.fd
-        );
+        log::trace!("UdpSender::flush has succeed (fd = {fd}).", fd = self.fd);
         Ok(())
     }
 }
