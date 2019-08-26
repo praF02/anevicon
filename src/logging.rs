@@ -79,8 +79,8 @@ fn associated_color_level(level: Level) -> &'static str {
         Level::Info => color::Green.fg_str(),
         Level::Warn => color::Yellow.fg_str(),
         Level::Error => color::Red.fg_str(),
-        Level::Debug => color::Magenta.fg_str(),
-        Level::Trace => color::Cyan.fg_str(),
+        Level::Debug => color::Cyan.fg_str(),
+        Level::Trace => color::Magenta.fg_str(),
     }
 }
 
@@ -89,8 +89,8 @@ fn associated_color_message(level: Level) -> &'static str {
         Level::Info => "",
         Level::Warn => color::Yellow.fg_str(),
         Level::Error => color::Red.fg_str(),
-        Level::Debug => color::Magenta.fg_str(),
-        Level::Trace => color::Cyan.fg_str(),
+        Level::Debug => color::Cyan.fg_str(),
+        Level::Trace => color::Magenta.fg_str(),
     }
 }
 
