@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v7.0.9] - 2019-08-26
+### Changed
+ - Rename `src/errors_utils.rs` to `src/helpers.rs` (https://github.com/Gymmasssorla/anevicon/commit/a9d4d2eef6e80b8a823aadadc58afd9c7bfb483b).
+ - Print magenta traces and cyan debugging information (https://github.com/Gymmasssorla/anevicon/commit/774445cadc1579d834154726fc37af13bd725cc4).
+ - Rename `src/core/udp_sender/sendmmsg.rs` to `src/core/udp_sender/sendmmsg_wrapper.rs` (https://github.com/Gymmasssorla/anevicon/commit/3157c00f1ce5582562eec5fccf1bc1c0c356df5f).
+ ### Added
+ - Trace `UdpSender::flush`, `UdpSender::send_one`, `UdpSender::new` (https://github.com/Gymmasssorla/anevicon/commit/073db8dc2ac6f60aeb4d9b85c718380933c231a9, https://github.com/Gymmasssorla/anevicon/commit/59bfe345d6da678c14da2e2b9c15e5c98a84d166, https://github.com/Gymmasssorla/anevicon/commit/5d43e46bb3c2440b7cce851335784e3ac05a837d).
+
+
 ## [v7.0.8] - 2019-08-21
 ### Fixed
  - Immediately exit a testing thread if a user has specified too big message (`EMSGSIZE` has been returned from `sendmmsg`) (https://github.com/Gymmasssorla/anevicon/commit/46deeacc094b81c9e2b6c7aeddb1936f74d16ce3).
