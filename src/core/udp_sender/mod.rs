@@ -226,6 +226,10 @@ impl<'a> UdpSender<'a> {
             }
         }
 
+        log::trace!(
+            "UdpSender::flush has been finished successfully (fd = {fd}).",
+            fd = self.fd
+        );
         Ok(())
     }
 }
