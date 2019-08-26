@@ -29,11 +29,9 @@ use std::{io, mem, thread};
 
 use failure::Fallible;
 
-use sendmmsg::sendmmsg;
-
 use crate::core::statistics::{SummaryPortion, TestSummary};
 
-mod sendmmsg;
+mod sendmmsg_wrapper;
 
 /// A type alias that represents a portion to be sent. `transmitted` is a
 /// number of bytes sent, and `slice` is a packet to be sent.
@@ -147,7 +145,7 @@ impl<'a> UdpSender<'a> {
             },
         });
 
-        log::trace!("a new UdpSender::new has succeed (fd = {fd}).", fd = fd);
+        log::trace!("UdpSender::new has succeed (fd = {fd}).", fd = fd);
         result
     }
 
@@ -210,7 +208,7 @@ impl<'a> UdpSender<'a> {
         if !self.buffer.is_empty() {
             let start = Instant::now();
 
-            let packets_sent = sendmmsg(self.fd, self.buffer.as_mut_slice())?;
+            let packets_sent = sendmmsg_wrapper::sendmmsg(self.fd, self.buffer.as_mut_slice())?;
 
             let mut bytes_expected = 0usize;
             let mut bytes_sent = 0usize;
