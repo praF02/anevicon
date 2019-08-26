@@ -118,7 +118,7 @@ impl<'a> UdpSender<'a> {
             },
         )
         .map_err(|error| CreateUdpSenderError::SetSocketOption {
-            error: error,
+            error,
             option: String::from("SO_SNDTIMEO"),
         })?;
 
@@ -138,14 +138,20 @@ impl<'a> UdpSender<'a> {
             address: *dest,
         })?;
 
-        Ok(UdpSender {
+        let result = Ok(UdpSender {
             fd,
             buffer: {
                 let mut packets = Vec::new();
                 packets.reserve_exact(test_intensity.get());
                 packets
             },
-        })
+        });
+
+        log::trace!(
+            "a new UdpSender has been successfully created (fd = {fd}).",
+            fd = fd
+        );
+        result
     }
 
     /// Puts `packet` into an inner buffer. If a buffer is full, then all its
